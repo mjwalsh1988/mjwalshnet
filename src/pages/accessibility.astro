@@ -1,0 +1,198 @@
+---
+// The accessibility statement (sections 4.1, 6.10, 9.1): the target, how the
+// site is tested, known issues, how to report a problem, and the dated fix log.
+import Base from "../layouts/Base.astro";
+import { fixLog, knownIssues, manualPasses } from "../data/a11y-log";
+import { formatDate } from "../lib/content";
+import { STATIC_PAGES } from "../lib/pages";
+import { webPage } from "../lib/seo/jsonld";
+import { canonicalUrl } from "../lib/seo/meta";
+
+const page = STATIC_PAGES.accessibility;
+const latest = fixLog[0]?.date ?? "2026-10-21";
+const date = (iso: string) => (iso.startsWith("[") ? iso : formatDate(new Date(iso)));
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  jsonLd={[
+    webPage({
+      url: canonicalUrl(page.path),
+      title: page.title,
+      description: page.description,
+      dateModified: latest,
+    }),
+  ]}
+>
+  <article class="wrap a11y">
+    <header class="a11y__header">
+      <p class="eyebrow">Accessibility</p>
+      <h1>Accessibility statement</h1>
+      <p class="a11y__lead measure">
+        [MICHAEL: two sentences in your words: you read this site with a screen reader yourself, and
+        that is why it is built the way it is.]
+      </p>
+    </header>
+
+    <div class="a11y__sections">
+      <section aria-labelledby="target">
+        <h2 id="target">What I aim for</h2>
+        <p>
+          WCAG 2.2 at level AA across the whole site, and AAA where it is practical: 7 to 1 contrast
+          for body text in both themes, line length and spacing you can adjust, link purpose from
+          the link text alone, and no animation that you cannot turn off. The exceptions are listed
+          under known issues, honestly.
+        </p>
+      </section>
+
+      <section aria-labelledby="how-tested">
+        <h2 id="how-tested">How it is tested</h2>
+        <p>Automatically, on every change, before anything is deployed:</p>
+        <ul>
+          <li>
+            axe-core through Playwright on every page, in both themes, at 360 and 1280 pixels wide,
+            failing on any violation.
+          </li>
+          <li>
+            Lighthouse with budgets: accessibility, best practices and SEO at 100, performance at 95
+            or better, measured on a simulated phone.
+          </li>
+          <li>
+            html-validate on every built page, because broken markup makes a broken accessibility
+            tree.
+          </li>
+          <li>A contrast check of every color pair in both themes and of the home page grounds.</li>
+          <li>
+            Keyboard tests for every interactive piece: the skip link, the dialog, the search, the
+            disclosures, the toggles, the forms.
+          </li>
+          <li>
+            A writing check that rejects em dashes, curly quotes and the other things that read
+            badly aloud.
+          </li>
+        </ul>
+        <p>By hand, before each release, by me:</p>
+        <ul>
+          <li>A full keyboard pass of every page: tab order, visible focus, Escape, no traps.</li>
+          <li>NVDA with Firefox and Chrome on Windows.</li>
+          <li>VoiceOver on an iPhone.</li>
+          <li>200 and 400 percent zoom in Chrome, Windows High Contrast, and reduced motion on.</li>
+          <li>
+            Reading with the "what my screen reader hears" view on, to confirm it matches what NVDA
+            said.
+          </li>
+        </ul>
+        <h3>Manual passes</h3>
+        <ul class="a11y__passes">
+          {manualPasses.map((p) => (
+            <li>
+              <span class="mono">{date(p.date)}</span>: {p.tool}, {p.pages}. {p.result}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="known">
+        <h2 id="known">Known issues</h2>
+        <ul>
+          {knownIssues.map((issue) => (
+            <li>{issue}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="report">
+        <h2 id="report">Report a problem</h2>
+        <p>
+          If something on this site does not work with your screen reader, your keyboard, your zoom
+          level or anything else, <a href="/contact?topic=accessibility">tell me</a>. Say which page
+          and what you were using. I read every message myself and I fix these first. There is also
+          a "report an accessibility problem" link in the footer of every page that fills in the
+          page for you.
+        </p>
+      </section>
+
+      <section aria-labelledby="log">
+        <h2 id="log">Fix log</h2>
+        <p>
+          Every accessibility bug found and fixed on this site, newest first, with how it was found.
+        </p>
+        <ol class="a11y__log">
+          {fixLog.map((entry) => (
+            <li class="a11y__entry">
+              <p class="eyebrow">
+                <time datetime={entry.date}>{date(entry.date)}</time>
+                <span>Found by {entry.found}</span>
+              </p>
+              <p>{entry.summary}</p>
+              <p class="a11y__fix">Fix: {entry.fix}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .a11y {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .a11y__header h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .a11y__lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .a11y__sections {
+    margin-top: var(--space-7);
+    display: grid;
+    gap: var(--space-7);
+    max-width: var(--measure);
+  }
+  .a11y__sections h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-3);
+    scroll-margin-top: var(--space-6);
+  }
+  .a11y__sections h3 {
+    font-size: var(--step-1);
+    margin-top: var(--space-5);
+    margin-bottom: var(--space-2);
+  }
+  .a11y__sections p + p,
+  .a11y__sections p + ul,
+  .a11y__sections ul + p {
+    margin-top: var(--space-3);
+  }
+  .a11y__sections ul {
+    padding-left: 1.2em;
+  }
+  .a11y__sections li + li {
+    margin-top: var(--space-2);
+  }
+  .a11y__log {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+  }
+  .a11y__entry {
+    padding-block: var(--space-4);
+    border-top: 1px solid var(--border);
+  }
+  .a11y__entry .eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin-bottom: var(--space-2);
+  }
+  .a11y__fix {
+    margin-top: var(--space-2);
+    color: var(--fg-muted);
+  }
+</style>

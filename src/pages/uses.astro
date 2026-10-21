@@ -1,0 +1,139 @@
+---
+// The uses page (section 4.1): the tools of a blind developer. Structure here,
+// the words from the interview. The sections follow the plan's list.
+import Base from "../layouts/Base.astro";
+import { STATIC_PAGES } from "../lib/pages";
+import { webPage } from "../lib/seo/jsonld";
+import { canonicalUrl } from "../lib/seo/meta";
+
+const page = STATIC_PAGES.uses;
+const sections = [
+  {
+    id: "screen-reader",
+    title: "Screen reader",
+    prompt:
+      "which screen reader, which voice and speed, the settings that matter, what you do when it fails",
+  },
+  { id: "keyboard", title: "Keyboard", prompt: "the keyboard, why it, the shortcuts you live in" },
+  {
+    id: "editor",
+    title: "Editor",
+    prompt: "the editor, the extensions, how you navigate a file by ear",
+  },
+  {
+    id: "terminal",
+    title: "Terminal",
+    prompt: "the terminal and shell, how you read long output, what you alias",
+  },
+  {
+    id: "claude-code",
+    title: "Claude Code",
+    prompt:
+      "how Claude Code fits the day: what you ask it to do, what you never let it do, how you review its work by ear",
+  },
+  {
+    id: "hooks",
+    title: "The hooks that turn markdown into plain text",
+    prompt:
+      "the Stop hook and markdown-to-text script that strip markdown before it reaches the clipboard or Notepad, and why punctuation read aloud is noise",
+  },
+  {
+    id: "hardware",
+    title: "Hardware",
+    prompt: "the machine, the headphones, anything braille, the phone",
+  },
+  {
+    id: "testing",
+    title: "Testing by ear",
+    prompt:
+      "how you test a page: the keyboard pass, NVDA with Firefox and Chrome, VoiceOver on the phone",
+  },
+];
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  jsonLd={[
+    webPage({ url: canonicalUrl(page.path), title: page.title, description: page.description }),
+  ]}
+>
+  <article class="wrap uses">
+    <header class="uses__header">
+      <p class="eyebrow">Uses</p>
+      <h1>The tools of a blind developer</h1>
+      <p class="uses__lead measure">
+        [MICHAEL: two or three sentences on why this page exists: searches for a blind developer
+        setup find almost nothing good, so here is yours, kept current.]
+      </p>
+      <nav class="uses__toc" aria-label="Sections on this page">
+        <ol>
+          {sections.map((s) => (
+            <li>
+              <a href={`#${s.id}`}>{s.title}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </header>
+    <div class="uses__sections">
+      {sections.map((s) => (
+        <section class="uses__section" aria-labelledby={s.id}>
+          <h2 id={s.id}>{s.title}</h2>
+          <p>[MICHAEL: {s.prompt}]</p>
+        </section>
+      ))}
+    </div>
+    <p class="uses__updated mono">
+      Last updated <time datetime="2026-10-21">2026-10-21</time>.
+    </p>
+  </article>
+</Base>
+
+<style>
+  .uses {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .uses__header h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .uses__lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .uses__toc {
+    margin-top: var(--space-5);
+    font-size: var(--step--1);
+  }
+  .uses__toc ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .uses__toc a {
+    display: inline-block;
+    min-height: var(--target-min);
+  }
+  .uses__sections {
+    margin-top: var(--space-7);
+    display: grid;
+    gap: var(--space-7);
+    max-width: var(--measure);
+  }
+  .uses__section h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-3);
+    scroll-margin-top: var(--space-6);
+  }
+  .uses__updated {
+    margin-top: var(--space-8);
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+</style>

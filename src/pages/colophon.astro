@@ -1,0 +1,145 @@
+---
+// The colophon (section 4.1): how the site is built, the fonts, the stack, the
+// design idea, the testing, and the AI disclosure in one paragraph (7.2).
+import Base from "../layouts/Base.astro";
+import { STATIC_PAGES } from "../lib/pages";
+import { webPage } from "../lib/seo/jsonld";
+import { canonicalUrl } from "../lib/seo/meta";
+
+const page = STATIC_PAGES.colophon;
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  jsonLd={[
+    webPage({ url: canonicalUrl(page.path), title: page.title, description: page.description }),
+  ]}
+>
+  <article class="wrap colophon">
+    <header class="colophon__header">
+      <p class="eyebrow">Colophon</p>
+      <h1>How this site is built</h1>
+    </header>
+
+    <div class="colophon__sections">
+      <section aria-labelledby="words">
+        <h2 id="words">The words</h2>
+        <p>
+          [MICHAEL: confirm or rewrite this paragraph; it is the AI disclosure from the plan. Draft:
+          Every word on this site was written or edited by me. I use Claude Code to build and to
+          draft from my own interview transcripts, and I edit every draft by ear with a screen
+          reader before it goes up. The memoir chapters are mine alone. A pattern check runs over
+          every string on the site, down to the button labels, and rejects the tells of machine
+          writing, so what you read here sounds like me because it is.]
+        </p>
+      </section>
+
+      <section aria-labelledby="idea">
+        <h2 id="idea">The idea</h2>
+        <p>
+          The home page moves from darkness to light as you scroll: it opens on near-black and the
+          ground lightens to paper by the time you reach the writing. It is the arc of the memoir
+          turned into a layout. With motion turned off it is four sections that step from dark to
+          light, and every text color is checked against every ground.
+        </p>
+        <p>The mark in the header is the braille cells for M and W. It is the favicon too.</p>
+      </section>
+
+      <section aria-labelledby="type">
+        <h2 id="type">Type</h2>
+        <p>
+          Headings are set in Fraunces. Body text is Atkinson Hyperlegible Next, designed by the
+          Braille Institute for low-vision legibility; it tells I, l and 1 apart, and O from 0,
+          which helps everyone. Code, dates and small labels are JetBrains Mono. All three are
+          self-hosted and subsetted, with fallbacks sized to match so nothing jumps when they load.
+        </p>
+      </section>
+
+      <section aria-labelledby="stack">
+        <h2 id="stack">Stack</h2>
+        <ul>
+          <li>
+            Astro builds every page to plain HTML at deploy; a post page carries no framework code
+            at all.
+          </li>
+          <li>
+            Vercel hosts it and runs the two small functions (the contact form and the metrics job)
+            and the nightly cron.
+          </li>
+          <li>
+            Supabase holds the live numbers, a backup of contact messages and the newsletter mirror.
+            Every table has row level security.
+          </li>
+          <li>
+            Resend sends the contact mail. Buttondown runs the newsletter. Giscus, built on GitHub
+            Discussions, handles comments and loads only when you ask for it.
+          </li>
+          <li>
+            Google Analytics 4 counts visits, loaded after the page is interactive, with no
+            advertising features. The <a href="/privacy">privacy page</a> says what it stores.
+          </li>
+          <li>Pagefind indexes the site at deploy, so search works with no server.</li>
+          <li>
+            Expressive Code renders code blocks. satori and sharp draw a social image for every page
+            at build.
+          </li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="rules">
+        <h2 id="rules">Rules the site follows</h2>
+        <ul>
+          <li>
+            Every image has alt text. Images that carry information also have a long description
+            under "Describe this image", for everyone.
+          </li>
+          <li>Every chart has a data table.</li>
+          <li>Every number is real and shows its source and date.</li>
+          <li>Nothing moves unless you scroll, and nothing plays unless you press play.</li>
+          <li>Focus is always visible. Nothing depends on hover, pointer precision or a mouse.</li>
+        </ul>
+        <p>
+          The <a href="/accessibility">accessibility statement</a> has the test process and the fix
+          log.
+        </p>
+      </section>
+
+      <section aria-labelledby="source">
+        <h2 id="source">Source</h2>
+        <p>[MICHAEL: say whether the repository is public and link it, or remove this section]</p>
+      </section>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .colophon {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .colophon__header h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .colophon__sections {
+    margin-top: var(--space-7);
+    display: grid;
+    gap: var(--space-7);
+    max-width: var(--measure);
+  }
+  .colophon__sections h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-3);
+  }
+  .colophon__sections p + p,
+  .colophon__sections ul + p {
+    margin-top: var(--space-3);
+  }
+  .colophon__sections ul {
+    padding-left: 1.2em;
+  }
+  .colophon__sections li + li {
+    margin-top: var(--space-2);
+  }
+</style>

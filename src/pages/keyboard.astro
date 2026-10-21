@@ -1,0 +1,149 @@
+---
+// Keyboard shortcuts reference (section 4.1), reachable with the ? key.
+import Base from "../layouts/Base.astro";
+import { STATIC_PAGES } from "../lib/pages";
+import { webPage } from "../lib/seo/jsonld";
+import { canonicalUrl } from "../lib/seo/meta";
+
+const page = STATIC_PAGES.keyboard;
+const groups = [
+  {
+    title: "Anywhere",
+    rows: [
+      ["Ctrl K, or Cmd K on a Mac", "Open or close search and commands"],
+      ["/", "Open search and commands"],
+      ["?", "Open this page"],
+      ["Tab, Shift Tab", "Move between controls; the first stop on every page is the skip link"],
+      ["Escape", "Close any dialog"],
+    ],
+  },
+  {
+    title: "Search and commands",
+    rows: [
+      ["Up and down arrows", "Move through the results"],
+      ["Home, End", "First or last result"],
+      ["Enter", "Open the selected result"],
+      ["Escape", "Close and return to where you were"],
+    ],
+  },
+  {
+    title: "Reading",
+    rows: [
+      [
+        "Enter or Space on a heading link",
+        "Jump to that section and copy its address to the address bar",
+      ],
+      ["Enter or Space on Describe this image", "Open or close the long description"],
+    ],
+  },
+  {
+    title: "Audio player",
+    rows: [
+      ["Space, or K", "Play or pause"],
+      ["Left and right arrows, or J and L", "Back or forward ten seconds"],
+      ["Comma and period", "Slower or faster"],
+      ["M", "Mute"],
+    ],
+  },
+];
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  jsonLd={[
+    webPage({ url: canonicalUrl(page.path), title: page.title, description: page.description }),
+  ]}
+>
+  <article class="wrap keys">
+    <header class="keys__header">
+      <p class="eyebrow">Keyboard</p>
+      <h1>Keyboard shortcuts</h1>
+      <p class="keys__lead measure">
+        Everything on this site works with a keyboard alone. These shortcuts are extras. None of
+        them fires while you are typing in a field, and single-key shortcuts can be ignored by using
+        the buttons instead.
+      </p>
+    </header>
+    <div class="keys__groups">
+      {groups.map((g) => (
+        <section aria-labelledby={`keys-${g.title.toLowerCase().replace(/\s+/g, "-")}`}>
+          <h2 id={`keys-${g.title.toLowerCase().replace(/\s+/g, "-")}`}>{g.title}</h2>
+          <table class="keys__table">
+            <caption class="visually-hidden">Shortcuts, {g.title}</caption>
+            <thead>
+              <tr>
+                <th scope="col">Keys</th>
+                <th scope="col">What it does</th>
+              </tr>
+            </thead>
+            <tbody>
+              {g.rows.map(([keys, does]) => (
+                <tr>
+                  <th scope="row">
+                    <kbd>{keys}</kbd>
+                  </th>
+                  <td>{does}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      ))}
+    </div>
+  </article>
+</Base>
+
+<style>
+  .keys {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .keys__header h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .keys__lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .keys__groups {
+    margin-top: var(--space-7);
+    display: grid;
+    gap: var(--space-7);
+    max-width: var(--measure);
+  }
+  .keys__groups h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-3);
+  }
+  .keys__table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .keys__table th,
+  .keys__table td {
+    text-align: left;
+    vertical-align: top;
+    padding: var(--space-2) var(--space-3) var(--space-2) 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .keys__table thead th {
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+    font-weight: 600;
+  }
+  .keys__table tbody th {
+    font-weight: 400;
+    width: 40%;
+  }
+  .keys__table kbd {
+    padding: 0.1em 0.4em;
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    background: var(--bg-surface);
+  }
+</style>

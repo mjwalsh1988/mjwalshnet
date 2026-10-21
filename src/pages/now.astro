@@ -1,0 +1,104 @@
+---
+// The now page (section 6.11): the current month and an archive of earlier
+// months, each a dated entry from src/content/now.
+import { render } from "astro:content";
+import Base from "../layouts/Base.astro";
+import Prose from "../components/content/Prose.astro";
+import { mdxComponents } from "../components/content/mdx-components";
+import { formatMonth, getNowEntries, isoDate } from "../lib/content";
+import { STATIC_PAGES } from "../lib/pages";
+import { webPage } from "../lib/seo/jsonld";
+import { canonicalUrl } from "../lib/seo/meta";
+
+const page = STATIC_PAGES.now;
+const entries = await getNowEntries();
+const [current, ...archive] = entries;
+const Current = current ? (await render(current)).Content : null;
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  jsonLd={[
+    webPage({
+      url: canonicalUrl(page.path),
+      title: page.title,
+      description: page.description,
+      dateModified: current ? isoDate(current.data.month) : undefined,
+    }),
+  ]}
+>
+  <div class="wrap now">
+    <header class="now__header">
+      <p class="eyebrow">Now</p>
+      <h1>What I am doing now</h1>
+      <p class="now__lead measure">
+        A page about this month, updated on the first of each month. The idea comes from
+        <a href="https://sive.rs/now">Derek Sivers</a>.
+      </p>
+    </header>
+
+    {current && Current ? (
+      <article class="now__current" aria-labelledby="now-month">
+        <h2 id="now-month">
+          <time datetime={isoDate(current.data.month)}>{formatMonth(current.data.month)}</time>
+        </h2>
+        <Prose>
+          <Current components={mdxComponents} />
+        </Prose>
+      </article>
+    ) : (
+      <p class="now__empty">The first entry arrives at launch.</p>
+    )}
+
+    {archive.length > 0 && (
+      <section class="now__archive" aria-labelledby="archive-title">
+        <h2 id="archive-title">Earlier months</h2>
+        <ul>
+          {archive.map((entry) => (
+            <li>
+              <time datetime={isoDate(entry.data.month)}>{formatMonth(entry.data.month)}</time>
+            </li>
+          ))}
+        </ul>
+        <p class="now__note">
+          [MICHAEL: decide whether earlier months stay readable here or just listed; the entries are
+          in src/content/now]
+        </p>
+      </section>
+    )}
+  </div>
+</Base>
+
+<style>
+  .now {
+    padding-block: var(--space-7) var(--space-8);
+    display: grid;
+    gap: var(--space-7);
+  }
+  .now__header h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .now__lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .now__current h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-4);
+  }
+  .now__archive h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-3);
+  }
+  .now__archive ul {
+    padding-left: 1.2em;
+  }
+  .now__note {
+    margin-top: var(--space-3);
+    color: var(--fg-muted);
+  }
+</style>

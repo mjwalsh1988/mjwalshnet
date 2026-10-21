@@ -1,0 +1,138 @@
+---
+// Privacy (sections 4.1 and 12): what is collected and by whom, in plain words.
+import Base from "../layouts/Base.astro";
+import { STATIC_PAGES } from "../lib/pages";
+import { webPage } from "../lib/seo/jsonld";
+import { canonicalUrl } from "../lib/seo/meta";
+
+const page = STATIC_PAGES.privacy;
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  jsonLd={[
+    webPage({
+      url: canonicalUrl(page.path),
+      title: page.title,
+      description: page.description,
+      dateModified: "2026-10-21",
+    }),
+  ]}
+>
+  <article class="wrap privacy">
+    <header class="privacy__header">
+      <p class="eyebrow">Privacy</p>
+      <h1>What this site collects</h1>
+      <p class="privacy__lead measure">
+        Short version: a contact message if you send one, an email address if you subscribe, and the
+        usual visit counts through Google Analytics. Nothing is sold. Here is the long version.
+      </p>
+    </header>
+
+    <div class="privacy__sections">
+      <section aria-labelledby="contact">
+        <h2 id="contact">Contact messages</h2>
+        <p>
+          When you send a message through the contact form, I get it by email and a copy is stored
+          in my Supabase database as a backup, with your name, your email address, the message, the
+          time, a hashed form of your IP address used only to stop floods, and your browser's user
+          agent string. It stays until I delete it. Ask and I will delete it sooner.
+        </p>
+        <p>
+          The form uses Cloudflare Turnstile to tell people from scripts. Turnstile may set a cookie
+          on its own domain while it runs; Cloudflare's privacy policy covers that.
+        </p>
+      </section>
+
+      <section aria-labelledby="newsletter">
+        <h2 id="newsletter">Newsletter</h2>
+        <p>
+          If you subscribe, your email address goes to Buttondown, which sends the letters, and a
+          copy is kept in my database so Buttondown is not the only record. Every letter has an
+          unsubscribe link. Unsubscribing removes you from both.
+        </p>
+      </section>
+
+      <section aria-labelledby="analytics">
+        <h2 id="analytics">Google Analytics</h2>
+        <p>
+          I use Google Analytics 4 to see which pages people read and which accessibility features
+          they use, such as the screen reader view or the text size control. It sets cookies in your
+          browser and sends page views, scrolls, outbound clicks and searches to Google, along with
+          your rough location and your device type. It does not know who you are. I have turned off
+          the advertising features and Google Signals, and nothing identifies you to me.
+        </p>
+        <p>
+          If you are in the European Economic Area or the United Kingdom, analytics storage is off
+          by default, so no cookie is set and the page view is counted without one. Anyone can opt
+          out everywhere with the{" "}
+          <a href="https://tools.google.com/dlpage/gaoptout">Google Analytics opt-out add-on</a>.
+          Vercel Speed Insights measures how fast pages load and stores nothing about you.
+        </p>
+      </section>
+
+      <section aria-labelledby="comments">
+        <h2 id="comments">Comments</h2>
+        <p>
+          Comments run on Giscus, which uses GitHub Discussions. Nothing from Giscus loads until you
+          choose to open the comments, and commenting means signing in to GitHub, whose terms then
+          apply.
+        </p>
+      </section>
+
+      <section aria-labelledby="settings">
+        <h2 id="settings">Your settings</h2>
+        <p>
+          The theme and reading controls are stored in your browser's local storage, on your device
+          only. They never leave it.
+        </p>
+      </section>
+
+      <section aria-labelledby="deletion">
+        <h2 id="deletion">Asking for deletion</h2>
+        <p>
+          <a href="/contact?topic=privacy">Send me a message</a> and say what to delete. I will
+          confirm when it is done.
+        </p>
+      </section>
+    </div>
+    <p class="privacy__updated mono">
+      Last updated <time datetime="2026-10-21">2026-10-21</time>.
+    </p>
+  </article>
+</Base>
+
+<style>
+  .privacy {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .privacy__header h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .privacy__lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .privacy__sections {
+    margin-top: var(--space-7);
+    display: grid;
+    gap: var(--space-7);
+    max-width: var(--measure);
+  }
+  .privacy__sections h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-3);
+  }
+  .privacy__sections p + p {
+    margin-top: var(--space-3);
+  }
+  .privacy__updated {
+    margin-top: var(--space-8);
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+</style>
