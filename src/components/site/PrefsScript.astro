@@ -1,0 +1,13 @@
+---
+// Applies the stored theme and reading preferences to <html> before first
+// paint, so the page never flashes the wrong theme. The script body lives in
+// src/lib/prefs.ts so a unit test can run it and this component can hash it
+// for the Content Security Policy.
+import { createHash } from "node:crypto";
+import { INLINE_PREFS_SCRIPT } from "../../lib/prefs";
+
+const hash = createHash("sha256").update(INLINE_PREFS_SCRIPT).digest("base64");
+Astro.csp.insertScriptHash(`sha256-${hash}`);
+---
+
+<script is:inline set:html={INLINE_PREFS_SCRIPT} />

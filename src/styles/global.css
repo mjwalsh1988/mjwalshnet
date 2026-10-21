@@ -1,1 +1,252 @@
 @import "tailwindcss";
+@import "./tokens.css";
+
+/* Tailwind reads the tokens so utilities and the hand-written CSS share one source. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-surface: var(--bg-surface);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-focus: var(--focus);
+  --color-ok: var(--ok);
+  --color-error: var(--error);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+@layer base {
+  html {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--space-6);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    font-size: var(--step-0);
+    font-weight: var(--body-weight);
+    line-height: var(--leading-body);
+    word-spacing: var(--word-spacing);
+    letter-spacing: var(--letter-spacing);
+    text-rendering: optimizeLegibility;
+    display: flex;
+    flex-direction: column;
+  }
+
+  ::selection {
+    background: var(--selection-bg);
+    color: var(--selection-fg);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: var(--leading-tight);
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  h1 {
+    font-size: var(--step-4);
+    font-variation-settings:
+      "opsz" 144,
+      "SOFT" 30,
+      "WONK" 1;
+  }
+  h2 {
+    font-size: var(--step-3);
+  }
+  h3 {
+    font-size: var(--step-2);
+  }
+  h4 {
+    font-size: var(--step-1);
+  }
+
+  p {
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.16em;
+  }
+  a:hover {
+    text-decoration-thickness: 0.14em;
+  }
+
+  code,
+  kbd,
+  pre,
+  samp,
+  time,
+  .mono {
+    font-family: var(--font-mono);
+    font-feature-settings: "zero" 1;
+  }
+
+  /* Focus is always visible: 3 px ring, 2 px offset, both grounds. */
+  :focus {
+    outline: var(--focus-width) solid var(--focus);
+    outline-offset: var(--focus-offset);
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+  :focus-visible {
+    outline: var(--focus-width) solid var(--focus);
+    outline-offset: var(--focus-offset);
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    word-spacing: inherit;
+  }
+
+  img,
+  picture,
+  video,
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-6) 0;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+}
+
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: var(--content-width);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .measure {
+    max-width: var(--measure);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  .skip-link {
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-2);
+    z-index: 100;
+    padding: var(--space-2) var(--space-4);
+    background: var(--fg);
+    color: var(--bg);
+    font-weight: 600;
+    text-decoration: none;
+    transform: translateY(-200%);
+  }
+  .skip-link:focus {
+    transform: none;
+  }
+}
+
+/* Motion: everything under 250 ms, and nothing at all when the visitor asks. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+:root[data-motion="reduce"] {
+  scroll-behavior: auto;
+}
+:root[data-motion="reduce"] *,
+:root[data-motion="reduce"] *::before,
+:root[data-motion="reduce"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Windows High Contrast and other forced-color modes keep borders and focus. */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 3px solid CanvasText;
+  }
+  .skip-link {
+    border: 2px solid CanvasText;
+  }
+}
+
+/* Cross-document view transitions by CSS alone, no client router. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 180ms;
+  }
+}
+
+@media print {
+  .skip-link,
+  .no-print {
+    display: none !important;
+  }
+  html {
+    background: #fff;
+    color: #000;
+  }
+  a {
+    color: #000;
+  }
+}

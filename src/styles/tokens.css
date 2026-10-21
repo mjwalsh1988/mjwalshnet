@@ -1,0 +1,172 @@
+/*
+  Design tokens for mjwalsh.net. Section 5.2 of the build plan.
+
+  Raw palette first, then the semantic tokens each theme maps onto it. Every
+  pair the site uses is checked by tests/unit/tokens.test.ts, which parses this
+  file, so a value changed here without re-running the tests fails CI.
+
+  Themes are set with data-theme on <html> by the inline preference script.
+  The reading controls set data-text-size, data-line-spacing, data-contrast,
+  data-dyslexia and data-motion on the same element.
+*/
+
+:root {
+  /* Raw palette */
+  --ink: #141210;
+  --paper: #f6f2ea;
+  --lamp: #d9941f;
+  --lamp-dim: #d4a04a;
+  --ember: #73420a;
+  --smoke-on-paper: #5e5a54;
+  --smoke-on-ink: #b3ada3;
+  --dusk: #26221e;
+  --surface-light: #ece7dd;
+  --surface-dark: #201d1a;
+  --border-light: #857d72;
+  --border-dark: #6f685f;
+  --signal-ok-light: #1f5f3a;
+  --signal-error-light: #8e2a1e;
+  --signal-ok-dark: #7fd39a;
+  --signal-error-dark: #f2a08f;
+
+  /* Type: fluid sizes between 360 and 1440 px, body never under 17 px. */
+  --text-scale: 1;
+  --step--1: calc(clamp(0.9375rem, 0.9rem + 0.2vw, 1rem) * var(--text-scale));
+  --step-0: calc(clamp(1.0625rem, 1.02rem + 0.22vw, 1.125rem) * var(--text-scale));
+  --step-1: calc(clamp(1.2rem, 1.1rem + 0.45vw, 1.375rem) * var(--text-scale));
+  --step-2: calc(clamp(1.45rem, 1.3rem + 0.75vw, 1.75rem) * var(--text-scale));
+  --step-3: calc(clamp(1.75rem, 1.5rem + 1.2vw, 2.25rem) * var(--text-scale));
+  --step-4: calc(clamp(2.125rem, 1.75rem + 1.9vw, 3rem) * var(--text-scale));
+  --step-5: calc(clamp(2.75rem, 2rem + 3.2vw, 4.25rem) * var(--text-scale));
+  --step-6: calc(clamp(3.25rem, 2.2rem + 5vw, 6rem) * var(--text-scale));
+  --leading-body: 1.6;
+  --leading-tight: 1.15;
+  --measure: 65ch;
+  --tracking-eyebrow: 0.08em;
+  --word-spacing: normal;
+  --letter-spacing: normal;
+
+  /* Space, in rem steps */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --content-width: 72rem;
+
+  /* Motion */
+  --duration: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Focus: 3 px ring, 2 px offset, never removed. */
+  --focus-width: 3px;
+  --focus-offset: 2px;
+
+  /* Target sizes */
+  --target-min: 24px;
+  --target-primary: 44px;
+
+  /* Semantic tokens: light theme is the default. */
+  color-scheme: light;
+  --bg: var(--paper);
+  --bg-surface: var(--surface-light);
+  --fg: var(--ink);
+  --fg-muted: var(--smoke-on-paper);
+  --accent: var(--ember);
+  --border: var(--border-light);
+  --focus: var(--ember);
+  --ok: var(--signal-ok-light);
+  --error: var(--signal-error-light);
+  --mark: var(--ink);
+  --body-weight: 400;
+  --selection-bg: var(--ember);
+  --selection-fg: var(--paper);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: var(--ink);
+  --bg-surface: var(--surface-dark);
+  --fg: var(--paper);
+  --fg-muted: var(--smoke-on-ink);
+  /* The accent is desaturated a step on dark so it does not glow. */
+  --accent: var(--lamp-dim);
+  --border: var(--border-dark);
+  --focus: var(--lamp);
+  --ok: var(--signal-ok-dark);
+  --error: var(--signal-error-dark);
+  --mark: var(--paper);
+  /* Light text on a dark ground reads heavier, so the weight comes down a step. */
+  --body-weight: 350;
+  --selection-bg: var(--lamp);
+  --selection-fg: var(--ink);
+}
+
+/* Movements of the home page scroll (section 5.1). Each is a solid ground
+   with its own text pairing; the arc between them is added in Phase 4. */
+:root {
+  --ground-dark: var(--ink);
+  --ground-dusk: var(--dusk);
+  --ground-dawn: var(--paper);
+  --ground-day: var(--paper);
+  --on-dark: var(--paper);
+  --on-dark-muted: var(--smoke-on-ink);
+  --on-dark-accent: var(--lamp);
+  --on-dusk: var(--paper);
+  --on-dusk-muted: var(--smoke-on-ink);
+  --on-dusk-accent: var(--lamp);
+}
+
+/* Reading controls (section 6.8). Applied as attributes on <html>. */
+:root[data-text-size="125"] {
+  --text-scale: 1.25;
+}
+:root[data-text-size="150"] {
+  --text-scale: 1.5;
+}
+:root[data-text-size="175"] {
+  --text-scale: 1.75;
+}
+:root[data-text-size="200"] {
+  --text-scale: 2;
+}
+:root[data-line-spacing="loose"] {
+  --leading-body: 1.9;
+}
+:root[data-dyslexia="on"] {
+  --leading-body: 1.8;
+  --word-spacing: 0.16em;
+  --letter-spacing: 0.035em;
+}
+
+/* High contrast goes past AAA: pure black and white grounds, the accent kept
+   only where it already clears 7:1 on the new ground. */
+:root[data-contrast="high"] {
+  --bg: #ffffff;
+  --bg-surface: #f2f2f2;
+  --fg: #000000;
+  --fg-muted: #2b2b2b;
+  --accent: #5a3200;
+  --border: #000000;
+  --focus: #000000;
+  --ok: #0f4a2a;
+  --error: #7a1d12;
+  --mark: #000000;
+}
+:root[data-theme="dark"][data-contrast="high"] {
+  --bg: #000000;
+  --bg-surface: #111111;
+  --fg: #ffffff;
+  --fg-muted: #e0e0e0;
+  --accent: #ffc466;
+  --border: #ffffff;
+  --focus: #ffffff;
+  --ok: #9ff0b5;
+  --error: #ffb3a3;
+  --mark: #ffffff;
+}

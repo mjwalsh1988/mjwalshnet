@@ -31,6 +31,8 @@ export default defineConfig({
     sitemap(),
   ],
   markdown: {
+    // Expressive Code renders every code block, so Astro's own highlighter is off.
+    syntaxHighlight: false,
     // The house style bans curly quotes, em dashes and ellipsis characters, so
     // the renderer must not add them after the writing checker has passed.
     processor: satteri({
@@ -66,6 +68,37 @@ export default defineConfig({
       fallbacks: ["Consolas", "monospace"],
     },
   ],
+  security: {
+    // Hash-based CSP. The site is static, so hashes stand in for nonces.
+    // Inline scripts added with is:inline register their own hash through
+    // Astro.csp.insertScriptHash (see PrefsScript.astro).
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data: https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
+        "font-src 'self'",
+        "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.analytics.google.com",
+        "frame-src https://challenges.cloudflare.com https://giscus.app",
+        "media-src 'self'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+      ],
+      scriptDirective: {
+        resources: [
+          "'self'",
+          "https://www.googletagmanager.com",
+          "https://challenges.cloudflare.com",
+          "https://giscus.app",
+        ],
+      },
+      styleDirective: {
+        // Expressive Code and the font component write inline style attributes,
+        // which hashes cannot cover, so styles allow inline. Scripts stay strict.
+        resources: ["'self'", "'unsafe-inline'"],
+      },
+    },
+  },
   vite: {
     plugins: [tailwindcss()],
   },
