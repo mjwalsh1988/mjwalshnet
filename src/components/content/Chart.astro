@@ -1,0 +1,135 @@
+---
+// A bar chart with its data table (section 6.5): the chart is an SVG with a
+// title and description, and the same numbers render as a table under
+// "Show the data", visible to everyone. Values are passed in; nothing is
+// computed from prose.
+import Describe from "./Describe.astro";
+
+interface Props {
+  title: string;
+  /** One sentence saying what the chart shows, for the SVG description. */
+  description: string;
+  unit?: string;
+  rows: { label: string; value: number }[];
+  source?: string;
+  asOf?: string;
+}
+const { title, description, unit = "", rows, source, asOf } = Astro.props;
+const max = Math.max(1, ...rows.map((r) => r.value));
+const id = `chart-${Math.abs(hash(title))}`;
+const barHeight = 28;
+const gap = 10;
+const labelWidth = 150;
+const width = 640;
+const height = rows.length * (barHeight + gap);
+const fmt = (n: number) => new Intl.NumberFormat("en-US").format(n);
+
+function hash(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i += 1) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return h;
+}
+---
+
+<figure class="chart">
+  <figcaption class="chart__caption">{title}</figcaption>
+  <svg
+    class="chart__svg"
+    viewBox={`0 0 ${width} ${height}`}
+    role="img"
+    aria-labelledby={`${id}-title ${id}-desc`}
+    aria-details={`${id}-data`}
+  >
+    <title id={`${id}-title`}>{title}</title>
+    <desc id={`${id}-desc`}>{description}</desc>
+    {rows.map((row, i) => {
+      const y = i * (barHeight + gap);
+      const w = Math.round(((width - labelWidth - 90) * row.value) / max);
+      return (
+        <g>
+          <text x="0" y={y + barHeight * 0.68} class="chart__label">
+            {row.label}
+          </text>
+          <rect x={labelWidth} y={y} width={w} height={barHeight} class="chart__bar" />
+          <text x={labelWidth + w + 8} y={y + barHeight * 0.68} class="chart__value">
+            {fmt(row.value)}
+            {unit}
+          </text>
+        </g>
+      );
+    })}
+  </svg>
+  <Describe label="Show the data" id={`${id}-data`}>
+    <table class="chart__table">
+      <caption>{title}</caption>
+      <thead>
+        <tr>
+          <th scope="col">Item</th>
+          <th scope="col">Value{unit ? ` (${unit})` : ""}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr>
+            <th scope="row">{row.label}</th>
+            <td>{fmt(row.value)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    {(source || asOf) && (
+      <p class="chart__source">
+        Source: {source}
+        {asOf && `, as of ${asOf}`}
+      </p>
+    )}
+  </Describe>
+</figure>
+
+<style>
+  .chart {
+    margin: var(--space-6) 0;
+  }
+  .chart__caption {
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+  }
+  .chart__svg {
+    width: 100%;
+    height: auto;
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+  .chart__label,
+  .chart__value {
+    fill: var(--fg);
+  }
+  .chart__bar {
+    fill: var(--accent);
+  }
+  .chart__table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .chart__table caption {
+    text-align: left;
+    font-weight: 600;
+    padding-bottom: var(--space-2);
+  }
+  .chart__table th,
+  .chart__table td {
+    text-align: left;
+    padding: var(--space-2) var(--space-3) var(--space-2) 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .chart__source {
+    margin-top: var(--space-2);
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  @media (forced-colors: active) {
+    .chart__bar {
+      fill: CanvasText;
+    }
+  }
+</style>
