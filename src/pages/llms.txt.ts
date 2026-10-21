@@ -14,7 +14,7 @@ export const GET: APIRoute = async () => {
     "",
     `> ${SITE.description}`,
     "",
-    "Every word on this site was written or edited by Michael Walsh. The colophon explains how it is built and which tools were used.",
+    "Every word on this site was written or edited by Michael Walsh. The page at /colophon explains how it is built and which tools were used.",
     "",
     "## Pages",
     "",

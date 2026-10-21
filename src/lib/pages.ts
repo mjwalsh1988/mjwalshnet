@@ -87,10 +87,10 @@ export const STATIC_PAGES = {
   },
   colophon: {
     path: "/colophon",
-    title: "Colophon",
+    title: "How this site is built",
     description:
       "How this site is built: Astro, Supabase, Vercel, the typefaces, the design idea, the testing, and which words were written by me (all of them).",
-    eyebrow: "Colophon",
+    eyebrow: "Behind the site",
   },
   privacy: {
     path: "/privacy",

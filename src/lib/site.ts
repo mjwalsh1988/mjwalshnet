@@ -30,7 +30,7 @@ export const PRIMARY_NAV: NavItem[] = [
 
 export const FOOTER_NAV: NavItem[] = [
   { href: "/accessibility", label: "Accessibility" },
-  { href: "/colophon", label: "Colophon" },
+  { href: "/colophon", label: "How this site is built" },
   { href: "/privacy", label: "Privacy" },
   { href: "/keyboard", label: "Keyboard shortcuts" },
   { href: "/feed.xml", label: "RSS feed" },
