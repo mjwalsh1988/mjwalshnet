@@ -1,0 +1,72 @@
+---
+title: "Pipeline sample: every kind of content in one post"
+description: "A draft that exercises the whole Markdown pipeline so the tests can check headings, footnotes, code, figures, tables and callouts. Never published."
+date: 2026-10-21
+category: build-log
+series: pipeline-samples
+seriesOrder: 1
+tags: ["build-log", "testing"]
+draft: true
+summary: "This post exists so the automated tests have a page with every content feature on it."
+---
+
+import { Picture } from "astro:assets";
+import portrait from "../../../assets/img/michael-walsh.jpg";
+
+<Callout kind="summary">
+  This is a test post. It is a draft, so it builds only in development and in the test build, and it
+  exists so the pipeline has one page with every feature on it.
+</Callout>
+
+This paragraph has a footnote.[^1] It also has `inline code`, a [link to the about page](/about),
+and some **bold** text.
+
+## A heading with an anchor
+
+The heading above should carry a same-page link named after it. The table of contents lists it.
+
+### A third-level heading
+
+Third-level headings are listed under their parent in the table of contents.
+
+## Code
+
+```ts title="example.ts"
+export function readingTime(words: number): number {
+  return Math.max(1, Math.ceil(words / 225));
+}
+```
+
+## A figure
+
+<Figure
+  src={portrait}
+  alt="Michael Walsh smiling, outdoors by a river in autumn."
+  caption="The portrait from ffbeacon.com."
+  longDescription="[MICHAEL: confirm this description with someone who was there. Michael from the shoulders up, smiling with his teeth showing, short dark hair brushed up and back, a full dark beard, a black collared shirt, outdoors beside a river with trees turning autumn colors and a cloudy sky; someone's arm rests across his shoulders from the right.]"
+/>
+
+## A table
+
+| Year | Role                      | Employer      |
+| ---- | ------------------------- | ------------- |
+| 2009 | Level 3 Technical Support | Hostgator.com |
+| 2015 | Chief Executive Officer   | Hoststing LLC |
+
+## A note
+
+<Callout>
+  A note inside the prose, with a visible label so the meaning does not rest on color.
+</Callout>
+
+<Callout kind="warning">A warning, the same way.</Callout>
+
+> A quotation, set off with a rule.
+
+1. An ordered list
+2. With two items
+
+- An unordered list
+- With two items
+
+[^1]: The footnote text, with a link back to where it was referenced.
