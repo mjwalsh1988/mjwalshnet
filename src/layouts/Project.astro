@@ -1,0 +1,228 @@
+---
+// Project page (section 4.1): the problem, what I built, stack, numbers with
+// sources, lessons, links. Screenshots carry alt text and a long description.
+import { render } from "astro:content";
+import Base from "./Base.astro";
+import Figure from "../components/content/Figure.astro";
+import Prose from "../components/content/Prose.astro";
+import { mdxComponents } from "../components/content/mdx-components";
+import { formatDate, isoDate, projectPath, type Project } from "../lib/content";
+import { breadcrumbs, creativeWork, softwareApplication } from "../lib/seo/jsonld";
+import { canonicalUrl } from "../lib/seo/meta";
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+const { Content } = await render(project);
+const path = projectPath(project);
+const data = project.data;
+const statusLabel = {
+  live: "Live",
+  sold: "Sold",
+  retired: "Retired",
+  "this site": "You are on it",
+}[data.status];
+const schema = data.url
+  ? softwareApplication({
+      url: canonicalUrl(path),
+      name: data.title,
+      description: data.description,
+      siteUrl: data.url,
+    })
+  : creativeWork({ url: canonicalUrl(path), name: data.title, description: data.description });
+---
+
+<Base
+  title={data.title}
+  description={data.description}
+  path={path}
+  jsonLd={[
+    schema,
+    breadcrumbs([
+      { name: "Projects", url: canonicalUrl("/projects") },
+      { name: data.title, url: canonicalUrl(path) },
+    ]),
+  ]}
+>
+  <article class="wrap project">
+    <header class="project__header">
+      <p class="eyebrow project__eyebrow">
+        <a href="/projects">Projects</a>
+        <span>{data.year}</span>
+        <span>{data.role.join(", ")}</span>
+        <span>{statusLabel}</span>
+      </p>
+      <h1>{data.title}</h1>
+      <p class="project__tagline">{data.tagline}</p>
+      {data.url && (
+        <p class="project__link">
+          <a href={data.url}>{new URL(data.url).hostname}</a>
+        </p>
+      )}
+    </header>
+
+    {data.gallery.length > 0 && (
+      <section class="project__gallery" aria-labelledby="gallery-title">
+        <h2 id="gallery-title" class="visually-hidden">
+          Screenshots
+        </h2>
+        {data.gallery.map((item, i) => (
+          <Figure
+            src={item.src}
+            alt={item.alt}
+            caption={item.caption}
+            longDescription={item.longDescription}
+            priority={i === 0}
+          />
+        ))}
+      </section>
+    )}
+
+    {data.stats.length > 0 && (
+      <section class="project__stats" aria-labelledby="stats-title">
+        <h2 id="stats-title">The numbers</h2>
+        <dl class="stats">
+          {data.stats.map((s) => (
+            <div class="stats__item">
+              <dt>{s.label}</dt>
+              <dd>
+                <span class="stats__value">{s.value}</span>
+                <span class="stats__source">
+                  Source: {s.source}, as of{" "}
+                  <time datetime={isoDate(s.asOf)}>{formatDate(s.asOf)}</time>
+                </span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    )}
+
+    <div class="project__layout">
+      <Prose class="project__body">
+        <Content components={mdxComponents} />
+      </Prose>
+      {data.stack.length > 0 && (
+        <aside class="project__stack" aria-labelledby="stack-title">
+          <h2 id="stack-title" class="eyebrow">
+            Stack
+          </h2>
+          <dl>
+            {data.stack.map((s) => (
+              <div class="project__stack-item">
+                <dt>{s.name}</dt>
+                <dd>{s.use}</dd>
+              </div>
+            ))}
+          </dl>
+        </aside>
+      )}
+    </div>
+
+    <footer class="project__footer">
+      <p>
+        <a href="/projects">All projects</a>
+      </p>
+    </footer>
+  </article>
+</Base>
+
+<style>
+  .project {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .project__eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+  }
+  .project__eyebrow a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .project__header {
+    max-width: var(--measure);
+  }
+  .project__header h1 {
+    margin-top: var(--space-4);
+    font-size: var(--step-5);
+  }
+  .project__tagline {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .project__link {
+    margin-top: var(--space-3);
+  }
+  .project__gallery {
+    margin-top: var(--space-7);
+    display: grid;
+    gap: var(--space-6);
+  }
+  .project__gallery :global(img) {
+    border: 1px solid var(--border);
+  }
+  .project__stats {
+    margin-top: var(--space-7);
+  }
+  .project__stats h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-4);
+  }
+  .stats {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    margin: 0;
+  }
+  .stats__item {
+    padding: var(--space-4) 0;
+    border-top: 2px solid var(--fg);
+  }
+  .stats__item dt {
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  .stats__item dd {
+    margin: var(--space-2) 0 0;
+    display: grid;
+    gap: var(--space-1);
+  }
+  .stats__value {
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    line-height: 1;
+  }
+  .stats__source {
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  .project__layout {
+    margin-top: var(--space-7);
+    display: grid;
+    gap: var(--space-7);
+  }
+  .project__stack dl {
+    margin: var(--space-3) 0 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .project__stack-item dt {
+    font-weight: 700;
+  }
+  .project__stack-item dd {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  .project__footer {
+    margin-top: var(--space-8);
+  }
+  @media (width >= 64rem) {
+    .project__layout {
+      grid-template-columns: minmax(0, var(--measure)) 16rem;
+    }
+  }
+</style>

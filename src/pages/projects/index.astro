@@ -1,0 +1,146 @@
+---
+// Projects index (section 4.1, borrowing the one-line grid from hakim.se):
+// each project is a title, a line, a year and role, and one real number when
+// there is one. Only my own work; no client case studies.
+import Base from "../../layouts/Base.astro";
+import { getProjects, projectPath } from "../../lib/content";
+import { STATIC_PAGES } from "../../lib/pages";
+import { webPage } from "../../lib/seo/jsonld";
+import { canonicalUrl } from "../../lib/seo/meta";
+
+const page = STATIC_PAGES.projects;
+const projects = await getProjects();
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  jsonLd={[
+    webPage({ url: canonicalUrl(page.path), title: page.title, description: page.description }),
+  ]}
+>
+  <div class="wrap projects">
+    <header class="projects__header">
+      <p class="eyebrow">Projects</p>
+      <h1>Things I have built</h1>
+      <p class="projects__lead measure">
+        [MICHAEL: two sentences in your words: these are the things you built on your own time and
+        your own dime, and the rule that every number has a source and a date.]
+      </p>
+    </header>
+    <ol class="projects__list">
+      {projects.map((project) => {
+        const stat = project.data.stats[0];
+        return (
+          <li class="projects__item">
+            <p class="eyebrow projects__meta">
+              <span>{project.data.year}</span>
+              <span>{project.data.role.join(", ")}</span>
+              {project.data.draft && <span class="projects__draft">Draft</span>}
+            </p>
+            <h2 class="projects__title">
+              <a href={projectPath(project)}>{project.data.title}</a>
+            </h2>
+            <p class="projects__tagline">{project.data.tagline}</p>
+            {stat && (
+              <p class="projects__stat">
+                <span class="projects__value">{stat.value}</span>
+                <span class="projects__label">{stat.label}</span>
+              </p>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  </div>
+</Base>
+
+<style>
+  .projects {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .projects__header h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .projects__lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .projects__list {
+    list-style: none;
+    margin: var(--space-7) 0 0;
+    padding: 0;
+  }
+  .projects__item {
+    display: grid;
+    gap: var(--space-2);
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--border);
+  }
+  .projects__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+  }
+  .projects__draft {
+    color: var(--error);
+  }
+  .projects__title {
+    font-size: var(--step-3);
+  }
+  .projects__title a {
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .projects__title a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 0.06em;
+    text-underline-offset: 0.12em;
+  }
+  .projects__tagline {
+    max-width: var(--measure);
+    color: var(--fg-muted);
+  }
+  .projects__stat {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+  .projects__value {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: 1;
+  }
+  .projects__label {
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  @media (width >= 48rem) {
+    .projects__item {
+      grid-template-columns: 10rem minmax(0, 1fr);
+      grid-template-areas:
+        "meta title"
+        "meta tagline"
+        "meta stat";
+    }
+    .projects__meta {
+      grid-area: meta;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+    .projects__title {
+      grid-area: title;
+    }
+    .projects__tagline {
+      grid-area: tagline;
+    }
+    .projects__stat {
+      grid-area: stat;
+    }
+  }
+</style>
