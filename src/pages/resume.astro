@@ -1,0 +1,260 @@
+---
+// The resume (section 6.9): one typed source renders this page, the PDF (made
+// from this page by scripts/build-pdf.mjs) and /resume.json. The print
+// stylesheet at the bottom is what the PDF uses.
+import Base from "../layouts/Base.astro";
+import { formatResumeDate, resume } from "../data/resume";
+import { STATIC_PAGES } from "../lib/pages";
+import { webPage } from "../lib/seo/jsonld";
+import { canonicalUrl } from "../lib/seo/meta";
+
+const page = STATIC_PAGES.resume;
+const { basics } = resume;
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  type="profile"
+  jsonLd={[
+    webPage({
+      url: canonicalUrl(page.path),
+      title: page.title,
+      description: page.description,
+      dateModified: resume.meta.lastModified,
+    }),
+  ]}
+>
+  <article class="wrap resume">
+    <header class="resume__header">
+      <p class="eyebrow">Resume</p>
+      <h1>{basics.name}</h1>
+      <p class="resume__label">{basics.label}</p>
+      <p class="resume__open">I am open to {resume.openTo.join(" and ")} roles.</p>
+      <ul class="resume__contact" aria-label="Contact and profiles">
+        <li>
+          {basics.location.city}, {basics.location.region}
+        </li>
+        <li>{basics.email}</li>
+        <li>
+          <a href={basics.url}>mjwalsh.net</a>
+        </li>
+        {basics.profiles.map((p) => (
+          <li>
+            <a href={p.url} rel="me">
+              {p.network}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="resume__formats no-print">
+        Also as <a href="/resume.pdf">a PDF</a> and <a href="/resume.json">JSON Resume</a>.
+      </p>
+    </header>
+
+    <section class="resume__section" aria-labelledby="summary-title">
+      <h2 id="summary-title">Summary</h2>
+      <p class="measure">{basics.summary}</p>
+    </section>
+
+    <section class="resume__section" aria-labelledby="work-title">
+      <h2 id="work-title">Work</h2>
+      <ol class="resume__list">
+        {resume.work.map((job) => (
+          <li class="resume__job">
+            <div class="resume__dates mono">
+              {formatResumeDate(job.startDate)} to {formatResumeDate(job.endDate)}
+            </div>
+            <div>
+              <h3 class="resume__position">{job.position}</h3>
+              <p class="resume__employer">
+                {job.url ? <a href={job.url}>{job.name}</a> : job.name}
+                {job.location && <span class="resume__location">, {job.location}</span>}
+              </p>
+              <p class="resume__summary">{job.summary}</p>
+              {job.highlights.length > 0 && (
+                <ul class="resume__highlights">
+                  {job.highlights.map((h) => (
+                    <li>{h}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="resume__section" aria-labelledby="projects-title">
+      <h2 id="projects-title">Projects</h2>
+      <ul class="resume__list">
+        {resume.projects.map((p) => (
+          <li class="resume__job">
+            <div class="resume__dates mono">{p.roles.join(", ")}</div>
+            <div>
+              <h3 class="resume__position">
+                <a href={p.url}>{p.name}</a>
+              </h3>
+              <p class="resume__summary">{p.description}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="resume__section" aria-labelledby="skills-title">
+      <h2 id="skills-title">Skills</h2>
+      <dl class="resume__skills">
+        {resume.skills.map((group) => (
+          <div class="resume__skill">
+            <dt>{group.name}</dt>
+            <dd>{group.keywords.join(", ")}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <section class="resume__section" aria-labelledby="education-title">
+      <h2 id="education-title">Education</h2>
+      <ul class="resume__list">
+        {resume.education.map((e) => (
+          <li class="resume__job">
+            <div class="resume__dates mono">
+              {e.startDate} to {e.endDate}
+            </div>
+            <div>
+              <h3 class="resume__position">{e.institution}</h3>
+              <p class="resume__summary">{e.studyType}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <p class="resume__updated mono">
+      Last updated <time datetime={resume.meta.lastModified}>{resume.meta.lastModified}</time>.
+    </p>
+  </article>
+</Base>
+
+<style>
+  .resume {
+    padding-block: var(--space-7) var(--space-8);
+    display: grid;
+    gap: var(--space-7);
+  }
+  .resume__header h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .resume__label {
+    margin-top: var(--space-3);
+    font-size: var(--step-1);
+  }
+  .resume__open {
+    margin-top: var(--space-2);
+    color: var(--fg-muted);
+  }
+  .resume__contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    font-size: var(--step--1);
+  }
+  .resume__formats {
+    margin-top: var(--space-3);
+    font-size: var(--step--1);
+  }
+  .resume__section h2 {
+    font-size: var(--step-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-4);
+  }
+  .resume__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-5);
+  }
+  .resume__job {
+    display: grid;
+    gap: var(--space-2) var(--space-5);
+    grid-template-columns: minmax(10rem, 14rem) minmax(0, var(--measure));
+  }
+  .resume__dates {
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+    padding-top: 0.35em;
+  }
+  .resume__position {
+    font-size: var(--step-1);
+    font-family: var(--font-body);
+    font-weight: 700;
+  }
+  .resume__employer {
+    margin-top: var(--space-1);
+  }
+  .resume__location {
+    color: var(--fg-muted);
+  }
+  .resume__summary {
+    margin-top: var(--space-2);
+  }
+  .resume__highlights {
+    margin-top: var(--space-2);
+    padding-left: 1.2em;
+  }
+  .resume__skills {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    max-width: var(--measure);
+  }
+  .resume__skill dt {
+    font-weight: 700;
+  }
+  .resume__skill dd {
+    margin: var(--space-1) 0 0;
+    color: var(--fg-muted);
+  }
+  .resume__updated {
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  @media (width < 40rem) {
+    .resume__job {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media print {
+    .resume {
+      padding: 0;
+      gap: 1.25rem;
+      font-size: 10.5pt;
+    }
+    .resume__header h1 {
+      font-size: 22pt;
+    }
+    .resume__job {
+      grid-template-columns: 9rem 1fr;
+      gap: 0.25rem 1rem;
+      break-inside: avoid;
+    }
+    .resume__section h2 {
+      font-size: 13pt;
+      margin-bottom: 0.5rem;
+    }
+    .resume__position {
+      font-size: 11pt;
+    }
+    a {
+      text-decoration: none;
+    }
+  }
+</style>
