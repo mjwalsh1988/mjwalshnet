@@ -37,6 +37,20 @@ const date = (iso: string) => (iso.startsWith("[") ? iso : formatDate(new Date(i
     </header>
 
     <div class="a11y__sections">
+      <section aria-labelledby="hear">
+        <h2 id="hear">Hear this page the way I do</h2>
+        <p>
+          The button below shows this page as the stream a screen reader reads: every landmark,
+          heading, link, button and image in order, built from the page itself. It is in the footer
+          of every page too.
+        </p>
+        <p>
+          <button type="button" class="a11y__sr" data-sr-view-open data-pending>
+            What my screen reader hears
+          </button>
+        </p>
+      </section>
+
       <section aria-labelledby="target">
         <h2 id="target">What I aim for</h2>
         <p>
@@ -190,6 +204,16 @@ const date = (iso: string) => (iso.startsWith("[") ? iso : formatDate(new Date(i
     flex-wrap: wrap;
     gap: var(--space-1) var(--space-4);
     margin-bottom: var(--space-2);
+  }
+  .a11y__sr {
+    min-height: var(--target-primary);
+    padding: var(--space-2) var(--space-5);
+    border: 1.5px solid var(--fg);
+    border-radius: 2px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-weight: 600;
   }
   .a11y__fix {
     margin-top: var(--space-2);

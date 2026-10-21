@@ -1,0 +1,98 @@
+---
+// "What my screen reader hears" (section 6.2). A toggle in the footer and on
+// /accessibility opens a dialog holding the page as the linear stream a screen
+// reader produces, built from the live DOM by src/lib/a11y/accessible-name.ts.
+// It doubles as a QA tool: what is listed here is what is in the page.
+import Dialog from "../ui/Dialog.astro";
+---
+
+<Dialog id="sr-view" title="What my screen reader hears" class="sr-view">
+  <p class="sr-view__intro">
+    This is the page as a screen reader reads it in browse mode: landmarks, headings with their
+    level, links, buttons with their state, images by their alt text, lists with their counts, and
+    the text in between, in order. It is built from the page itself, so it is a true picture, not a
+    simulation. Images with empty alt text and anything hidden are left out, because they are left
+    out for me too.
+  </p>
+  <p class="sr-view__count" data-sr-count></p>
+  <ol class="sr-view__stream" data-sr-stream aria-label="The page, line by line"></ol>
+</Dialog>
+
+<style>
+  .sr-view {
+    width: min(100% - 2rem, 48rem);
+    max-height: min(100dvh - 2rem, 60rem);
+  }
+  .sr-view__intro {
+    color: var(--fg-muted);
+  }
+  .sr-view__count {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  .sr-view__stream {
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+  .sr-view__stream li {
+    padding: var(--space-1) 0 var(--space-1) calc(var(--depth, 0) * 0.75rem);
+    border-top: 1px solid var(--border);
+  }
+  .sr-view__stream [data-kind="heading"] {
+    font-weight: 700;
+  }
+  .sr-view__stream [data-kind="landmark"],
+  .sr-view__stream [data-kind="end"] {
+    color: var(--accent);
+  }
+  .sr-view__stream [data-kind="link"],
+  .sr-view__stream [data-kind="button"],
+  .sr-view__stream [data-kind="field"] {
+    color: var(--fg);
+  }
+  .sr-view__stream [data-kind="text"],
+  .sr-view__stream [data-kind="block"],
+  .sr-view__stream [data-kind="listitem"] {
+    color: var(--fg-muted);
+  }
+</style>
+
+<script>
+  import { readStream } from "../../lib/a11y/accessible-name";
+  import { openDialog } from "../../lib/ui/dialog";
+
+  const dialog = document.getElementById("sr-view") as HTMLDialogElement | null;
+  const list = document.querySelector<HTMLElement>("[data-sr-stream]");
+  const count = document.querySelector<HTMLElement>("[data-sr-count]");
+
+  function render() {
+    if (!list || !count) return;
+    const lines = readStream(document.body);
+    list.replaceChildren(
+      ...lines.map((line) => {
+        const li = document.createElement("li");
+        li.dataset.kind = line.kind;
+        li.style.setProperty("--depth", String(Math.min(line.depth, 6)));
+        li.textContent = line.text;
+        return li;
+      }),
+    );
+    count.textContent = `${lines.length} lines.`;
+  }
+
+  for (const button of document.querySelectorAll<HTMLElement>("[data-sr-view-open]")) {
+    button.removeAttribute("data-pending");
+    button.addEventListener("click", () => {
+      if (!dialog) return;
+      render();
+      openDialog(dialog, button);
+      window.mwTrack?.("sr_view_on");
+    });
+  }
+</script>
