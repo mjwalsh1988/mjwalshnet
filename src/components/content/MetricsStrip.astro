@@ -1,7 +1,9 @@
 ---
 // The live numbers strip (section 6.6): each figure with its source and
 // as-of date, baked into the HTML at build. "Live" means the value came from
-// Supabase at this build; otherwise it is the committed snapshot.
+// Supabase at this build; otherwise it is the committed snapshot. The data
+// attributes let scripts/postbuild.mjs write in figures it can only count
+// after the build, such as the number of tests.
 import { formatDate } from "../../lib/content";
 import { formatValue, getMetrics } from "../../lib/metrics";
 
@@ -25,8 +27,10 @@ const metrics = keys ? keys.map((k) => all.find((m) => m.key === k)).filter(Bool
       <div class="metrics__item">
         <dt>{m!.label}</dt>
         <dd>
-          <span class="metrics__value">{formatValue(m!.value)}</span>
-          <span class="metrics__source">
+          <span class="metrics__value" data-metric-value={m!.key}>
+            {formatValue(m!.value)}
+          </span>
+          <span class="metrics__source" data-metric-source={m!.key}>
             Source: {m!.source}, as of{" "}
             <time datetime={m!.asOf}>{formatDate(new Date(m!.asOf))}</time>
             {m!.live ? "" : " (last committed snapshot)"}

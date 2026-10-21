@@ -26,12 +26,19 @@ test.describe("home page", () => {
     await page.goto("/");
     const sections = page.locator("main > section");
     await expect(sections).toHaveCount(4);
-    await expect(page.getByRole("region", { name: /opens the site|MICHAEL/ })).toHaveCount(1);
+    await expect(page.getByRole("region", { name: /I lost my sight at 34/ })).toHaveCount(1);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "I lost my sight at 34. I still write code for a living.",
+    );
     await expect(
       page.getByRole("heading", { level: 2, name: "Things I built on my own time" }),
     ).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "The latest" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: /This month/ })).toBeVisible();
+    // The test count is written in after the build by scripts/postbuild.mjs.
+    await expect(
+      page.getByText(/Playwright tests and \d+ unit tests, counted at build/),
+    ).toHaveCount(1);
   });
 });
 

@@ -72,7 +72,6 @@ Every placeholder reads [MICHAEL: what is needed]. `npm run check:writing -- --p
 
 ### Home page (src/components/home)
 
-- components/home/Dark.astro, line 14: the quiet second line. Something like what the first sentence of the memoir does.
 - components/home/Day.astro, line 36: one line inviting people to write, in your words.
 - components/home/Dusk.astro, line 66: one real number for {project.data.title}, with its source
 
@@ -219,6 +218,7 @@ Copy .env.example to .env for local work. Production values go in the Vercel pro
 - npm run check:html: html-validate over the built pages. npm run check:contrast: the token and arc sampler. npm run check:writing: the writing checker; add --placeholders to list every placeholder.
 - npm run build:pdf: regenerate resume.pdf from the built resume page (run after editing src/data/resume.ts, then commit public/resume.pdf). npm run capture:screenshots: recapture the project screenshots.
 - npx tsx scripts/snapshot-metrics.ts: refresh the committed metrics snapshot from Supabase.
+- node scripts/count-tests.mjs: print the test count. Nothing to do by hand: every build counts the tests after the pages exist and writes the figure into the home page (scripts/postbuild.mjs). A production build counts fewer than CI, because the budget tests run once per built page and drafts are not built.
 - npm run db:new, db:push, db:types: Supabase migrations and types, as before.
 
 ## 5. Manual testing checklist (section 9.4)
