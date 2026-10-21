@@ -212,3 +212,10 @@ src/components/islands/ReadingControls.astro: a Reading button in every footer o
 /api/subscribe posts to Buttondown and mirrors the address into the subscribers table; without the key it answers that the newsletter is not live yet. The form sits on the blog index and under every post. Comments (src/components/islands/Comments.astro) load Giscus only on a click, with the theme matched; until the repository values in src/lib/site.ts are filled the section says comments are coming. Webmentions are fetched from webmention.io at build with a five-second timeout and rendered as counts and a list; the head carries the webmention link.
 
 Tests: 174 Playwright tests, 36 unit tests, HTML validation clean, Lighthouse at 100 for accessibility, best practices and SEO on every route, performance 99 to 100, every route under 2.0 s LCP with the compressing local server.
+
+## Phase 0: keyword research (2026-10-21)
+
+docs/content-topics.md is the topic map from section 10.1. Michael asked for it to be done without Semrush, so it uses Search Console (ffbeacon.com, dynastypricecheck.com, gridironsites.com, 90 days) and live Google results read in his Chrome. There are no search volumes in it; opportunities are judged from what ranks and how old it is, and say so.
+
+- Decision: the FF Beacon figure is updated to the live Search Console number, 73,908 impressions and 2,025 clicks for 2026-07-23 to 2026-10-21, in the metrics snapshot and on the FF Beacon project page. The plan's 69,885 was the earlier pull. The test count in the snapshot is now 210.
+- Main findings: accessible fantasy football and blind developer setup are the clearest openings (old or missing answers to questions people are asking now); Claude Code automation is crowded and should be written for links, not search; the name "Michael Walsh" is crowded, so every profile should link to the site.
