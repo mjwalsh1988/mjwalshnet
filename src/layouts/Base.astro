@@ -1,0 +1,109 @@
+---
+import "../styles/global.css";
+import { Font } from "astro:assets";
+import { createHash } from "node:crypto";
+import Analytics from "../components/site/Analytics.astro";
+import Footer from "../components/site/Footer.astro";
+import Header from "../components/site/Header.astro";
+import PrefsScript from "../components/site/PrefsScript.astro";
+import SkipLink from "../components/site/SkipLink.astro";
+import { resolveMeta, type PageMeta } from "../lib/seo/meta";
+import { SITE } from "../lib/site";
+
+interface Props extends PageMeta {
+  /** JSON-LD objects for the page. The Person graph is added by the layout. */
+  jsonLd?: Record<string, unknown>[];
+  /** "dark" on the home page, whose first movement is on ink. */
+  ground?: "default" | "dark";
+  bodyClass?: string;
+}
+
+const { jsonLd = [], ground = "default", bodyClass, ...pageMeta } = Astro.props;
+const meta = resolveMeta(pageMeta);
+
+// Same-site prefetch with moderate eagerness; browsers without the API ignore it.
+const speculationRules = JSON.stringify({
+  prerender: [
+    {
+      where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/api/*" } }] },
+      eagerness: "moderate",
+    },
+  ],
+});
+Astro.csp?.insertScriptHash(
+  `sha256-${createHash("sha256").update(speculationRules).digest("base64")}`,
+);
+const jsonLdText = jsonLd.length ? JSON.stringify(jsonLd.length === 1 ? jsonLd[0] : jsonLd) : null;
+---
+
+<!doctype html>
+<html lang={SITE.language}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{meta.fullTitle}</title>
+    <meta name="description" content={meta.description} />
+    <link rel="canonical" href={meta.canonical} />
+    {meta.noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f2ea" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141210" />
+    <PrefsScript />
+    <Font cssVariable="--font-body" preload={[{ weight: "200 800", style: "normal" }]} />
+    <Font cssVariable="--font-display" preload={[{ weight: "300 900", style: "normal" }]} />
+    <Font cssVariable="--font-mono" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:type" content={meta.type} />
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    <meta property="og:url" content={meta.canonical} />
+    <meta property="og:image" content={meta.image} />
+    <meta property="og:image:alt" content={meta.imageAlt} />
+    <meta property="og:locale" content={SITE.locale} />
+    {meta.publishedTime && <meta property="article:published_time" content={meta.publishedTime} />}
+    {meta.modifiedTime && <meta property="article:modified_time" content={meta.modifiedTime} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={meta.title} />
+    <meta name="twitter:description" content={meta.description} />
+    <meta name="twitter:image" content={meta.image} />
+    <meta name="twitter:image:alt" content={meta.imageAlt} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Michael Walsh, all posts"
+      href="/feed.xml"
+    />
+    <link
+      rel="alternate"
+      type="application/feed+json"
+      title="Michael Walsh, all posts"
+      href="/feed.json"
+    />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script type="speculationrules" set:html={speculationRules} is:inline />
+    {jsonLdText && <script type="application/ld+json" set:html={jsonLdText} is:inline />}
+    <slot name="head" />
+  </head>
+  <body class={bodyClass}>
+    <SkipLink />
+    <Header ground={ground} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer>
+      <slot name="footer-controls" slot="controls" />
+    </Footer>
+    <Analytics />
+  </body>
+</html>
+
+<style>
+  main {
+    flex: 1 0 auto;
+    outline: none;
+  }
+</style>

@@ -1,0 +1,57 @@
+---
+// A toggle button for the dark theme. aria-pressed reflects the live state, so
+// a screen reader hears "Dark theme, toggle button, pressed" and the label
+// never changes. Works without JavaScript by doing nothing visible: the page
+// then simply follows the system preference.
+---
+
+<button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" hidden>
+  <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
+    <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+    <path d="M8 2a6 6 0 0 0 0 12z" fill="currentColor"></path>
+  </svg>
+  <span>Dark theme</span>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--target-primary);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+  .theme-toggle[aria-pressed="true"] svg {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script>
+  import { readPrefs, resolvedTheme, writePrefs, PREFS_EVENT, type Prefs } from "../../lib/prefs";
+
+  const buttons = document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]");
+
+  function reflect(prefs: Prefs) {
+    const dark = resolvedTheme(prefs) === "dark";
+    for (const button of buttons) button.setAttribute("aria-pressed", String(dark));
+  }
+
+  for (const button of buttons) {
+    button.hidden = false;
+    button.addEventListener("click", () => {
+      const next = resolvedTheme(readPrefs()) === "dark" ? "light" : "dark";
+      writePrefs({ theme: next });
+      if (next === "dark") window.mwTrack?.("theme_dark");
+    });
+  }
+
+  document.addEventListener(PREFS_EVENT, (event) => reflect((event as CustomEvent<Prefs>).detail));
+  reflect(readPrefs());
+</script>

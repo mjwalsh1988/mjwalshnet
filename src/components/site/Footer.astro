@@ -1,0 +1,110 @@
+---
+import { FOOTER_NAV, SOCIAL } from "../../lib/site";
+import BrailleMark from "./BrailleMark.astro";
+import LocalTime from "./LocalTime.astro";
+import MotionToggle from "./MotionToggle.astro";
+
+const year = new Date().getFullYear();
+// Pre-fills the contact form with the page the problem was found on (section 9.3).
+const reportHref = `/contact?topic=accessibility&page=${encodeURIComponent(Astro.url.pathname)}`;
+---
+
+<footer class="site-footer">
+  <div class="wrap site-footer__grid">
+    <div class="site-footer__about">
+      <BrailleMark size={36} class="site-footer__mark" />
+      <LocalTime />
+      <p class="site-footer__line">
+        Every word here is mine. I write it, I edit it by ear, and nothing goes up without that
+        pass.
+        <a href="/colophon">How this site is built</a>.
+      </p>
+    </div>
+    <nav class="site-footer__nav" aria-label="Site">
+      <ul>
+        {FOOTER_NAV.map((item) => (
+          <li>
+            <a href={item.href}>{item.label}</a>
+          </li>
+        ))}
+        <li>
+          <a href={reportHref}>Report an accessibility problem</a>
+        </li>
+      </ul>
+    </nav>
+    <nav class="site-footer__nav" aria-label="Elsewhere">
+      <ul>
+        {SOCIAL.map((s) => (
+          <li>
+            <a href={s.href} rel={`${s.rel} noopener`}>
+              {s.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <div class="site-footer__controls" aria-label="Display settings" role="group">
+      <MotionToggle />
+      <slot name="controls" />
+    </div>
+    <p class="site-footer__copyright">
+      <span class="mono">{year}</span> Michael Walsh.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+    padding-block: var(--space-7) var(--space-6);
+    border-top: 1px solid var(--border);
+    font-size: var(--step--1);
+  }
+  .site-footer__grid {
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+  .site-footer__about {
+    display: grid;
+    gap: var(--space-3);
+    grid-column: 1 / -1;
+    max-width: 40ch;
+  }
+  .site-footer__mark {
+    color: var(--mark);
+  }
+  .site-footer__line {
+    color: var(--fg-muted);
+  }
+  .site-footer__nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-1);
+  }
+  .site-footer__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target-min);
+    padding-block: var(--space-1);
+    color: var(--fg);
+  }
+  .site-footer__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    align-content: start;
+  }
+  .site-footer__copyright {
+    grid-column: 1 / -1;
+    color: var(--fg-muted);
+  }
+  @media (width >= 64rem) {
+    .site-footer__about {
+      grid-column: span 2;
+    }
+  }
+</style>

@@ -1,0 +1,45 @@
+---
+// Footer toggle for people whose operating system has no reduced motion
+// setting, or who want it only here. Mirrors the OS setting when nothing is
+// stored. aria-pressed carries the state.
+---
+
+<button type="button" class="motion-toggle" data-motion-toggle aria-pressed="false" hidden>
+  Reduce motion
+</button>
+
+<style>
+  .motion-toggle {
+    min-height: var(--target-primary);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+  .motion-toggle[aria-pressed="true"]::before {
+    content: "\2713\00a0";
+  }
+</style>
+
+<script>
+  import { readPrefs, writePrefs, PREFS_EVENT, type Prefs } from "../../lib/prefs";
+
+  const buttons = document.querySelectorAll<HTMLButtonElement>("[data-motion-toggle]");
+  const reflect = (prefs: Prefs) => {
+    for (const b of buttons) b.setAttribute("aria-pressed", String(prefs.reduceMotion));
+  };
+  for (const button of buttons) {
+    button.hidden = false;
+    button.addEventListener("click", () => {
+      const next = !readPrefs().reduceMotion;
+      writePrefs({ reduceMotion: next });
+      if (next) window.mwTrack?.("reduced_motion_on");
+    });
+  }
+  document.addEventListener(PREFS_EVENT, (e) => reflect((e as CustomEvent<Prefs>).detail));
+  reflect(readPrefs());
+</script>

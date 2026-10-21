@@ -1,0 +1,103 @@
+---
+import { PRIMARY_NAV, isActive } from "../../lib/site";
+import BrailleMark from "./BrailleMark.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+
+interface Props {
+  /** "dark" on the home page's first movement, where the mark's dots take the lamp color. */
+  ground?: "default" | "dark";
+}
+const { ground = "default" } = Astro.props;
+const current = Astro.url.pathname.replace(/\/$/, "") || "/";
+---
+
+<header class:list={["site-header", { "site-header--dark": ground === "dark" }]}>
+  <div class="wrap site-header__row">
+    <a class="site-header__home" href="/" aria-label="Michael Walsh, home">
+      <BrailleMark class="site-header__mark" size={32} />
+      <span class="site-header__name">Michael Walsh</span>
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <ul class="site-nav__list">
+        {PRIMARY_NAV.map((item) => (
+          <li>
+            <a href={item.href} aria-current={isActive(current, item.href) ? "page" : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <ThemeToggle />
+  </div>
+</header>
+
+<style>
+  .site-header {
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--border);
+  }
+  .site-header__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+  }
+  .site-header__home {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--target-primary);
+    color: var(--fg);
+    text-decoration: none;
+    margin-right: auto;
+  }
+  .site-header__mark {
+    color: var(--mark);
+    flex: none;
+  }
+  .site-header--dark .site-header__mark {
+    color: var(--on-dark-accent);
+  }
+  .site-header__name {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    font-variation-settings: "opsz" 48;
+  }
+  .site-nav__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .site-nav__list a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target-primary);
+    padding: var(--space-2) var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--fg);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+  }
+  .site-nav__list a:hover {
+    border-bottom-color: var(--border);
+  }
+  /* The active marker is a lamp or ember rule, the one place the accent sits in the header. */
+  .site-nav__list a[aria-current="page"] {
+    border-bottom-color: var(--accent);
+  }
+  @media (width < 48rem) {
+    .site-nav {
+      order: 3;
+      flex-basis: 100%;
+    }
+  }
+</style>

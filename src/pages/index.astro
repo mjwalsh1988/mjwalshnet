@@ -1,20 +1,15 @@
 ---
-import "../styles/global.css";
-import PrefsScript from "../components/site/PrefsScript.astro";
+import Base from "../layouts/Base.astro";
+import { SITE } from "../lib/site";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Michael Walsh</title>
-    <PrefsScript />
-  </head>
-  <body>
-    <main class="wrap">
-      <h1>Michael Walsh</h1>
-      <p>Scaffold. The real home page arrives in Phase 3.</p>
-    </main>
-  </body>
-</html>
+<Base title={SITE.name} description={SITE.description} path="/">
+  <section class="wrap" style="padding-block: var(--space-8);">
+    <p class="eyebrow">Scaffold</p>
+    <h1>Michael Walsh</h1>
+    <p class="measure" style="margin-top: var(--space-4);">
+      The home page is built in Phase 3. This page exists so the layout, the header, the footer and
+      the preference controls can be tested first.
+    </p>
+  </section>
+</Base>

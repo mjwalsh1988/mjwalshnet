@@ -1,0 +1,39 @@
+---
+// The footer's place line. The time is filled in by a small script in the
+// visitor's browser; without JavaScript the line is just the place.
+import { SITE } from "../../lib/site";
+---
+
+<p class="place-line">
+  <span>{SITE.place}</span>
+  <span class="place-line__time" data-local-time data-zone={SITE.timeZone} hidden></span>
+</p>
+
+<style>
+  .place-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+</style>
+
+<script>
+  const el = document.querySelector<HTMLElement>("[data-local-time]");
+  if (el) {
+    const zone = el.dataset.zone ?? "America/Indiana/Indianapolis";
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: zone,
+    });
+    const tick = () => {
+      el.textContent = `It is ${fmt.format(new Date()).toLowerCase().replace(" ", " ")} here.`;
+      el.hidden = false;
+    };
+    tick();
+    setInterval(tick, 30_000);
+  }
+</script>

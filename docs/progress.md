@@ -53,3 +53,14 @@ src/components/site/Analytics.astro sets Consent Mode defaults (analytics storag
 
 - Decision: the tag loads only when the page's hostname is the production host, or when the URL carries ?analytics=on. Preview builds, the Playwright suites and local work therefore send nothing to the property, and Lighthouse CI opens its pages with the query string so budgets are measured with the tag present, as the plan asks.
 - Still Michael's: set the property's data retention to 14 months in the Google Analytics admin (section 10.4). The code cannot do that.
+
+### Phase 1: base layout
+
+src/layouts/Base.astro: metadata from one helper (src/lib/seo/meta.ts), canonical, Open Graph and Twitter tags, theme-color for both schemes, the inline preference script, font preloads, feed and sitemap links, the favicon set, speculation rules for same-site prefetch (hashed for the policy), an optional JSON-LD slot, then skip link, header, main with tabindex -1, footer and the analytics component. Header: the mark plus "Michael Walsh" as one link named "Michael Walsh, home", a nav labelled Main with aria-current on the active item and the accent used only as the active rule, and the theme toggle. Footer: the mark, the Fort Wayne place line with a live local time, a one-line statement about the writing, two labelled navs (Site and Elsewhere, with rel="me" on the profiles), a display settings group with the reduce motion toggle, and "Report an accessibility problem", which links to the contact page with the current path.
+
+Tests: tests/a11y/helpers.ts registers the standard matrix for a route (both themes at 360 and 1280 px, axe with WCAG 2.2 AA and best-practice tags, no console errors, one h1, one main, no horizontal overflow). tests/a11y/layout.spec.ts runs it on the home page and adds keyboard tests for the skip link, landmark names, the home link name, the theme toggle (state, persistence, aria-pressed), the motion toggle, the footer place line and report link, and the policy meta tag. Eleven tests pass.
+
+- Decision: the main nav wraps onto a second row under 48rem instead of collapsing into a menu button. Eight short mono labels fit in two rows at 360 px, nothing is hidden, and there is no JavaScript to fail or focus to manage.
+- Decision: the theme control is a toggle button whose label never changes ("Dark theme") and whose aria-pressed carries the state, following the ARIA toggle button pattern. The same shape is used for "Reduce motion" in the footer.
+- Decision: the home link uses aria-label="Michael Walsh, home" so the name is exact regardless of how the markup is formatted. The visible text is contained in the name, so label-in-name holds.
+- Decision: the local time renders only through JavaScript. Without it the footer shows the place alone rather than a stale build-time clock.
