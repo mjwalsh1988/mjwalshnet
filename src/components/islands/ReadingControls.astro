@@ -164,13 +164,14 @@ import Dialog from "../ui/Dialog.astro";
       motion.checked = prefs.reduceMotion;
     }
 
-    form.addEventListener("change", () => {
+    form.addEventListener("change", (event) => {
       const next = writePrefs({
         textSize: size.value as Prefs["textSize"],
         lineSpacing: spacing.checked ? "loose" : "normal",
         dyslexia: dyslexia.checked,
         highContrast: contrast.checked,
-        theme: dark.checked ? "dark" : "light",
+        // Only the theme box sets a theme; other fields leave "system" alone.
+        ...(event.target === dark ? { theme: dark.checked ? "dark" : "light" } : {}),
         reduceMotion: motion.checked,
       });
       window.mwTrack?.("reading_text_size", { size: next.textSize });

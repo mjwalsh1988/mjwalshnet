@@ -40,25 +40,27 @@ import Dialog from "../ui/Dialog.astro";
     font-size: var(--step--1);
     line-height: 1.5;
   }
-  .sr-view__stream li {
+  /* The lines are built by the script below, so they never carry Astro's
+     scoping attribute and are styled through :global. */
+  .sr-view__stream :global(li) {
     padding: var(--space-1) 0 var(--space-1) calc(var(--depth, 0) * 0.75rem);
     border-top: 1px solid var(--border);
   }
-  .sr-view__stream [data-kind="heading"] {
+  .sr-view__stream :global([data-kind="heading"]) {
     font-weight: 700;
   }
-  .sr-view__stream [data-kind="landmark"],
-  .sr-view__stream [data-kind="end"] {
+  .sr-view__stream :global([data-kind="landmark"]),
+  .sr-view__stream :global([data-kind="end"]) {
     color: var(--accent);
   }
-  .sr-view__stream [data-kind="link"],
-  .sr-view__stream [data-kind="button"],
-  .sr-view__stream [data-kind="field"] {
+  .sr-view__stream :global([data-kind="link"]),
+  .sr-view__stream :global([data-kind="button"]),
+  .sr-view__stream :global([data-kind="field"]) {
     color: var(--fg);
   }
-  .sr-view__stream [data-kind="text"],
-  .sr-view__stream [data-kind="block"],
-  .sr-view__stream [data-kind="listitem"] {
+  .sr-view__stream :global([data-kind="text"]),
+  .sr-view__stream :global([data-kind="block"]),
+  .sr-view__stream :global([data-kind="listitem"]) {
     color: var(--fg-muted);
   }
 </style>

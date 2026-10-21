@@ -73,7 +73,7 @@ const ready = Boolean(GISCUS.repo && GISCUS.repoId && GISCUS.categoryId);
 
 <script>
   import { announce } from "../../lib/ui/announce";
-  import { readPrefs, resolvedTheme } from "../../lib/prefs";
+  import { readPrefs, resolvedTheme, PREFS_EVENT, type Prefs } from "../../lib/prefs";
 
   const button = document.querySelector<HTMLButtonElement>("[data-comments-load]");
   const frame = document.querySelector<HTMLElement>("[data-comments-frame]");
@@ -104,5 +104,12 @@ const ready = Boolean(GISCUS.repo && GISCUS.repoId && GISCUS.categoryId);
     button.textContent = "Comments loading";
     announce("Loading the comments.");
     window.mwTrack?.("comments_load");
+  });
+
+  // giscus reads its theme once at load; a later switch is posted to the frame.
+  document.addEventListener(PREFS_EVENT, (event) => {
+    const iframe = frame?.querySelector<HTMLIFrameElement>("iframe.giscus-frame");
+    const theme = resolvedTheme((event as CustomEvent<Prefs>).detail) === "dark" ? "dark" : "light";
+    iframe?.contentWindow?.postMessage({ giscus: { setConfig: { theme } } }, "https://giscus.app");
   });
 </script>

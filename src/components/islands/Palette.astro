@@ -59,10 +59,26 @@ import Dialog from "../ui/Dialog.astro";
     max-height: 50dvh;
     overflow: auto;
   }
+  /* The native clear button ignores the theme (a fixed blue in Chromium), so it
+     is drawn from the text color instead. */
+  .palette__input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1rem;
+    height: 1rem;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 3l10 10M13 3L3 13' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 3l10 10M13 3L3 13' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    cursor: pointer;
+  }
   .palette__results:empty {
     display: none;
   }
-  .palette__results [role="option"] {
+  /* The options are built by the script below, so they never carry Astro's
+     scoping attribute. Everything inside the list is styled through :global. */
+  .palette__results :global([role="option"]) {
     display: grid;
     gap: 2px;
     padding: var(--space-3) var(--space-3);
@@ -70,22 +86,25 @@ import Dialog from "../ui/Dialog.astro";
     border-top: 1px solid var(--border);
     cursor: default;
   }
-  .palette__results [role="option"][aria-selected="true"] {
+  .palette__results :global([role="option"][aria-selected="true"]) {
     background: var(--bg-surface);
     box-shadow: inset 3px 0 0 var(--accent);
   }
-  .palette__results .palette__kind {
+  .palette__results :global(.palette__kind) {
     font-family: var(--font-mono);
     font-size: var(--step--1);
     color: var(--fg-muted);
     text-transform: uppercase;
     letter-spacing: var(--tracking-eyebrow);
   }
-  .palette__results .palette__excerpt {
+  .palette__results :global(.palette__title) {
+    font-weight: 600;
+  }
+  .palette__results :global(.palette__excerpt) {
     font-size: var(--step--1);
     color: var(--fg-muted);
   }
-  .palette__results .palette__excerpt :global(mark) {
+  .palette__results :global(.palette__excerpt mark) {
     background: transparent;
     color: var(--accent);
     font-weight: 700;
@@ -101,7 +120,7 @@ import Dialog from "../ui/Dialog.astro";
   import { announce } from "../../lib/ui/announce";
   import { openDialog } from "../../lib/ui/dialog";
   import { createListbox } from "../../lib/ui/listbox";
-  import { readPrefs, resolvedTheme, writePrefs } from "../../lib/prefs";
+  import { writePrefs } from "../../lib/prefs";
   import { PRIMARY_NAV, FOOTER_NAV } from "../../lib/site";
 
   type Action = { kind: string; title: string; excerpt?: string; run: () => void };
@@ -132,7 +151,9 @@ import Dialog from "../ui/Dialog.astro";
         title: "Switch theme",
         excerpt: "Light or dark",
         run: () => {
-          writePrefs({ theme: resolvedTheme(readPrefs()) === "dark" ? "light" : "dark" });
+          writePrefs({
+            theme: document.documentElement.dataset.theme === "dark" ? "light" : "dark",
+          });
           dialog.close();
         },
       },
@@ -179,6 +200,7 @@ import Dialog from "../ui/Dialog.astro";
           kind.className = "palette__kind";
           kind.textContent = a.kind;
           const title = document.createElement("span");
+          title.className = "palette__title";
           title.textContent = a.title;
           li.append(kind, title);
           if (a.excerpt) {

@@ -66,9 +66,24 @@ export function resolvedTheme(prefs: Prefs): Theme {
   return prefs.theme === "system" ? systemTheme() : prefs.theme;
 }
 
+/** The browser bar colors, matching --paper and --ink in tokens.css. */
+export const THEME_COLORS: Record<Theme, string> = { light: "#f6f2ea", dark: "#141210" };
+
+/**
+ * Point every theme-color tag at the chosen theme. The tags carry a
+ * prefers-color-scheme media query for the first paint; without this, a
+ * visitor who picked the other theme keeps the system's bar color.
+ */
+export function syncThemeColor(theme: Theme, doc: Document = document): void {
+  for (const meta of doc.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) {
+    meta.content = THEME_COLORS[theme];
+  }
+}
+
 /** Mirror prefs onto <html> so the CSS tokens pick them up. */
 export function applyPrefs(prefs: Prefs, root: HTMLElement = document.documentElement): void {
   root.dataset.theme = resolvedTheme(prefs);
+  syncThemeColor(resolvedTheme(prefs), root.ownerDocument);
   root.dataset.textSize = prefs.textSize;
   root.dataset.lineSpacing = prefs.lineSpacing;
   root.dataset.contrast = prefs.highContrast ? "high" : "normal";

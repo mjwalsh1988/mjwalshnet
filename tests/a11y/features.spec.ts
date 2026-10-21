@@ -45,7 +45,7 @@ test.describe("what my screen reader hears", () => {
     expect(texts).toContain("Main navigation landmark");
     expect(texts).toContain("heading level 1, About me");
     expect(texts.some((t) => t.startsWith("image, Michael Walsh smiling"))).toBe(true);
-    expect(texts.some((t) => t === "button, Dark theme, not pressed")).toBe(true);
+    expect(texts.some((t) => t === "button, Switch to dark theme")).toBe(true);
     expect(texts).toContain("end of main landmark");
     // The view never reads itself.
     expect(

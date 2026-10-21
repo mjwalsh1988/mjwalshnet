@@ -62,6 +62,7 @@ Tests: tests/a11y/helpers.ts registers the standard matrix for a route (both the
 
 - Decision: the main nav wraps onto a second row under 48rem instead of collapsing into a menu button. Eight short mono labels fit in two rows at 360 px, nothing is hidden, and there is no JavaScript to fail or focus to manage.
 - Decision: the theme control is a toggle button whose label never changes ("Dark theme") and whose aria-pressed carries the state, following the ARIA toggle button pattern. The same shape is used for "Reduce motion" in the footer.
+- Changed 2026-10-21: the fixed label hid the state from sighted visitors, since only a small icon turn showed it. The header button now names its action ("Switch to dark theme", "Switch to light theme") with a moon or sun icon, drops aria-pressed and announces the new theme. "Reduce motion" keeps the pressed pattern. The home page arc stays fixed in both themes on purpose.
 - Decision: the home link uses aria-label="Michael Walsh, home" so the name is exact regardless of how the markup is formatted. The visible text is contained in the name, so label-in-name holds.
 - Decision: the local time renders only through JavaScript. Without it the footer shows the place alone rather than a stale build-time clock.
 
