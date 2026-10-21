@@ -1,0 +1,166 @@
+---
+// Movement three: the ground reaches paper as the writing arrives. The latest
+// posts, grouped by category, with reading time; the latest Build Log entries.
+import PostCard from "../content/PostCard.astro";
+import { chapterPath, formatDate, isoDate, type Chapter, type Post } from "../../lib/content";
+
+interface Props {
+  posts: Post[];
+  buildLog: Post[];
+  chapters: Chapter[];
+}
+const { posts, buildLog, chapters } = Astro.props;
+const latest = posts.filter((p) => p.data.category !== "build-log").slice(0, 4);
+---
+
+<section class="movement movement--dawn" aria-labelledby="writing-title">
+  <div class="wrap">
+    <p class="eyebrow">Writing</p>
+    <h2 id="writing-title" class="movement__title">
+      The latest
+    </h2>
+    <div class="dawn__layout">
+      <div class="dawn__posts">
+        {latest.map((post) => (
+          <PostCard post={post} />
+        ))}
+        {latest.length === 0 &&
+          chapters.slice(0, 1).map((chapter) => (
+            <article class="dawn__chapter">
+              <p class="eyebrow">
+                Traversing Darkness, chapter {chapter.data.chapter}
+                <time datetime={isoDate(chapter.data.date)}>{formatDate(chapter.data.date)}</time>
+              </p>
+              <h3>
+                <a href={chapterPath(chapter)}>{chapter.data.title}</a>
+              </h3>
+              <p class="dawn__summary">{chapter.data.summary}</p>
+            </article>
+          ))}
+        <p class="dawn__more">
+          <a href="/blog">All posts, by category</a>
+        </p>
+      </div>
+      <aside class="dawn__log" aria-labelledby="log-title">
+        <h3 id="log-title" class="eyebrow">
+          Build log
+        </h3>
+        {buildLog.length > 0 ? (
+          <ul class="dawn__log-list">
+            {buildLog.slice(0, 3).map((entry) => (
+              <li>
+                <time class="mono" datetime={isoDate(entry.data.date)}>
+                  {formatDate(entry.data.date)}
+                </time>
+                <a href={`/blog/${entry.id}`}>{entry.data.title}</a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="dawn__log-empty">The first entries arrive at launch.</p>
+        )}
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .movement--dawn {
+    /* Each movement pins its own ground and text tokens, whatever the theme. */
+    --bg: var(--paper);
+    --bg-surface: var(--surface-light);
+    --fg: var(--ink);
+    --fg-muted: var(--smoke-on-paper);
+    --accent: var(--ember);
+    --border: var(--border-light);
+    --focus: var(--ember);
+    --error: var(--signal-error-light);
+    --ok: var(--signal-ok-light);
+    background: var(--ground-dawn);
+    color: var(--ink);
+    padding-block: var(--space-9);
+  }
+  .movement--dawn :global(.eyebrow) {
+    color: var(--smoke-on-paper);
+  }
+  .movement__title {
+    margin-top: var(--space-3);
+    font-size: var(--step-4);
+  }
+  .dawn__layout {
+    margin-top: var(--space-6);
+    display: grid;
+    gap: var(--space-7);
+  }
+  .dawn__posts :global(.post-card) {
+    border-top-color: var(--border-light);
+  }
+  .dawn__posts :global(.post-card__title a) {
+    color: var(--ink);
+  }
+  .dawn__posts :global(.post-card__description) {
+    color: var(--smoke-on-paper);
+  }
+  .dawn__posts :global(.post-card__meta a),
+  .dawn__more a,
+  .dawn__log a,
+  .dawn__chapter a {
+    color: var(--ember);
+  }
+  .dawn__chapter {
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--border-light);
+  }
+  .dawn__chapter .eyebrow {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-2);
+  }
+  .dawn__chapter h3 {
+    font-size: var(--step-2);
+  }
+  .dawn__chapter h3 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .dawn__summary {
+    margin-top: var(--space-2);
+    color: var(--smoke-on-paper);
+  }
+  .dawn__more {
+    margin-top: var(--space-5);
+  }
+  .dawn__more a {
+    display: inline-block;
+    min-height: var(--target-primary);
+  }
+  .dawn__log-list {
+    list-style: none;
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .dawn__log-list li {
+    display: grid;
+    gap: 2px;
+    font-size: var(--step--1);
+  }
+  .dawn__log-list time {
+    color: var(--smoke-on-paper);
+  }
+  .dawn__log-empty {
+    margin-top: var(--space-3);
+    color: var(--smoke-on-paper);
+    font-size: var(--step--1);
+  }
+  @media (width >= 64rem) {
+    .dawn__layout {
+      grid-template-columns: minmax(0, 1fr) 16rem;
+    }
+  }
+  :global(html[data-contrast="high"]) .movement--dawn {
+    background: #fff;
+    color: #000;
+  }
+</style>

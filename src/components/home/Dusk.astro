@@ -1,0 +1,234 @@
+---
+// Movement two: deep warm gray, "what I have shipped" as large editorial
+// blocks with one real number each, and the compact story timeline.
+import { Picture } from "astro:assets";
+import { formatDate, projectPath, type Project } from "../../lib/content";
+
+interface Props {
+  projects: Project[];
+}
+const { projects } = Astro.props;
+
+// The beats on record (section 6.3), in order. Michael's chapters tell the rest.
+const beats = [
+  { when: "2022", what: "Vision problems through the year" },
+  { when: "October 2022", what: "A brain tumor found" },
+  { when: "After that", what: "A craniotomy" },
+  { when: "", what: "Sight lost as a complication of the tumor and the surgery" },
+  { when: "2022 to 2024", what: "Two years of recovery and relearning how to live blind" },
+  { when: "October 2024", what: "Back at JWeis Marketing, building again" },
+];
+---
+
+<section class="movement movement--dusk" aria-labelledby="work-title">
+  <div class="wrap">
+    <p class="eyebrow movement__eyebrow">What I have shipped</p>
+    <h2 id="work-title" class="movement__title">
+      Things I built on my own time
+    </h2>
+    <ol class="shipped">
+      {projects.map((project) => {
+        const stat = project.data.stats[0];
+        const shot = project.data.gallery[0];
+        return (
+          <li class="shipped__item">
+            {shot && (
+              <Picture
+                class="shipped__image"
+                src={shot.src}
+                alt={shot.alt}
+                widths={[480, 800, 1200]}
+                sizes="(min-width: 64rem) 36rem, calc(100vw - 2rem)"
+                formats={["avif", "webp"]}
+                loading="lazy"
+              />
+            )}
+            <div class="shipped__text">
+              <p class="eyebrow shipped__meta">
+                <span>{project.data.year}</span>
+                <span>{project.data.role.join(", ")}</span>
+              </p>
+              <h3 class="shipped__title">
+                <a href={projectPath(project)}>{project.data.title}</a>
+              </h3>
+              <p class="shipped__tagline">{project.data.tagline}</p>
+              {stat ? (
+                <p class="shipped__stat">
+                  <span class="shipped__value">{stat.value}</span>
+                  <span class="shipped__label">
+                    {stat.label}, as of {formatDate(stat.asOf)}
+                  </span>
+                </p>
+              ) : (
+                <p class="shipped__stat shipped__stat--pending">
+                  [MICHAEL: one real number for {project.data.title}, with its source]
+                </p>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+    <p class="movement__more">
+      <a href="/projects">All projects</a>
+    </p>
+
+    <section class="beats" aria-labelledby="beats-title">
+      <h2 id="beats-title" class="eyebrow movement__eyebrow">
+        The story, in six beats
+      </h2>
+      <ol class="beats__list">
+        {beats.map((b) => (
+          <li class="beats__item">
+            <span class="beats__when mono">{b.when}</span>
+            <span class="beats__what">{b.what}</span>
+          </li>
+        ))}
+      </ol>
+      <p class="movement__more">
+        <a href="/story">Read the chapters</a>
+      </p>
+    </section>
+  </div>
+</section>
+
+<style>
+  .movement--dusk {
+    /* Each movement pins its own ground and text tokens, whatever the theme. */
+    --bg: var(--ink);
+    --bg-surface: var(--surface-dark);
+    --fg: var(--paper);
+    --fg-muted: var(--smoke-on-ink);
+    --accent: var(--lamp);
+    --border: var(--border-dark);
+    --focus: var(--lamp);
+    --error: var(--signal-error-dark);
+    --ok: var(--signal-ok-dark);
+    background: var(--ground-dusk);
+    color: var(--on-dusk);
+    padding-block: var(--space-9);
+  }
+  .movement__eyebrow {
+    color: var(--on-dusk-muted);
+  }
+  .movement__title {
+    margin-top: var(--space-3);
+    font-size: var(--step-4);
+    max-width: 20ch;
+  }
+  .shipped {
+    list-style: none;
+    margin: var(--space-7) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-8);
+  }
+  .shipped__item {
+    display: grid;
+    gap: var(--space-5);
+    align-items: start;
+  }
+  .shipped :global(.shipped__image) {
+    width: 100%;
+    border: 1px solid var(--on-dusk-muted);
+  }
+  .shipped__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    color: var(--on-dusk-muted);
+  }
+  .shipped__title {
+    margin-top: var(--space-2);
+    font-size: var(--step-3);
+  }
+  .shipped__title a {
+    color: var(--on-dusk);
+    text-decoration: none;
+  }
+  .shipped__title a:hover {
+    text-decoration: underline;
+  }
+  .shipped__tagline {
+    margin-top: var(--space-3);
+    max-width: 50ch;
+  }
+  .shipped__stat {
+    margin-top: var(--space-4);
+    display: grid;
+    gap: var(--space-1);
+  }
+  .shipped__stat--pending {
+    color: var(--on-dusk-muted);
+  }
+  .shipped__value {
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    line-height: 1;
+    color: var(--on-dusk-accent);
+  }
+  .shipped__label {
+    font-size: var(--step--1);
+    color: var(--on-dusk-muted);
+  }
+  .movement__more {
+    margin-top: var(--space-6);
+  }
+  .movement__more a {
+    color: var(--on-dusk-accent);
+    display: inline-block;
+    min-height: var(--target-primary);
+  }
+  .beats {
+    margin-top: var(--space-9);
+    padding-top: var(--space-7);
+    border-top: 1px solid var(--on-dusk-muted);
+  }
+  .beats__list {
+    list-style: none;
+    margin: var(--space-5) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+    max-width: var(--measure);
+  }
+  .beats__item {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: var(--space-4);
+    padding-block: var(--space-2);
+    border-bottom: 1px solid rgb(179 173 163 / 0.35);
+  }
+  .beats__when {
+    font-size: var(--step--1);
+    color: var(--on-dusk-muted);
+  }
+  @media (width >= 64rem) {
+    .shipped__item {
+      grid-template-columns: 36rem minmax(0, 1fr);
+    }
+    .shipped__item:nth-child(even) :global(.shipped__image) {
+      order: 2;
+    }
+  }
+  @media (width < 40rem) {
+    .beats__item {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+    }
+  }
+  :global(html[data-contrast="high"]) .movement--dusk {
+    background: #000;
+    color: #fff;
+  }
+  :global(html[data-contrast="high"]) .movement--dusk .eyebrow,
+  :global(html[data-contrast="high"]) .shipped__label,
+  :global(html[data-contrast="high"]) .beats__when,
+  :global(html[data-contrast="high"]) .shipped__stat--pending {
+    color: #e0e0e0;
+  }
+  :global(html[data-contrast="high"]) .shipped__value,
+  :global(html[data-contrast="high"]) .movement__more a {
+    color: #ffc466;
+  }
+</style>

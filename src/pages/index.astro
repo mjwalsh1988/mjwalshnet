@@ -1,15 +1,64 @@
 ---
+// The home page (sections 4.1 and 5.1): four movements from dark to light.
+// Static sections first; the scroll arc that blends between them is Phase 4.
 import Base from "../layouts/Base.astro";
-import { SITE } from "../lib/site";
+import Dark from "../components/home/Dark.astro";
+import Dusk from "../components/home/Dusk.astro";
+import Dawn from "../components/home/Dawn.astro";
+import Day from "../components/home/Day.astro";
+import { getChapters, getNowEntries, getPosts, getProjects } from "../lib/content";
+import { STATIC_PAGES } from "../lib/pages";
+import { webPage } from "../lib/seo/jsonld";
+import { canonicalUrl } from "../lib/seo/meta";
+
+const page = STATIC_PAGES.home;
+const posts = await getPosts();
+const projects = (await getProjects()).filter((p) => p.data.status !== "this site").slice(0, 4);
+const chapters = await getChapters();
+const [now] = await getNowEntries();
+const buildLog = posts.filter((p) => p.data.category === "build-log");
 ---
 
-<Base title={SITE.name} description={SITE.description} path="/">
-  <section class="wrap" style="padding-block: var(--space-8);">
-    <p class="eyebrow">Scaffold</p>
-    <h1>Michael Walsh</h1>
-    <p class="measure" style="margin-top: var(--space-4);">
-      The home page is built in Phase 3. This page exists so the layout, the header, the footer and
-      the preference controls can be tested first.
-    </p>
-  </section>
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  ground="dark"
+  bodyClass="home"
+  jsonLd={[
+    webPage({ url: canonicalUrl(page.path), title: page.title, description: page.description }),
+  ]}
+>
+  <Dark />
+  <Dusk projects={projects} />
+  <Dawn posts={posts} buildLog={buildLog} chapters={chapters} />
+  <Day now={now} />
 </Base>
+
+<style is:global>
+  /* The header sits on the dark ground on the home page. Pinning the tokens
+     beats every scoped rule inside the header, whatever the theme. */
+  body.home .site-header {
+    --bg: var(--ink);
+    --bg-surface: var(--surface-dark);
+    --fg: var(--paper);
+    --fg-muted: var(--smoke-on-ink);
+    --accent: var(--lamp);
+    --border: var(--border-dark);
+    --focus: var(--lamp);
+    --mark: var(--lamp);
+    background: var(--ink);
+    color: var(--paper);
+  }
+  html[data-contrast="high"] body.home .site-header {
+    --bg: #000;
+    --fg: #fff;
+    --fg-muted: #e0e0e0;
+    --accent: #ffc466;
+    --border: #fff;
+    --focus: #fff;
+    --mark: #fff;
+    background: #000;
+    color: #fff;
+  }
+</style>

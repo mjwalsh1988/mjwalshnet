@@ -1,0 +1,110 @@
+---
+// Movement four: full paper. The now strip and contact.
+import { formatMonth, isoDate, type NowEntry } from "../../lib/content";
+
+interface Props {
+  now?: NowEntry;
+}
+const { now } = Astro.props;
+---
+
+<section class="movement movement--day" aria-labelledby="now-title">
+  <div class="wrap day__layout">
+    <div class="day__now">
+      <p class="eyebrow">Now</p>
+      <h2 id="now-title" class="movement__title">
+        {now ? (
+          <>
+            This month,{" "}
+            <time datetime={isoDate(now.data.month)}>{formatMonth(now.data.month)}</time>
+          </>
+        ) : (
+          "This month"
+        )}
+      </h2>
+      <p class="day__text">
+        [MICHAEL: two or three lines for the home page now strip: what you are working on this
+        month. The now page has the full entry.]
+      </p>
+      <p class="day__more">
+        <a href="/now">The now page</a>
+      </p>
+    </div>
+    <div class="day__contact">
+      <p class="eyebrow">Contact</p>
+      <h2 class="movement__title">Email me</h2>
+      <p class="day__text">[MICHAEL: one line inviting people to write, in your words.]</p>
+      <p class="day__more">
+        <a href="/contact" class="day__button">
+          Send a message
+        </a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .movement--day {
+    /* Each movement pins its own ground and text tokens, whatever the theme. */
+    --bg: var(--paper);
+    --bg-surface: var(--surface-light);
+    --fg: var(--ink);
+    --fg-muted: var(--smoke-on-paper);
+    --accent: var(--ember);
+    --border: var(--border-light);
+    --focus: var(--ember);
+    --error: var(--signal-error-light);
+    --ok: var(--signal-ok-light);
+    background: var(--ground-day);
+    color: var(--ink);
+    padding-block: var(--space-8) var(--space-9);
+    border-top: 1px solid var(--border-light);
+  }
+  .movement--day :global(.eyebrow) {
+    color: var(--smoke-on-paper);
+  }
+  .day__layout {
+    display: grid;
+    gap: var(--space-7);
+  }
+  .movement__title {
+    margin-top: var(--space-3);
+    font-size: var(--step-3);
+  }
+  .day__text {
+    margin-top: var(--space-4);
+    max-width: 45ch;
+  }
+  .day__more {
+    margin-top: var(--space-4);
+  }
+  .day__more a {
+    color: var(--ember);
+    display: inline-block;
+    min-height: var(--target-primary);
+  }
+  .day__button {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-5);
+    border: 1.5px solid var(--ink);
+    border-radius: 2px;
+    background: var(--ink);
+    color: var(--paper) !important;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .day__button:hover {
+    background: var(--ember);
+    border-color: var(--ember);
+  }
+  @media (width >= 48rem) {
+    .day__layout {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  :global(html[data-contrast="high"]) .movement--day {
+    background: #fff;
+    color: #000;
+  }
+</style>

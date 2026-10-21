@@ -1,0 +1,87 @@
+---
+// Movement one (section 5.1): near-black ground, one large statement in
+// display type, a quiet second line. No hero image, no row of buttons.
+---
+
+<section class="movement movement--dark" aria-labelledby="home-title">
+  <div class="wrap">
+    <p class="eyebrow movement__eyebrow">Michael Walsh, Fort Wayne, Indiana</p>
+    <h1 id="home-title" class="movement__statement">
+      [MICHAEL: the one sentence that opens the site. Who you are and what you have shipped, in your
+      words.]
+    </h1>
+    <p class="movement__second">
+      [MICHAEL: the quiet second line. Something like what the first sentence of the memoir does.]
+    </p>
+    <p class="movement__links">
+      <a href="/story">Read the story</a>
+      <a href="/projects">See the work</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .movement--dark {
+    /* Each movement pins its own ground and text tokens, whatever the theme. */
+    --bg: var(--ink);
+    --bg-surface: var(--surface-dark);
+    --fg: var(--paper);
+    --fg-muted: var(--smoke-on-ink);
+    --accent: var(--lamp);
+    --border: var(--border-dark);
+    --focus: var(--lamp);
+    --error: var(--signal-error-dark);
+    --ok: var(--signal-ok-dark);
+    background: var(--ground-dark);
+    color: var(--on-dark);
+    padding-block: var(--space-9) var(--space-8);
+    min-height: 70dvh;
+    display: flex;
+    align-items: center;
+  }
+  .movement__eyebrow {
+    color: var(--on-dark-muted);
+  }
+  .movement__statement {
+    margin-top: var(--space-5);
+    font-size: var(--step-6);
+    font-weight: 500;
+    max-width: 18ch;
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+  }
+  .movement__second {
+    margin-top: var(--space-5);
+    font-size: var(--step-1);
+    max-width: 40ch;
+    color: var(--on-dark-muted);
+  }
+  .movement__links {
+    margin-top: var(--space-6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+  }
+  .movement__links a {
+    display: inline-block;
+    min-height: var(--target-primary);
+    color: var(--on-dark-accent);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    text-decoration-thickness: 0.1em;
+    text-underline-offset: 0.3em;
+  }
+  :global(html[data-contrast="high"]) .movement--dark {
+    background: #000;
+    color: #fff;
+  }
+  :global(html[data-contrast="high"]) .movement__eyebrow,
+  :global(html[data-contrast="high"]) .movement__second {
+    color: #e0e0e0;
+  }
+  :global(html[data-contrast="high"]) .movement__links a {
+    color: #ffc466;
+  }
+</style>
