@@ -1,4 +1,11 @@
-@import "tailwindcss";
+/* Tailwind scans only the site source for class candidates. Without this it
+   reads docs, tests and scripts too, and ordinary words such as "ring" or
+   "shadow" in prose make it emit utilities nothing uses. */
+@import "tailwindcss" source(none);
+@source "../components";
+@source "../layouts";
+@source "../pages";
+@source "../content";
 @import "./tokens.css";
 
 /* Tailwind reads the tokens so utilities and the hand-written CSS share one source. */
@@ -139,6 +146,11 @@
 
   [hidden] {
     display: none !important;
+  }
+
+  /* Controls that need JavaScript keep their space before it runs, so nothing shifts. */
+  [data-pending] {
+    visibility: hidden;
   }
 }
 

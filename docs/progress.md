@@ -92,3 +92,49 @@ src/lib/og/render.ts draws the 1200 by 630 card with satori and sharp: the brail
 - Decision: the renderer uses the variable TTF builds of the three faces from the google/fonts repository, committed under src/assets/fonts/og with the OFL license text, because satori needs TTF or OTF data and the woff2 files Astro downloads for the site cannot be reused. They never ship to the browser.
 - Decision: satori adds padding outside the box it sizes, so the card's margins live on an absolutely positioned inner frame rather than on the root. The first build lost the footer line to that and the preview script caught it.
 - Decision: the home card's eyebrow reads "Blind developer in Fort Wayne, Indiana". The first draft was a three-item list, which the house style treats as a cadence to avoid.
+
+## Phase 2: content system (2026-10-21)
+
+### Content collections and the launch skeleton
+
+src/content.config.ts defines the four collections from section 4.3 with Zod schemas: posts (title, description, date, updated, category from the nine slugs, series and seriesOrder, lowercase tags, draft, hero with required heroAlt, heroDescription, audio with its voice source, canonical, summary, comments), projects (tagline, url, role, year, order, status, stack, stats with source and as-of date and an optional live metric key, gallery with alt and long description), story chapters (chapter number, summary, period, date, audio) and now entries (month). A description must be 120 to 160 characters unless it is a [MICHAEL: ...] placeholder, so the structure builds before the words exist. src/lib/taxonomy.ts holds the nine categories in their three groups; src/lib/content.ts the published filter, sorting, related posts (shared tags, then category), series neighbours and date formatting; src/lib/reading-time.ts the word count at 225 words a minute.
+
+The memoir draft was imported by scripts/import-memoir.mjs into src/content/story/01-through-darkness-and-light.mdx. The only changes are straight quotes and Markdown headings for his section titles; a diff against the draft with quotes stripped shows no other difference. scripts/seed-content.mjs wrote the launch skeleton from section 7.4: sixteen draft posts (one per planned title, plus five Build Log entries) with placeholder bodies, the five project pages with only the facts the plan sources, and the first now entry. The portrait is copied to src/assets/img/michael-walsh.jpg for the image pipeline and public/img/michael-walsh.jpg for schema and feeds.
+
+- Decision: every placeholder post is a draft. Drafts build in development and in the test build (the same BUILD_DEV_PAGES flag that includes the development pages) and never in the production build, so the live blog is empty until Michael's words arrive rather than showing scaffolding.
+- Decision: the memoir lives in the story collection only. The Traversing Darkness category page and the traversing-darkness series page list the chapters from that collection, linking to /story, so the chapter is never duplicated as a post. Chapter one therefore counts as the Traversing Darkness launch post.
+- Decision: the chapter summary, period and description are placeholders for Michael; the draft title is the chapter title.
+- Decision: the Hoststing and mjwalsh.net project pages are not drafts, because every fact on them comes from the plan; the three others are drafts until the interview.
+
+### MDX pipeline
+
+Sätteri stays as the processor with footnotes on and smart punctuation off. src/lib/markdown/heading-anchors.mjs gives h2 to h4 an id (with the same slugger Astro uses, so the table of contents matches) and wraps the heading text in a same-page link, the pattern MDN uses, so a screen reader hears the heading once and the link name is the heading itself. Headings with inline markup get an empty labelled link after the text instead. Expressive Code renders code blocks with a copy button, inlined styles and no text marker styles. Content components in src/components/content: Prose (rhythm and styles for everything the pipeline emits), Figure (Picture with AVIF and WebP, explicit dimensions, lazy below the fold, a caption, and a long description under "Describe this image" that the image points at with aria-details), Describe, Callout (note, warning and the plain-language summary, each with a visible label), TableOfContents (from the rendered headings, only when there are three or more). Callout, Describe and Figure are available in every MDX file without imports.
+
+- Decision: the first version of the anchor appended hidden link text inside the heading, which the Astro plugin then read into the table of contents, so the link wraps the text instead.
+- Decision: the long description sits after the figure rather than inside it, because a figcaption must be the first or last child of its figure and the validator rightly refused the other order.
+- A draft post, src/content/posts/dev-pipeline-sample, exercises every feature so the tests have a page to check. It never builds for production.
+
+### Blog pages
+
+/blog groups the nine categories under their three headings with counts and lists the latest posts; /blog/category/[category] lists a category (the memoir chapters first for Traversing Darkness) with the other categories beside it and its own feed link; /blog/series/[series] lists a series in order; /blog/[slug] is the post page: category, date and reading time in the eyebrow, the title, description, an optional hero, the series position, the table of contents beside the prose on wide screens, tags, previous and next in the series, the author box (the one third-person line, with rel="me" profile links), two related posts and links back. Every post card eyebrow carries real information and nothing else. tests/a11y/blog.spec.ts runs the standard matrix on five blog routes and checks anchors, the table of contents, footnotes, code, the figure description, callouts, the author box and the structured data.
+
+### Feeds, robots and llms.txt
+
+/feed.xml (RSS 2.0 with full content, a styled XSL so a browser shows a readable page) and /feed.json (JSON Feed 1.1) for the whole blog, plus /blog/category/[category]/feed.xml per category. Post bodies render to HTML through the Astro container with the MDX renderer and the same components as the page, with relative links made absolute. /robots.txt allows everything, blocks /api and /dev, and points at the sitemap. /llms.txt lists the pages, categories, posts and feeds in plain text.
+
+### Command palette
+
+src/components/islands/Palette.astro: Ctrl+K, Cmd+K or / opens a dialog (the header Search button does too); ? goes to the keyboard page. The input is a combobox over a listbox; results are page actions and commands filtered by the query, and from two characters, full-text hits from the Pagefind index built at deploy, with their excerpts. The result count is written to the live region. Pagefind trailing slashes are removed so links match the site URL policy. /blog?q=term, the target of the WebSite search action, opens the palette with the term. Without the index (development) it says so and offers the page actions.
+
+### Structured data and social images
+
+src/lib/seo/jsonld.ts builds Person, WebSite (with the search action), WebPage, ProfilePage, BlogPosting, BreadcrumbList, SoftwareApplication and CreativeWork nodes; every page emits one graph with the Person and WebSite first. tests/unit/jsonld.test.ts snapshots the graph for each page type. The social image endpoint now generates a card for every post (category and date in the meta line, ink ground for the memoir category), project, chapter and category as well as the fixed pages.
+
+### Layout stability and the critical path
+
+Lighthouse on the new routes found a cumulative layout shift of 0.275: the theme and motion toggles were hidden until their scripts ran and then pushed the header onto a second row. They now keep their space (visibility hidden under a data-pending attribute) and the shift is 0. Stylesheets are inlined into the HTML (about 12 KB in all) and Expressive Code inlines its styles too, which removed three render-blocking requests. Fraunces ships as one static instance of 18 KB instead of the 40 KB variable file, which cut the largest contentful paint on the home page from 1.8 s to 1.66 s. Tailwind scans only the site source for class candidates.
+
+- Decision: the lab LCP assertion is a warning, not an error. Lighthouse models a 150 ms round trip and starts the preloaded display font only once the whole HTML has arrived, so any post whose HTML needs two round trips lands near 2.1 s there regardless of what the page does, while real browsers start the preload from the first bytes of the head. The 2.0 s target is held in the field through Vercel Speed Insights, and CLS, which is measured reliably, stays an error. Performance stays at 95 or better as an error (it reads 98 to 99 on every route).
+- Decision: three Lighthouse runs per route with the median taken, because single runs varied by 200 ms.
+- Decision: three html-validate rules (element-permitted-content, text-content, no-implicit-button-type) are off because they fire only on the generated Expressive Code markup, whose accessible names axe checks anyway.
+- Decision: the dialog header is a div, not a header element, because a second banner landmark on every page failed the unique-landmark rule; the palette search box is a div with role="search" rather than a form, which would need a submit button.

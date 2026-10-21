@@ -4,7 +4,7 @@
 // stored. aria-pressed carries the state.
 ---
 
-<button type="button" class="motion-toggle" data-motion-toggle aria-pressed="false" hidden>
+<button type="button" class="motion-toggle" data-motion-toggle aria-pressed="false" data-pending>
   Reduce motion
 </button>
 
@@ -33,7 +33,7 @@
     for (const b of buttons) b.setAttribute("aria-pressed", String(prefs.reduceMotion));
   };
   for (const button of buttons) {
-    button.hidden = false;
+    button.removeAttribute("data-pending");
     button.addEventListener("click", () => {
       const next = !readPrefs().reduceMotion;
       writePrefs({ reduceMotion: next });

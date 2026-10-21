@@ -5,7 +5,7 @@
 // then simply follows the system preference.
 ---
 
-<button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" hidden>
+<button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" data-pending>
   <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
     <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
     <path d="M8 2a6 6 0 0 0 0 12z" fill="currentColor"></path>
@@ -44,7 +44,7 @@
   }
 
   for (const button of buttons) {
-    button.hidden = false;
+    button.removeAttribute("data-pending");
     button.addEventListener("click", () => {
       const next = resolvedTheme(readPrefs()) === "dark" ? "light" : "dark";
       writePrefs({ theme: next });

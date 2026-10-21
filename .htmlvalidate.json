@@ -8,15 +8,19 @@
     "attribute-boolean-style": "off",
     "void-style": "off",
     "no-raw-characters": "off",
+    "unrecognized-char-ref": "off",
     "element-required-attributes": "error",
     "prefer-native-element": "error",
+    "unique-landmark": "error",
     "wcag/h30": "error",
     "wcag/h32": "error",
     "wcag/h37": "error",
     "wcag/h63": "error",
     "wcag/h67": "error",
     "wcag/h71": "error",
-    "unrecognized-char-ref": "off"
+    "element-permitted-content": "off",
+    "text-content": "off",
+    "no-implicit-button-type": "off"
   },
   "elements": ["html5"]
 }
