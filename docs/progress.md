@@ -46,3 +46,10 @@ Fraunces, Atkinson Hyperlegible Next and JetBrains Mono are self-hosted through 
 ### Phase 1: braille mark and favicon set
 
 src/components/site/BrailleMark.astro draws the M and W cells as two six-dot grids: present dots filled, absent dots as faint small circles so the grid reads. It is decorative unless given a label. scripts/build-icons.mjs renders the filled dots to favicon.svg (which follows the color scheme on its own), favicon-32.png, apple-touch-icon.png, the two manifest icons and site.webmanifest. Outputs are committed; rerun the script only if the mark changes.
+
+### Phase 1: Analytics component
+
+src/components/site/Analytics.astro sets Consent Mode defaults (analytics storage denied in the EEA and the UK until consent, granted elsewhere; every advertising signal denied everywhere), then injects gtag.js after the window load event. Google Signals and ad personalization are off in the config call. The measurement ID comes from PUBLIC_GA_MEASUREMENT_ID with G-1HNN2M5MQ1 as the built-in default, since the value is public. window.mwTrack is the one function the site's own features call for custom events; it does nothing when the tag is not loaded.
+
+- Decision: the tag loads only when the page's hostname is the production host, or when the URL carries ?analytics=on. Preview builds, the Playwright suites and local work therefore send nothing to the property, and Lighthouse CI opens its pages with the query string so budgets are measured with the tag present, as the plan asks.
+- Still Michael's: set the property's data retention to 14 months in the Google Analytics admin (section 10.4). The code cannot do that.

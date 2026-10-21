@@ -1,0 +1,95 @@
+---
+// Google Analytics 4, loaded the way section 10.4 of the plan describes:
+// after the window load event, with Consent Mode defaults set first, and no
+// advertising features. The tag only loads on the production host, or when a
+// page is opened with ?analytics=on (Lighthouse CI does that so budgets are
+// measured with the tag present). Everything else, including the a11y tests,
+// runs without it.
+---
+
+<script>
+  import { SITE } from "../../lib/site";
+
+  // Countries where analytics storage is denied until consent: the EEA and the UK.
+  const CONSENT_REGIONS = [
+    "AT",
+    "BE",
+    "BG",
+    "HR",
+    "CY",
+    "CZ",
+    "DK",
+    "EE",
+    "FI",
+    "FR",
+    "DE",
+    "GR",
+    "HU",
+    "IS",
+    "IE",
+    "IT",
+    "LV",
+    "LI",
+    "LT",
+    "LU",
+    "MT",
+    "NL",
+    "NO",
+    "PL",
+    "PT",
+    "RO",
+    "SK",
+    "SI",
+    "ES",
+    "SE",
+    "GB",
+  ];
+
+  const id = SITE.gaMeasurementId;
+  const productionHost = new URL(SITE.url).hostname;
+  const forced = new URLSearchParams(location.search).get("analytics") === "on";
+  const shouldLoad = Boolean(id) && (location.hostname === productionHost || forced);
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag(...args: unknown[]) {
+    window.dataLayer!.push(args);
+  }
+  window.gtag = gtag;
+
+  // The site's own events go through here, so a missing tag is harmless.
+  window.mwTrack = (name, params) => {
+    if (!shouldLoad) return;
+    gtag("event", name, params ?? {});
+  };
+
+  if (!shouldLoad) {
+    if (location.hostname !== productionHost) {
+      console.info("Analytics: not on the production host, tag not loaded.");
+    }
+  } else {
+    gtag("consent", "default", {
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      analytics_storage: "denied",
+      region: CONSENT_REGIONS,
+    });
+    gtag("consent", "default", {
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      analytics_storage: "granted",
+    });
+    gtag("js", new Date());
+    gtag("config", id, { allow_google_signals: false, allow_ad_personalization_signals: false });
+
+    const load = () => {
+      const s = document.createElement("script");
+      s.async = true;
+      s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
+      document.head.appendChild(s);
+    };
+    if (document.readyState === "complete") load();
+    else window.addEventListener("load", load, { once: true });
+  }
+</script>
