@@ -1,34 +1,28 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("the scroll arc", () => {
-  test("the home page has bands between the movements and no text in them", async ({ page }) => {
-    await page.goto("/");
-    const bands = page.locator("main > .band");
-    await expect(bands).toHaveCount(2);
-    for (const band of await bands.all()) {
-      expect((await band.innerText()).trim()).toBe("");
-      await expect(band).toHaveAttribute("aria-hidden", "true");
-    }
-  });
-
-  test("reduced motion turns the ground animation off", async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/");
-    const name = await page.evaluate(() => getComputedStyle(document.body).animationName);
-    expect(name).toBe("none");
-  });
-
-  test("with motion allowed the ground animates where the browser supports it", async ({
-    page,
-  }) => {
+  test("the four movements meet edge to edge on solid grounds", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/");
-    const result = await page.evaluate(() => ({
-      supported: CSS.supports("animation-timeline: scroll()"),
-      name: getComputedStyle(document.body).animationName,
-    }));
-    if (result.supported) expect(result.name).toBe("home-ground");
-    else expect(result.name).toBe("none");
+    const parts = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>("main > *")].map((el) => {
+        const r = el.getBoundingClientRect();
+        const s = getComputedStyle(el);
+        return { cls: el.className, top: r.top, bottom: r.bottom, image: s.backgroundImage };
+      }),
+    );
+    expect(parts.map((p) => p.cls.match(/movement--(\w+)/)?.[1])).toEqual([
+      "dark",
+      "dusk",
+      "dawn",
+      "day",
+    ]);
+    for (let i = 0; i < parts.length - 1; i += 1) {
+      expect(Math.abs(parts[i]!.bottom - parts[i + 1]!.top)).toBeLessThan(1);
+    }
+    for (const p of parts) expect(p.image).toBe("none");
+    const animation = await page.evaluate(() => getComputedStyle(document.body).animationName);
+    expect(animation).toBe("none");
   });
 });
 

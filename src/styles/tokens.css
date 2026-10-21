@@ -19,7 +19,9 @@
   --ember: #73420a;
   --smoke-on-paper: #5e5a54;
   --smoke-on-ink: #b3ada3;
-  --dusk: #26221e;
+  --dusk: #2c2823;
+  /* Secondary text on dusk, a step lighter than smoke-on-ink to keep 7:1 there. */
+  --smoke-on-dusk: #b8b3a9;
   --surface-light: #ece7dd;
   --surface-dark: #201d1a;
   --border-light: #857d72;
@@ -118,7 +120,7 @@
   --on-dark-muted: var(--smoke-on-ink);
   --on-dark-accent: var(--lamp);
   --on-dusk: var(--paper);
-  --on-dusk-muted: var(--smoke-on-ink);
+  --on-dusk-muted: var(--smoke-on-dusk);
   --on-dusk-accent: var(--lamp);
 }
 

@@ -1,6 +1,6 @@
 ---
 // The home page (sections 4.1 and 5.1): four movements from dark to light.
-// Static sections first; the scroll arc that blends between them is Phase 4.
+// Four solid sections that step from black to brown to cream, edge to edge.
 import Base from "../layouts/Base.astro";
 import Dark from "../components/home/Dark.astro";
 import Dusk from "../components/home/Dusk.astro";
@@ -35,9 +35,7 @@ const daysSinceLastPost = latestDate ? daysSince(new Date(latestDate)) : undefin
   ]}
 >
   <Dark />
-  <div class="band band--dark-dusk" aria-hidden="true"></div>
   <Dusk projects={projects} daysSinceLastPost={daysSinceLastPost} />
-  <div class="band band--dusk-dawn" aria-hidden="true"></div>
   <Dawn posts={posts} buildLog={buildLog} chapters={chapters} />
   <Day now={now} />
 </Base>

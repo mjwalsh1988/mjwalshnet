@@ -66,7 +66,7 @@ describe("home page movements", () => {
   it("dusk ground carries paper, smoke and lamp text", () => {
     const dusk = v("--dusk");
     expect(contrast(v("--paper"), dusk)).toBeGreaterThanOrEqual(AAA);
-    expect(contrast(v("--smoke-on-ink"), dusk)).toBeGreaterThanOrEqual(AAA);
+    expect(contrast(v("--smoke-on-dusk"), dusk)).toBeGreaterThanOrEqual(AAA);
     expect(contrast(v("--lamp"), dusk)).toBeGreaterThanOrEqual(AA);
   });
   it("the sampler reports a ratio for each point of an arc", () => {

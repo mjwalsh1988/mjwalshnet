@@ -146,6 +146,8 @@ The home page is one long scroll in four movements:
 
 Implementation: each movement is its own section with its own background token, so with motion off the page is simply four sections that step from dark to light. With motion on, a CSS scroll-driven animation interpolates the ground color between sections. The text color follows the same curve, and every intermediate state is checked for 4.5:1 contrast by a build-time script that samples the interpolation at ten points. This is the one place the site takes a visual risk, and it degrades to nothing worse than a well-spaced page.
 
+Revised 2026-10-21: the blend is gone. Text cannot sit on the midtones between dusk and paper, so the blend could only live in empty bands between sections, and those read as dead space (a long version through a muddy grey was tried and looked worse). The home page is now four solid sections that meet edge to edge, with no scroll animation, so it looks the same with reduced motion on. The dusk ground was lightened to #2c2823 so the first step is visible.
+
 Every other page is single-ground and follows the visitor's light or dark preference, with a visible toggle in the header that persists.
 
 ### 5.2 Tokens
