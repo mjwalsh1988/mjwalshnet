@@ -1,0 +1,37 @@
+---
+// The site's link. Underlined by default; "quiet" drops the underline for
+// lists of links where the context already says they are links (navs, cards).
+// Links never open new tabs: the reader decides that.
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"a"> {
+  href: string;
+  variant?: "default" | "quiet";
+  current?: boolean;
+}
+
+const { href, variant = "default", current = false, class: className, ...rest } = Astro.props;
+const external = /^https?:\/\//.test(href) && !href.startsWith("https://mjwalsh.net");
+---
+
+<a
+  href={href}
+  class:list={["link", { "link--quiet": variant === "quiet" }, className]}
+  aria-current={current ? "page" : undefined}
+  rel={external ? "external" : undefined}
+  {...rest}
+>
+  <slot />
+</a>
+
+<style>
+  .link--quiet {
+    text-decoration: none;
+    color: inherit;
+  }
+  .link--quiet:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.16em;
+  }
+</style>

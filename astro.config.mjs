@@ -28,7 +28,9 @@ export default defineConfig({
       },
     }),
     mdx(),
-    sitemap(),
+    sitemap({
+      filter: (page) => !page.includes("/dev/"),
+    }),
   ],
   markdown: {
     // Expressive Code renders every code block, so Astro's own highlighter is off.

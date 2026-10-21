@@ -1,0 +1,63 @@
+---
+// Native details and summary. The browser handles the expanded state, the
+// keyboard and the announcement, so there is no script. Used for "Describe
+// this image", chart tables and long descriptions.
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"details"> {
+  summary: string;
+  open?: boolean;
+  variant?: "default" | "plain";
+}
+
+const { summary, open = false, variant = "default", class: className, ...rest } = Astro.props;
+---
+
+<details class:list={["disclosure", `disclosure--${variant}`, className]} open={open} {...rest}>
+  <summary class="disclosure__summary">{summary}</summary>
+  <div class="disclosure__body">
+    <slot />
+  </div>
+</details>
+
+<style>
+  .disclosure {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .disclosure--plain {
+    border: 0;
+  }
+  .disclosure__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--target-primary);
+    padding-block: var(--space-2);
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+  }
+  .disclosure__summary::-webkit-details-marker {
+    display: none;
+  }
+  .disclosure__summary::before {
+    content: "";
+    flex: none;
+    width: 0.6em;
+    height: 0.6em;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg);
+    transition: transform var(--duration) var(--ease);
+  }
+  .disclosure[open] > .disclosure__summary::before {
+    transform: rotate(45deg);
+  }
+  .disclosure__body {
+    padding-block: var(--space-2) var(--space-4);
+  }
+  .disclosure__body > :global(* + *) {
+    margin-top: var(--space-3);
+  }
+</style>

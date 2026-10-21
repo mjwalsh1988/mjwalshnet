@@ -7,6 +7,7 @@ import Footer from "../components/site/Footer.astro";
 import Header from "../components/site/Header.astro";
 import PrefsScript from "../components/site/PrefsScript.astro";
 import SkipLink from "../components/site/SkipLink.astro";
+import LiveRegion from "../components/ui/LiveRegion.astro";
 import { resolveMeta, type PageMeta } from "../lib/seo/meta";
 import { SITE } from "../lib/site";
 
@@ -97,6 +98,7 @@ const jsonLdText = jsonLd.length ? JSON.stringify(jsonLd.length === 1 ? jsonLd[0
     <Footer>
       <slot name="footer-controls" slot="controls" />
     </Footer>
+    <LiveRegion />
     <Analytics />
   </body>
 </html>

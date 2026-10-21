@@ -1,0 +1,83 @@
+---
+// One button shape for the whole site. Renders a link when href is given, so
+// a link never pretends to be a button and the other way round. Primary
+// controls meet the 44 by 44 target; every button meets 24 by 24.
+import type { HTMLAttributes } from "astro/types";
+
+type Variant = "primary" | "secondary" | "quiet";
+
+interface Props extends HTMLAttributes<"button"> {
+  href?: string;
+  variant?: Variant;
+  type?: "button" | "submit" | "reset";
+}
+
+const { href, variant = "secondary", type = "button", class: className, ...rest } = Astro.props;
+const classes = ["button", `button--${variant}`, className];
+---
+
+{href ? (
+  <a href={href} class:list={classes} {...(rest as HTMLAttributes<"a">)}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class:list={classes} {...rest}>
+    <slot />
+  </button>
+)}
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: var(--target-primary);
+    min-width: var(--target-primary);
+    padding: var(--space-2) var(--space-5);
+    border: 1.5px solid var(--fg);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: var(--step-0);
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color var(--duration) var(--ease),
+      color var(--duration) var(--ease);
+  }
+  .button--primary {
+    background: var(--fg);
+    color: var(--bg);
+  }
+  .button--primary:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+  }
+  .button--secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .button--quiet {
+    border-color: transparent;
+    padding-inline: var(--space-3);
+    font-weight: 500;
+  }
+  .button--quiet:hover {
+    border-color: var(--border);
+  }
+  .button[disabled],
+  .button[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  @media (forced-colors: active) {
+    .button {
+      border-color: ButtonText;
+    }
+  }
+</style>

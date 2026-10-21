@@ -1,0 +1,9 @@
+---
+// Two visually hidden live regions, present from first paint so screen
+// readers register them before anything is announced. Write to them through
+// announce() in src/lib/ui/announce.ts. Polite is the default; assertive is
+// reserved for a submission failure.
+---
+
+<div class="visually-hidden" aria-live="polite" aria-atomic="true" data-live-polite></div>
+<div class="visually-hidden" aria-live="assertive" aria-atomic="true" data-live-assertive></div>

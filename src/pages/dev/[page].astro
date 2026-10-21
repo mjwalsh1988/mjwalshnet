@@ -1,0 +1,161 @@
+---
+// Development-only pages. They exist in the build only when BUILD_DEV_PAGES=1
+// (the test build sets it), never in the production build on Vercel.
+import Base from "../../layouts/Base.astro";
+import Button from "../../components/ui/Button.astro";
+import Dialog from "../../components/ui/Dialog.astro";
+import Disclosure from "../../components/ui/Disclosure.astro";
+import Link from "../../components/ui/Link.astro";
+
+export function getStaticPaths() {
+  if (process.env.BUILD_DEV_PAGES !== "1") return [];
+  return [{ params: { page: "primitives" } }];
+}
+---
+
+<Base
+  title="UI primitives"
+  description="Test page for the site's interface primitives: buttons, links, disclosures, the dialog, the listbox and the live regions. Not part of the public site."
+  path="/dev/primitives"
+  noindex
+>
+  <div class="wrap" style="padding-block: var(--space-7); display: grid; gap: var(--space-7);">
+    <h1>UI primitives</h1>
+
+    <section aria-labelledby="h-buttons">
+      <h2 id="h-buttons">Buttons</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-4);">
+        <Button variant="primary">Send message</Button>
+        <Button>Download the PDF</Button>
+        <Button variant="quiet">Cancel</Button>
+        <Button href="/" variant="secondary">
+          Back to the home page
+        </Button>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-links">
+      <h2 id="h-links">Links</h2>
+      <p style="margin-top: var(--space-4);">
+        A <Link href="/about">link to the about page</Link>, a
+        <Link href="https://ffbeacon.com">link to FF Beacon</Link>, and a
+        <Link href="/resume" variant="quiet">
+          quiet link
+        </Link>
+        .
+      </p>
+    </section>
+
+    <section aria-labelledby="h-disclosure">
+      <h2 id="h-disclosure">Disclosure</h2>
+      <div style="margin-top: var(--space-4);">
+        <Disclosure summary="Describe this image">
+          <p>A long description would go here, in full sentences.</p>
+        </Disclosure>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-dialog">
+      <h2 id="h-dialog">Dialog</h2>
+      <div style="margin-top: var(--space-4);">
+        <Button data-dialog-open="demo-dialog">Open the dialog</Button>
+        <Dialog id="demo-dialog" title="A dialog">
+          <p>Focus is inside the dialog. Escape closes it and focus returns to the button.</p>
+          <p style="margin-top: var(--space-3);">
+            <Link href="/">A link inside the dialog</Link>
+          </p>
+        </Dialog>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-listbox">
+      <h2 id="h-listbox">Listbox</h2>
+      <div style="margin-top: var(--space-4); display: grid; gap: var(--space-4);">
+        <div>
+          <label for="combo-input" style="display: block; margin-bottom: var(--space-2);">
+            Search the list
+          </label>
+          <input id="combo-input" type="text" autocomplete="off" style="padding: var(--space-2);" />
+          <ul id="combo-list" class="demo-list" aria-label="Results">
+            <li role="option" id="opt-a">
+              Alpha
+            </li>
+            <li role="option" id="opt-b">
+              Bravo
+            </li>
+            <li role="option" id="opt-c">
+              Charlie
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p id="plain-list-label">Plain listbox</p>
+          <ul id="plain-list" class="demo-list" aria-labelledby="plain-list-label">
+            <li role="option">One</li>
+            <li role="option">Two</li>
+            <li role="option">Three</li>
+          </ul>
+        </div>
+        <p>
+          Last selected:{" "}
+          <output id="selected" for="combo-list plain-list">
+            none
+          </output>
+        </p>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-live">
+      <h2 id="h-live">Live region</h2>
+      <div style="margin-top: var(--space-4);">
+        <Button id="announce-button">Announce a message</Button>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .demo-list {
+    list-style: none;
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    max-width: 20rem;
+  }
+  .demo-list [role="option"] {
+    padding: var(--space-2) var(--space-3);
+    min-height: var(--target-primary);
+    display: flex;
+    align-items: center;
+    cursor: default;
+  }
+  .demo-list [role="option"][aria-selected="true"] {
+    background: var(--bg-surface);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+</style>
+
+<script>
+  import { announce } from "../../lib/ui/announce";
+  import { createListbox } from "../../lib/ui/listbox";
+
+  const selected = document.getElementById("selected")!;
+  createListbox({
+    list: document.getElementById("combo-list")!,
+    input: document.getElementById("combo-input") as HTMLInputElement,
+    onSelect: (option) => {
+      selected.textContent = option.textContent?.trim() ?? "";
+    },
+  });
+  createListbox({
+    list: document.getElementById("plain-list")!,
+    onSelect: (option) => {
+      selected.textContent = option.textContent?.trim() ?? "";
+    },
+  });
+  let count = 0;
+  document.getElementById("announce-button")?.addEventListener("click", () => {
+    count += 1;
+    announce(`Message number ${count} announced.`);
+  });
+</script>

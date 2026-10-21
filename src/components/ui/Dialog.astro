@@ -1,0 +1,103 @@
+---
+// Native dialog opened with showModal(), which gives the focus trap, Escape
+// and the inert background for free. Open it from any element with
+// data-dialog-open="<id>"; close from anything inside with data-dialog-close.
+// Focus returns to the opener on close. See src/lib/ui/dialog.ts.
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"dialog"> {
+  id: string;
+  title: string;
+  /** Hide the title visually when the body makes it obvious (the palette). It stays the accessible name. */
+  hideTitle?: boolean;
+  closeLabel?: string;
+}
+
+const {
+  id,
+  title,
+  hideTitle = false,
+  closeLabel = "Close",
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<dialog id={id} class:list={["dialog", className]} aria-labelledby={`${id}-title`} {...rest}>
+  <div class="dialog__frame">
+    <header class="dialog__header">
+      <h2 id={`${id}-title`} class:list={["dialog__title", { "visually-hidden": hideTitle }]}>
+        {title}
+      </h2>
+      <button type="button" class="dialog__close" data-dialog-close>
+        <span aria-hidden="true">&times;</span>
+        <span class="visually-hidden">{closeLabel}</span>
+      </button>
+    </header>
+    <div class="dialog__body">
+      <slot />
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .dialog {
+    width: min(100% - 2rem, 40rem);
+    max-height: min(100dvh - 2rem, 48rem);
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--fg);
+    box-shadow: 0 1.5rem 3rem rgb(0 0 0 / 0.3);
+  }
+  .dialog::backdrop {
+    background: rgb(20 18 16 / 0.6);
+  }
+  .dialog__frame {
+    display: flex;
+    flex-direction: column;
+    max-height: inherit;
+  }
+  .dialog__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--border);
+  }
+  .dialog__title {
+    font-size: var(--step-2);
+  }
+  .dialog__close {
+    flex: none;
+    min-width: var(--target-primary);
+    min-height: var(--target-primary);
+    border: 1px solid transparent;
+    border-radius: 2px;
+    background: transparent;
+    color: inherit;
+    font-size: var(--step-2);
+    line-height: 1;
+    cursor: pointer;
+  }
+  .dialog__close:hover {
+    border-color: var(--border);
+  }
+  .dialog__body {
+    padding: var(--space-5);
+    overflow: auto;
+  }
+  @media (forced-colors: active) {
+    .dialog {
+      border: 2px solid CanvasText;
+    }
+  }
+</style>
+
+<script>
+  import { wireDialogs } from "../../lib/ui/dialog";
+  wireDialogs();
+</script>

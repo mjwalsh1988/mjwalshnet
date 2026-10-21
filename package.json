@@ -28,7 +28,8 @@
     "db:list": "supabase migration list",
     "db:diff": "supabase db diff --linked",
     "db:types": "supabase gen types typescript --linked --schema public > supabase/types/database.ts",
-    "prepare": "git config core.hooksPath .githooks"
+    "prepare": "git config core.hooksPath .githooks",
+    "build:test": "node scripts/build-test.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.11",

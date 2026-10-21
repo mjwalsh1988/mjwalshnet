@@ -64,3 +64,13 @@ Tests: tests/a11y/helpers.ts registers the standard matrix for a route (both the
 - Decision: the theme control is a toggle button whose label never changes ("Dark theme") and whose aria-pressed carries the state, following the ARIA toggle button pattern. The same shape is used for "Reduce motion" in the footer.
 - Decision: the home link uses aria-label="Michael Walsh, home" so the name is exact regardless of how the markup is formatted. The visible text is contained in the name, so label-in-name holds.
 - Decision: the local time renders only through JavaScript. Without it the footer shows the place alone rather than a stale build-time clock.
+
+### Phase 1: UI primitives
+
+src/components/ui: Button (link or button by props, 44 px primary target, three variants), Link (underlined by default, quiet variant, rel="external" on outside links, never a new tab), Disclosure (native details and summary, no script), Dialog (native dialog with showModal, focus moved to the first control inside, Escape and the close button both close, focus returns to the opener, backdrop click closes), LiveRegion (one polite and one assertive region in the base layout, written through announce()). src/lib/ui/listbox.ts implements the APG listbox in two arrangements: focus on the list, or a combobox where a text input keeps focus and carries aria-activedescendant. Arrow keys, Home, End, Enter, click and pointer hover are handled.
+
+The primitives render on /dev/primitives, a page that exists only in builds made with `npm run build:test` (BUILD_DEV_PAGES=1) and is filtered out of the sitemap. tests/a11y/primitives.spec.ts runs the standard axe matrix on it and keyboard tests for every primitive. Twenty-one accessibility tests pass across the two routes.
+
+- Decision: native dialog and details rather than ARIA re-implementations, per section 9.2 ("native elements are preferred wherever one exists"). The dialog's focus trap is the browser's own; tabbing past the last control hands focus to the browser chrome, not to the inert page, which is the expected native behaviour and what the test checks.
+- Decision: the development page is gated by an environment variable in getStaticPaths instead of shipping to production under a noindex tag. Vercel runs the plain build, so the route is absent there.
+- Still to do: an NVDA pass on each primitive is a manual item for Michael's testing phase (the plan calls for it before anything uses them; the automated checks stand in until then and the handoff lists it first).
