@@ -22,3 +22,7 @@ desktop.ini
 
 # Logs
 *.log
+
+# Supabase CLI local state
+supabase/.temp/
+supabase/.branches/
