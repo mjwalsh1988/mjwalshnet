@@ -7,6 +7,7 @@
 @source "../pages";
 @source "../content";
 @import "./tokens.css";
+@import "./home-arc.css";
 
 /* Tailwind reads the tokens so utilities and the hand-written CSS share one source. */
 @theme inline {
@@ -62,6 +63,8 @@
     line-height: var(--leading-tight);
     text-wrap: balance;
     margin: 0;
+    /* At 200 percent text a single long word can be wider than a phone; it may break. */
+    overflow-wrap: anywhere;
   }
 
   h1 {
@@ -84,6 +87,7 @@
   p {
     margin: 0;
     text-wrap: pretty;
+    overflow-wrap: anywhere;
   }
 
   a {

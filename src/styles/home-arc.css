@@ -1,0 +1,67 @@
+/*
+  The dark-to-light scroll arc (section 5.1 and 6.1).
+
+  Every movement is a solid section and the blend between grounds shows only in
+  the empty bands between sections, so no text ever sits on a blended ground
+  (scripts/check-contrast.ts prints the band samples). With motion on and
+  scroll-driven animations supported, the page ground behind the bands moves
+  from ink to paper with the scroll position; otherwise each band is a static
+  gradient between its two neighbours, and the page is simply four sections
+  that step from dark to light.
+*/
+
+body.home {
+  background: var(--ground-dark);
+}
+
+.band {
+  height: clamp(6rem, 16vh, 12rem);
+  background: linear-gradient(to bottom, var(--band-from), var(--band-to));
+}
+.band--dark-dusk {
+  --band-from: var(--ground-dark);
+  --band-to: var(--ground-dusk);
+}
+.band--dusk-dawn {
+  --band-from: var(--ground-dusk);
+  --band-to: var(--ground-dawn);
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* The timeline goes through a custom property so the minifier cannot fold it
+       into the animation shorthand, which browsers do not accept. */
+    html:not([data-motion="reduce"]) body.home {
+      --home-timeline: scroll(root block);
+      animation-name: home-ground;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: var(--home-timeline);
+    }
+    html:not([data-motion="reduce"]) body.home .band {
+      background: transparent;
+    }
+  }
+}
+
+@keyframes home-ground {
+  0% {
+    background-color: var(--ground-dark);
+  }
+  30% {
+    background-color: var(--ground-dusk);
+  }
+  60% {
+    background-color: var(--ground-dawn);
+  }
+  100% {
+    background-color: var(--ground-day);
+  }
+}
+
+@media (forced-colors: active) {
+  .band {
+    background: Canvas;
+    border-top: 1px solid CanvasText;
+  }
+}
