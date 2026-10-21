@@ -42,3 +42,7 @@ src/styles/tokens.css holds the raw palette (ink, paper, lamp, lamp-dim, ember, 
 Fraunces, Atkinson Hyperlegible Next and JetBrains Mono are self-hosted through the Astro Fonts API from the Google provider, Latin subset, variable weights, with metric-matched fallbacks generated from Georgia, Arial and Consolas. The body and display faces are preloaded from the base layout.
 
 - Decision: Fraunces ships in the upright style only. With both italics the four families came to 194 KB of woff2 against the plan's 180 KB budget; dropping the display italic brings the total to 149 KB. Atkinson keeps its italic for emphasis in prose.
+
+### Phase 1: braille mark and favicon set
+
+src/components/site/BrailleMark.astro draws the M and W cells as two six-dot grids: present dots filled, absent dots as faint small circles so the grid reads. It is decorative unless given a label. scripts/build-icons.mjs renders the filled dots to favicon.svg (which follows the color scheme on its own), favicon-32.png, apple-touch-icon.png, the two manifest icons and site.webmanifest. Outputs are committed; rerun the script only if the mark changes.
