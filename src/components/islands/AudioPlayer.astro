@@ -1,0 +1,338 @@
+---
+// Listen mode (section 6.4): a native audio element with custom, fully
+// labelled controls, the voice source in the label, keyboard shortcuts, and
+// the transcript (the post itself). Posts without a recording get a browser
+// read-aloud button, labelled as synthetic, through the Web Speech API.
+interface Props {
+  src?: string;
+  voice?: "michael" | "actor" | "synthetic";
+  duration?: number;
+  /** Selector of the element the synthetic reader reads when there is no recording. */
+  readSelector?: string;
+  title: string;
+}
+const { src, voice, duration, readSelector = ".prose", title } = Astro.props;
+const voiceLabel =
+  voice === "michael"
+    ? "Read by Michael"
+    : voice === "actor"
+      ? "Read by a voice actor"
+      : "Synthetic voice";
+const minutes = duration ? `${Math.round(duration / 60)} minutes` : "";
+---
+
+{src ? (
+  <section class="player" aria-labelledby="player-title" data-player data-src={src}>
+    <p id="player-title" class="player__label">
+      <span class="eyebrow">Listen</span>
+      <span>
+        {voiceLabel}
+        {minutes && `, ${minutes}`}
+      </span>
+    </p>
+    <audio preload="metadata" src={src} aria-label={`${title}, ${voiceLabel.toLowerCase()}`}>
+      <a href={src}>Download the recording</a>
+    </audio>
+    <div class="player__controls">
+      <button type="button" class="player__button" data-player-toggle aria-pressed="false">
+        <span data-player-toggle-label>Play</span>
+      </button>
+      <label class="player__seek">
+        <span class="visually-hidden">Position</span>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step="0.1"
+          value="0"
+          data-player-seek
+          aria-valuetext="0 seconds of unknown"
+        />
+      </label>
+      <span class="player__time mono" data-player-time aria-hidden="true">
+        0:00 / 0:00
+      </span>
+      <label class="player__speed">
+        <span class="visually-hidden">Speed</span>
+        <select data-player-speed>
+          <option value="0.8">0.8 times</option>
+          <option value="1" selected>
+            Normal speed
+          </option>
+          <option value="1.25">1.25 times</option>
+          <option value="1.5">1.5 times</option>
+          <option value="2">2 times</option>
+        </select>
+      </label>
+      <button type="button" class="player__button" data-player-mute aria-pressed="false">
+        Mute
+      </button>
+    </div>
+    <p class="player__hint">
+      Shortcuts: K or Space plays and pauses, J and L go back and forward ten seconds, comma and
+      period change the speed, M mutes. The transcript is the text on this page.
+    </p>
+  </section>
+) : (
+  <section
+    class="player player--synthetic"
+    aria-labelledby="player-title"
+    data-player-synthetic
+    data-read={readSelector}
+  >
+    <p id="player-title" class="player__label">
+      <span class="eyebrow">Listen</span>
+      <span>No recording yet</span>
+    </p>
+    <div class="player__controls">
+      <button
+        type="button"
+        class="player__button"
+        data-speech-toggle
+        aria-pressed="false"
+        data-pending
+      >
+        <span data-speech-label>Read aloud with a synthetic voice</span>
+      </button>
+      <button type="button" class="player__button" data-speech-stop hidden>
+        Stop
+      </button>
+    </div>
+    <p class="player__hint" data-speech-note>
+      This uses the voice built into your browser, so it is synthetic and it is not me. A recording
+      comes later.
+    </p>
+  </section>
+)}
+
+<style>
+  .player {
+    margin-top: var(--space-5);
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    max-width: var(--measure);
+  }
+  .player__label {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+  }
+  .player__controls {
+    margin-top: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .player__button {
+    min-height: var(--target-primary);
+    min-width: var(--target-primary);
+    padding: var(--space-2) var(--space-4);
+    border: 1.5px solid var(--fg);
+    border-radius: 2px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .player__button[aria-pressed="true"] {
+    background: var(--fg);
+    color: var(--bg);
+  }
+  .player__seek {
+    flex: 1 1 12rem;
+    display: flex;
+    align-items: center;
+    min-height: var(--target-primary);
+  }
+  .player__seek input {
+    width: 100%;
+    accent-color: var(--accent);
+  }
+  .player__time {
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  .player__speed select {
+    min-height: var(--target-primary);
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: var(--bg);
+    color: var(--fg);
+  }
+  .player__hint {
+    margin-top: var(--space-3);
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+</style>
+
+<script>
+  import { announce } from "../../lib/ui/announce";
+
+  const fmt = (s: number) => {
+    const m = Math.floor(s / 60);
+    const r = Math.floor(s % 60);
+    return `${m}:${String(r).padStart(2, "0")}`;
+  };
+  const spoken = (s: number) => {
+    const m = Math.floor(s / 60);
+    const r = Math.floor(s % 60);
+    return m
+      ? `${m} minute${m === 1 ? "" : "s"} ${r} second${r === 1 ? "" : "s"}`
+      : `${r} second${r === 1 ? "" : "s"}`;
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-player]")) {
+    const audio = root.querySelector("audio")!;
+    const toggle = root.querySelector<HTMLButtonElement>("[data-player-toggle]")!;
+    const toggleLabel = root.querySelector<HTMLElement>("[data-player-toggle-label]")!;
+    const seek = root.querySelector<HTMLInputElement>("[data-player-seek]")!;
+    const time = root.querySelector<HTMLElement>("[data-player-time]")!;
+    const speed = root.querySelector<HTMLSelectElement>("[data-player-speed]")!;
+    const mute = root.querySelector<HTMLButtonElement>("[data-player-mute]")!;
+
+    const update = () => {
+      const d = audio.duration || 0;
+      const t = audio.currentTime || 0;
+      seek.value = d ? String((t / d) * 100) : "0";
+      seek.setAttribute("aria-valuetext", `${spoken(t)} of ${d ? spoken(d) : "unknown"}`);
+      time.textContent = `${fmt(t)} / ${fmt(d)}`;
+    };
+    const setPlaying = (playing: boolean) => {
+      toggle.setAttribute("aria-pressed", String(playing));
+      toggleLabel.textContent = playing ? "Pause" : "Play";
+    };
+    toggle.addEventListener("click", () => {
+      if (audio.paused) void audio.play();
+      else audio.pause();
+    });
+    audio.addEventListener("play", () => {
+      setPlaying(true);
+      window.mwTrack?.("audio_play");
+    });
+    audio.addEventListener("pause", () => setPlaying(false));
+    audio.addEventListener("ended", () => {
+      setPlaying(false);
+      announce("End of the recording.");
+    });
+    audio.addEventListener("timeupdate", update);
+    audio.addEventListener("loadedmetadata", update);
+    seek.addEventListener("input", () => {
+      if (audio.duration) audio.currentTime = (Number(seek.value) / 100) * audio.duration;
+    });
+    speed.addEventListener("change", () => {
+      audio.playbackRate = Number(speed.value);
+      announce(speed.options[speed.selectedIndex]?.text ?? "");
+    });
+    mute.addEventListener("click", () => {
+      audio.muted = !audio.muted;
+      mute.setAttribute("aria-pressed", String(audio.muted));
+    });
+
+    const step = (seconds: number) => {
+      audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + seconds));
+      announce(`${spoken(audio.currentTime)}`);
+    };
+    const speeds = [0.8, 1, 1.25, 1.5, 2];
+    const changeSpeed = (dir: number) => {
+      const i = Math.max(0, Math.min(speeds.length - 1, speeds.indexOf(audio.playbackRate) + dir));
+      speed.value = String(speeds[i]);
+      speed.dispatchEvent(new Event("change"));
+    };
+    document.addEventListener("keydown", (e) => {
+      const t = e.target as HTMLElement | null;
+      if (
+        t instanceof HTMLInputElement ||
+        t instanceof HTMLTextAreaElement ||
+        t instanceof HTMLSelectElement ||
+        t?.isContentEditable
+      )
+        return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      switch (e.key) {
+        case "k":
+        case "K":
+        case " ":
+          if (e.key === " " && t instanceof HTMLButtonElement) return;
+          e.preventDefault();
+          toggle.click();
+          break;
+        case "j":
+        case "J":
+          step(-10);
+          break;
+        case "l":
+        case "L":
+          step(10);
+          break;
+        case ",":
+          changeSpeed(-1);
+          break;
+        case ".":
+          changeSpeed(1);
+          break;
+        case "m":
+        case "M":
+          mute.click();
+          break;
+      }
+    });
+    update();
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-player-synthetic]")) {
+    const toggle = root.querySelector<HTMLButtonElement>("[data-speech-toggle]")!;
+    const label = root.querySelector<HTMLElement>("[data-speech-label]")!;
+    const stop = root.querySelector<HTMLButtonElement>("[data-speech-stop]")!;
+    const note = root.querySelector<HTMLElement>("[data-speech-note]")!;
+    toggle.removeAttribute("data-pending");
+    if (!("speechSynthesis" in window)) {
+      toggle.disabled = true;
+      note.textContent = "Your browser cannot read pages aloud. A recording comes later.";
+      continue;
+    }
+    const synth = window.speechSynthesis;
+    let utterance: SpeechSynthesisUtterance | null = null;
+    const reset = () => {
+      toggle.setAttribute("aria-pressed", "false");
+      label.textContent = "Read aloud with a synthetic voice";
+      stop.hidden = true;
+    };
+    toggle.addEventListener("click", () => {
+      if (synth.speaking && !synth.paused) {
+        synth.pause();
+        toggle.setAttribute("aria-pressed", "false");
+        label.textContent = "Resume reading";
+        return;
+      }
+      if (synth.paused) {
+        synth.resume();
+        toggle.setAttribute("aria-pressed", "true");
+        label.textContent = "Pause reading";
+        return;
+      }
+      const source = document.querySelector<HTMLElement>(root.dataset.read ?? ".prose");
+      const text = source?.innerText ?? "";
+      if (!text.trim()) return;
+      utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = document.documentElement.lang || "en";
+      utterance.onend = reset;
+      utterance.onerror = reset;
+      synth.cancel();
+      synth.speak(utterance);
+      toggle.setAttribute("aria-pressed", "true");
+      label.textContent = "Pause reading";
+      stop.hidden = false;
+      window.mwTrack?.("synthetic_read_aloud");
+    });
+    stop.addEventListener("click", () => {
+      synth.cancel();
+      reset();
+      toggle.focus();
+    });
+    window.addEventListener("pagehide", () => synth.cancel());
+  }
+</script>
