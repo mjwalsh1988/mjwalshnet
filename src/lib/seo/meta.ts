@@ -36,9 +36,12 @@ export function canonicalUrl(path: string): string {
   return `${SITE.url}${clean.startsWith("/") ? clean : `/${clean}`}`;
 }
 
+export function ogSlug(path: string): string {
+  return path === "/" ? "home" : path.replace(/^\/+|\/+$/g, "").replace(/\//g, "--");
+}
+
 export function ogImageUrl(path: string): string {
-  const slug = path === "/" ? "home" : path.replace(/^\/+|\/+$/g, "").replace(/\//g, "--");
-  return `${SITE.url}/og/${slug}.png`;
+  return `${SITE.url}/og/${ogSlug(path)}.png`;
 }
 
 export function resolveMeta(meta: PageMeta): ResolvedMeta {
