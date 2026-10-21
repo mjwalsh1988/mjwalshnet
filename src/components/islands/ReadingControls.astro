@@ -1,0 +1,187 @@
+---
+// The reading menu (section 6.8): text size up to 200 percent, line spacing,
+// high contrast, dyslexia-friendly spacing, the theme and motion. Settings
+// apply on change and persist through the preference store; the page renders
+// correctly when storage is unavailable. Each change fires a site event so
+// Michael can see which controls people use.
+import Dialog from "../ui/Dialog.astro";
+---
+
+<button type="button" class="reading-open" data-dialog-open="reading-controls" data-pending>
+  Reading
+</button>
+
+<Dialog id="reading-controls" title="Reading settings" class="reading">
+  <div class="reading__form" data-reading-form role="group" aria-label="Reading settings">
+    <p class="reading__help">These settings stay in your browser. Nothing is sent anywhere.</p>
+
+    <div class="reading__field">
+      <label for="reading-size">Text size</label>
+      <select id="reading-size" name="textSize">
+        <option value="100">100 percent</option>
+        <option value="125">125 percent</option>
+        <option value="150">150 percent</option>
+        <option value="175">175 percent</option>
+        <option value="200">200 percent</option>
+      </select>
+    </div>
+
+    <fieldset class="reading__group">
+      <legend>Spacing</legend>
+      <label class="reading__check">
+        <input type="checkbox" name="lineSpacing" value="loose" />
+        Looser line spacing
+      </label>
+      <label class="reading__check">
+        <input type="checkbox" name="dyslexia" />
+        Dyslexia-friendly letter and word spacing
+      </label>
+    </fieldset>
+
+    <fieldset class="reading__group">
+      <legend>Color</legend>
+      <label class="reading__check">
+        <input type="checkbox" name="highContrast" />
+        High contrast, beyond AA
+      </label>
+      <label class="reading__check">
+        <input type="checkbox" name="darkTheme" />
+        Dark theme
+      </label>
+    </fieldset>
+
+    <fieldset class="reading__group">
+      <legend>Motion</legend>
+      <label class="reading__check">
+        <input type="checkbox" name="reduceMotion" />
+        Reduce motion
+      </label>
+    </fieldset>
+
+    <p>
+      <button type="button" class="reading__reset" data-reading-reset>
+        Back to the defaults
+      </button>
+    </p>
+  </div>
+</Dialog>
+
+<style>
+  .reading-open {
+    min-height: var(--target-primary);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+  .reading__form {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .reading__help {
+    color: var(--fg-muted);
+  }
+  .reading__field {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .reading__field select {
+    min-height: var(--target-primary);
+    padding: var(--space-2) var(--space-3);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    background: var(--bg);
+    color: var(--fg);
+    max-width: 16rem;
+  }
+  .reading__group {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .reading__group legend {
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+  }
+  .reading__check {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--target-primary);
+  }
+  .reading__check input {
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: var(--accent);
+  }
+  .reading__reset {
+    min-height: var(--target-primary);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  import {
+    DEFAULT_PREFS,
+    PREFS_EVENT,
+    readPrefs,
+    resolvedTheme,
+    writePrefs,
+    type Prefs,
+  } from "../../lib/prefs";
+
+  const form = document.querySelector<HTMLElement>("[data-reading-form]");
+  const opener = document.querySelector<HTMLElement>('[data-dialog-open="reading-controls"]');
+  opener?.removeAttribute("data-pending");
+
+  if (form) {
+    const field = <T extends HTMLElement>(name: string) =>
+      form.querySelector(`[name="${name}"]`) as T;
+    const size = field<HTMLSelectElement>("textSize");
+    const spacing = field<HTMLInputElement>("lineSpacing");
+    const dyslexia = field<HTMLInputElement>("dyslexia");
+    const contrast = field<HTMLInputElement>("highContrast");
+    const dark = field<HTMLInputElement>("darkTheme");
+    const motion = field<HTMLInputElement>("reduceMotion");
+
+    function reflect(prefs: Prefs) {
+      size.value = prefs.textSize;
+      spacing.checked = prefs.lineSpacing === "loose";
+      dyslexia.checked = prefs.dyslexia;
+      contrast.checked = prefs.highContrast;
+      dark.checked = resolvedTheme(prefs) === "dark";
+      motion.checked = prefs.reduceMotion;
+    }
+
+    form.addEventListener("change", () => {
+      const next = writePrefs({
+        textSize: size.value as Prefs["textSize"],
+        lineSpacing: spacing.checked ? "loose" : "normal",
+        dyslexia: dyslexia.checked,
+        highContrast: contrast.checked,
+        theme: dark.checked ? "dark" : "light",
+        reduceMotion: motion.checked,
+      });
+      window.mwTrack?.("reading_text_size", { size: next.textSize });
+      if (next.highContrast) window.mwTrack?.("high_contrast_on");
+      if (next.dyslexia) window.mwTrack?.("dyslexia_spacing_on");
+    });
+    form.querySelector("[data-reading-reset]")?.addEventListener("click", () => {
+      writePrefs({ ...DEFAULT_PREFS });
+      window.mwTrack?.("reading_reset");
+    });
+    document.addEventListener(PREFS_EVENT, (e) => reflect((e as CustomEvent<Prefs>).detail));
+    reflect(readPrefs());
+  }
+</script>
