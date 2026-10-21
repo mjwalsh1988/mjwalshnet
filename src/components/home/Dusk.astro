@@ -28,6 +28,7 @@ const beats = [
     <h2 id="work-title" class="movement__title">
       Things I built on my own time
     </h2>
+    <p class="movement__lede">Over twenty years of building for the web, the last two by ear.</p>
     <ol class="shipped">
       {projects.map((project) => {
         const stat = project.data.stats[0];
@@ -134,6 +135,12 @@ const beats = [
     margin-top: var(--space-3);
     font-size: var(--step-4);
     max-width: 20ch;
+  }
+  .movement__lede {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    max-width: 40ch;
+    color: var(--on-dusk-muted);
   }
   .shipped {
     list-style: none;
@@ -244,6 +251,7 @@ const beats = [
     color: #fff;
   }
   :global(html[data-contrast="high"]) .movement--dusk .eyebrow,
+  :global(html[data-contrast="high"]) .movement__lede,
   :global(html[data-contrast="high"]) .shipped__label,
   :global(html[data-contrast="high"]) .beats__when,
   :global(html[data-contrast="high"]) .shipped__stat--pending {
