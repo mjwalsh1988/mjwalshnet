@@ -1,0 +1,404 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`JSON-LD builders > a blog post 1`] = `
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "https://mjwalsh.net/#person",
+      "@type": "Person",
+      "homeLocation": {
+        "@type": "Place",
+        "name": "Fort Wayne, Indiana",
+      },
+      "image": "https://mjwalsh.net/img/michael-walsh.jpg",
+      "jobTitle": "Full-Stack Developer and Automation / AI Specialist",
+      "knowsAbout": [
+        "Web accessibility",
+        "Screen readers",
+        "Full-stack development",
+        "Automation",
+        "Search engine optimization",
+        "Web hosting",
+        "Fantasy football",
+      ],
+      "name": "Michael Walsh",
+      "sameAs": [
+        "https://www.linkedin.com/in/michaeljameswalsh",
+        "https://github.com/mjwalsh1988",
+        "https://ffbeacon.com",
+        "https://gridironsites.com",
+      ],
+      "url": "https://mjwalsh.net",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "JWeis Marketing",
+        "url": "https://jweis.com",
+      },
+    },
+    {
+      "@id": "https://mjwalsh.net/#website",
+      "@type": "WebSite",
+      "description": "I am a full-stack developer and automation specialist in Fort Wayne, Indiana. I lost my sight at 34 and kept building. This is my story, my work and my writing.",
+      "inLanguage": "en",
+      "name": "Michael Walsh",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "query-input": "required name=search_term_string",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://mjwalsh.net/blog?q={search_term_string}",
+        },
+      },
+      "publisher": {
+        "@id": "https://mjwalsh.net/#person",
+      },
+      "url": "https://mjwalsh.net",
+    },
+    {
+      "@id": "https://mjwalsh.net/blog/how-i-write-code-i-cannot-see#post",
+      "@type": "BlogPosting",
+      "articleSection": "Building Blind",
+      "author": {
+        "@id": "https://mjwalsh.net/#person",
+      },
+      "dateModified": "2026-11-01",
+      "datePublished": "2026-11-01",
+      "description": "A description of the post.",
+      "headline": "How I write code I cannot see",
+      "image": "https://mjwalsh.net/og/blog--how-i-write-code-i-cannot-see.png",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://mjwalsh.net/#website",
+      },
+      "keywords": "nvda, claude-code",
+      "mainEntityOfPage": "https://mjwalsh.net/blog/how-i-write-code-i-cannot-see",
+      "publisher": {
+        "@id": "https://mjwalsh.net/#person",
+      },
+      "url": "https://mjwalsh.net/blog/how-i-write-code-i-cannot-see",
+      "wordCount": 1800,
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "item": "https://mjwalsh.net/blog",
+          "name": "Blog",
+          "position": 1,
+        },
+        {
+          "@type": "ListItem",
+          "item": "https://mjwalsh.net/blog/category/building-blind",
+          "name": "Building Blind",
+          "position": 2,
+        },
+        {
+          "@type": "ListItem",
+          "item": "https://mjwalsh.net/blog/how-i-write-code-i-cannot-see",
+          "name": "How I write code I cannot see",
+          "position": 3,
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`JSON-LD builders > a plain page 1`] = `
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "https://mjwalsh.net/#person",
+      "@type": "Person",
+      "homeLocation": {
+        "@type": "Place",
+        "name": "Fort Wayne, Indiana",
+      },
+      "image": "https://mjwalsh.net/img/michael-walsh.jpg",
+      "jobTitle": "Full-Stack Developer and Automation / AI Specialist",
+      "knowsAbout": [
+        "Web accessibility",
+        "Screen readers",
+        "Full-stack development",
+        "Automation",
+        "Search engine optimization",
+        "Web hosting",
+        "Fantasy football",
+      ],
+      "name": "Michael Walsh",
+      "sameAs": [
+        "https://www.linkedin.com/in/michaeljameswalsh",
+        "https://github.com/mjwalsh1988",
+        "https://ffbeacon.com",
+        "https://gridironsites.com",
+      ],
+      "url": "https://mjwalsh.net",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "JWeis Marketing",
+        "url": "https://jweis.com",
+      },
+    },
+    {
+      "@id": "https://mjwalsh.net/#website",
+      "@type": "WebSite",
+      "description": "I am a full-stack developer and automation specialist in Fort Wayne, Indiana. I lost my sight at 34 and kept building. This is my story, my work and my writing.",
+      "inLanguage": "en",
+      "name": "Michael Walsh",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "query-input": "required name=search_term_string",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://mjwalsh.net/blog?q={search_term_string}",
+        },
+      },
+      "publisher": {
+        "@id": "https://mjwalsh.net/#person",
+      },
+      "url": "https://mjwalsh.net",
+    },
+    {
+      "@id": "https://mjwalsh.net/uses#webpage",
+      "@type": "WebPage",
+      "about": {
+        "@id": "https://mjwalsh.net/#person",
+      },
+      "dateModified": "2026-10-21",
+      "description": "A description.",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://mjwalsh.net/#website",
+      },
+      "name": "Uses",
+      "url": "https://mjwalsh.net/uses",
+    },
+  ],
+}
+`;
+
+exports[`JSON-LD builders > a project page 1`] = `
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "https://mjwalsh.net/#person",
+      "@type": "Person",
+      "homeLocation": {
+        "@type": "Place",
+        "name": "Fort Wayne, Indiana",
+      },
+      "image": "https://mjwalsh.net/img/michael-walsh.jpg",
+      "jobTitle": "Full-Stack Developer and Automation / AI Specialist",
+      "knowsAbout": [
+        "Web accessibility",
+        "Screen readers",
+        "Full-stack development",
+        "Automation",
+        "Search engine optimization",
+        "Web hosting",
+        "Fantasy football",
+      ],
+      "name": "Michael Walsh",
+      "sameAs": [
+        "https://www.linkedin.com/in/michaeljameswalsh",
+        "https://github.com/mjwalsh1988",
+        "https://ffbeacon.com",
+        "https://gridironsites.com",
+      ],
+      "url": "https://mjwalsh.net",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "JWeis Marketing",
+        "url": "https://jweis.com",
+      },
+    },
+    {
+      "@id": "https://mjwalsh.net/#website",
+      "@type": "WebSite",
+      "description": "I am a full-stack developer and automation specialist in Fort Wayne, Indiana. I lost my sight at 34 and kept building. This is my story, my work and my writing.",
+      "inLanguage": "en",
+      "name": "Michael Walsh",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "query-input": "required name=search_term_string",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://mjwalsh.net/blog?q={search_term_string}",
+        },
+      },
+      "publisher": {
+        "@id": "https://mjwalsh.net/#person",
+      },
+      "url": "https://mjwalsh.net",
+    },
+    {
+      "@id": "https://mjwalsh.net/projects/ff-beacon#software",
+      "@type": "SoftwareApplication",
+      "applicationCategory": "WebApplication",
+      "author": {
+        "@id": "https://mjwalsh.net/#person",
+      },
+      "creator": {
+        "@id": "https://mjwalsh.net/#person",
+      },
+      "description": "A description.",
+      "installUrl": "https://ffbeacon.com",
+      "name": "FF Beacon",
+      "operatingSystem": "Any",
+      "url": "https://ffbeacon.com",
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "item": "https://mjwalsh.net/projects",
+          "name": "Projects",
+          "position": 1,
+        },
+        {
+          "@type": "ListItem",
+          "item": "https://mjwalsh.net/projects/ff-beacon",
+          "name": "FF Beacon",
+          "position": 2,
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`JSON-LD builders > every page carries the Person and WebSite graph 1`] = `
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "https://mjwalsh.net/#person",
+      "@type": "Person",
+      "homeLocation": {
+        "@type": "Place",
+        "name": "Fort Wayne, Indiana",
+      },
+      "image": "https://mjwalsh.net/img/michael-walsh.jpg",
+      "jobTitle": "Full-Stack Developer and Automation / AI Specialist",
+      "knowsAbout": [
+        "Web accessibility",
+        "Screen readers",
+        "Full-stack development",
+        "Automation",
+        "Search engine optimization",
+        "Web hosting",
+        "Fantasy football",
+      ],
+      "name": "Michael Walsh",
+      "sameAs": [
+        "https://www.linkedin.com/in/michaeljameswalsh",
+        "https://github.com/mjwalsh1988",
+        "https://ffbeacon.com",
+        "https://gridironsites.com",
+      ],
+      "url": "https://mjwalsh.net",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "JWeis Marketing",
+        "url": "https://jweis.com",
+      },
+    },
+    {
+      "@id": "https://mjwalsh.net/#website",
+      "@type": "WebSite",
+      "description": "I am a full-stack developer and automation specialist in Fort Wayne, Indiana. I lost my sight at 34 and kept building. This is my story, my work and my writing.",
+      "inLanguage": "en",
+      "name": "Michael Walsh",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "query-input": "required name=search_term_string",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://mjwalsh.net/blog?q={search_term_string}",
+        },
+      },
+      "publisher": {
+        "@id": "https://mjwalsh.net/#person",
+      },
+      "url": "https://mjwalsh.net",
+    },
+  ],
+}
+`;
+
+exports[`JSON-LD builders > the about page 1`] = `
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "https://mjwalsh.net/#person",
+      "@type": "Person",
+      "homeLocation": {
+        "@type": "Place",
+        "name": "Fort Wayne, Indiana",
+      },
+      "image": "https://mjwalsh.net/img/michael-walsh.jpg",
+      "jobTitle": "Full-Stack Developer and Automation / AI Specialist",
+      "knowsAbout": [
+        "Web accessibility",
+        "Screen readers",
+        "Full-stack development",
+        "Automation",
+        "Search engine optimization",
+        "Web hosting",
+        "Fantasy football",
+      ],
+      "name": "Michael Walsh",
+      "sameAs": [
+        "https://www.linkedin.com/in/michaeljameswalsh",
+        "https://github.com/mjwalsh1988",
+        "https://ffbeacon.com",
+        "https://gridironsites.com",
+      ],
+      "url": "https://mjwalsh.net",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "JWeis Marketing",
+        "url": "https://jweis.com",
+      },
+    },
+    {
+      "@id": "https://mjwalsh.net/#website",
+      "@type": "WebSite",
+      "description": "I am a full-stack developer and automation specialist in Fort Wayne, Indiana. I lost my sight at 34 and kept building. This is my story, my work and my writing.",
+      "inLanguage": "en",
+      "name": "Michael Walsh",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "query-input": "required name=search_term_string",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://mjwalsh.net/blog?q={search_term_string}",
+        },
+      },
+      "publisher": {
+        "@id": "https://mjwalsh.net/#person",
+      },
+      "url": "https://mjwalsh.net",
+    },
+    {
+      "@id": "https://mjwalsh.net/about#profile",
+      "@type": "ProfilePage",
+      "dateCreated": "2026-10-21",
+      "dateModified": "2026-10-21",
+      "isPartOf": {
+        "@id": "https://mjwalsh.net/#website",
+      },
+      "mainEntity": {
+        "@id": "https://mjwalsh.net/#person",
+      },
+      "url": "https://mjwalsh.net/about",
+    },
+  ],
+}
+`;
