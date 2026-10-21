@@ -1,0 +1,108 @@
+---
+// Comments through Giscus (section 6.12), loaded only when the reader asks,
+// so nothing from giscus.app costs anything on first paint. The repository
+// values are public and live in src/lib/site.ts; until Michael fills them in,
+// the section says comments are coming.
+import { GISCUS } from "../../lib/site";
+
+interface Props {
+  term: string;
+}
+const { term } = Astro.props;
+const ready = Boolean(GISCUS.repo && GISCUS.repoId && GISCUS.categoryId);
+---
+
+<section class="comments" aria-labelledby="comments-title" data-comments>
+  <h2 id="comments-title" class="comments__title">
+    Comments
+  </h2>
+  {ready ? (
+    <div>
+      <p class="comments__text">
+        Comments run on GitHub Discussions through Giscus. Nothing loads until you ask, and
+        commenting means signing in to GitHub.
+      </p>
+      <button
+        type="button"
+        class="comments__load"
+        data-comments-load
+        data-repo={GISCUS.repo}
+        data-repo-id={GISCUS.repoId}
+        data-category={GISCUS.category}
+        data-category-id={GISCUS.categoryId}
+        data-term={term}
+      >
+        Load the comments
+      </button>
+      <div class="comments__frame" data-comments-frame />
+    </div>
+  ) : (
+    <p class="comments__text">
+      [MICHAEL: comments go live once the GitHub Discussions repository is connected; the values go
+      in src/lib/site.ts under GISCUS]
+    </p>
+  )}
+</section>
+
+<style>
+  .comments {
+    max-width: var(--measure);
+  }
+  .comments__title {
+    font-size: var(--step-2);
+  }
+  .comments__text {
+    margin-top: var(--space-2);
+    color: var(--fg-muted);
+  }
+  .comments__load {
+    margin-top: var(--space-4);
+    min-height: var(--target-primary);
+    padding: var(--space-2) var(--space-5);
+    border: 1.5px solid var(--fg);
+    border-radius: 2px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .comments__frame {
+    margin-top: var(--space-4);
+  }
+</style>
+
+<script>
+  import { announce } from "../../lib/ui/announce";
+  import { readPrefs, resolvedTheme } from "../../lib/prefs";
+
+  const button = document.querySelector<HTMLButtonElement>("[data-comments-load]");
+  const frame = document.querySelector<HTMLElement>("[data-comments-frame]");
+  button?.addEventListener("click", () => {
+    if (!frame) return;
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    const attrs: Record<string, string> = {
+      "data-repo": button.dataset.repo ?? "",
+      "data-repo-id": button.dataset.repoId ?? "",
+      "data-category": button.dataset.category ?? "",
+      "data-category-id": button.dataset.categoryId ?? "",
+      "data-mapping": "specific",
+      "data-term": button.dataset.term ?? "",
+      "data-strict": "1",
+      "data-reactions-enabled": "1",
+      "data-emit-metadata": "0",
+      "data-input-position": "top",
+      "data-theme": resolvedTheme(readPrefs()) === "dark" ? "dark" : "light",
+      "data-lang": "en",
+      "data-loading": "eager",
+    };
+    for (const [k, v] of Object.entries(attrs)) script.setAttribute(k, v);
+    frame.replaceChildren(script);
+    button.disabled = true;
+    button.textContent = "Comments loading";
+    announce("Loading the comments.");
+    window.mwTrack?.("comments_load");
+  });
+</script>

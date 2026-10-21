@@ -10,6 +10,11 @@ import Figure from "../components/content/Figure.astro";
 import PostCard from "../components/content/PostCard.astro";
 import Prose from "../components/content/Prose.astro";
 import TableOfContents from "../components/content/TableOfContents.astro";
+import Webmentions from "../components/content/Webmentions.astro";
+import AudioPlayer from "../components/islands/AudioPlayer.astro";
+import Comments from "../components/islands/Comments.astro";
+import SubscribeForm from "../components/islands/SubscribeForm.astro";
+import { getMentions } from "../lib/webmentions";
 import { mdxComponents } from "../components/content/mdx-components";
 import {
   formatDate,
@@ -38,6 +43,7 @@ const series = post.data.series ? seriesPosts(post.data.series, allPosts) : [];
 const index = series.findIndex((p) => p.id === post.id);
 const previous = index > 0 ? series[index - 1] : undefined;
 const next = index >= 0 ? series[index + 1] : undefined;
+const mentions = await getMentions(path);
 const seriesName = post.data.series
   ? post.data.series.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase())
   : undefined;
@@ -92,6 +98,13 @@ const jsonLd = [
           <a href={post.data.canonical}>{new URL(post.data.canonical).hostname}</a>.
         </p>
       )}
+      <AudioPlayer
+        src={post.data.audio?.src}
+        voice={post.data.audio?.voice}
+        duration={post.data.audio?.duration}
+        readSelector=".post__body"
+        title={post.data.title}
+      />
     </header>
 
     {post.data.hero && post.data.heroAlt && (
@@ -152,7 +165,10 @@ const jsonLd = [
         </nav>
       )}
       <slot name="after-content" />
+      <SubscribeForm />
       <AuthorBox />
+      <Webmentions mentions={mentions} />
+      {post.data.comments && <Comments term={path} />}
       {related.length > 0 && (
         <section class="post__related" aria-labelledby="related-title">
           <h2 id="related-title">Related</h2>

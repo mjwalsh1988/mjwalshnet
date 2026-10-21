@@ -74,5 +74,5 @@ export const manualPasses: ManualPass[] = [
 
 export const knownIssues: string[] = [
   "The NVDA pass of the interface primitives (dialog, listbox, disclosure) is still to be done by me; the automated checks stand in until then.",
-  "The screen reader view, listen mode and the reading controls are being built and are not yet on every page.",
+  "No chapter or post has a recording yet, so listen mode offers the synthetic browser voice only, labelled as such.",
 ];

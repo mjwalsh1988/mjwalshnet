@@ -10,6 +10,7 @@ import { getChapters, getNowEntries, getPosts, getProjects } from "../lib/conten
 import { STATIC_PAGES } from "../lib/pages";
 import { webPage } from "../lib/seo/jsonld";
 import { canonicalUrl } from "../lib/seo/meta";
+import { daysSince } from "../lib/metrics";
 
 const page = STATIC_PAGES.home;
 const posts = await getPosts();
@@ -17,6 +18,10 @@ const projects = (await getProjects()).filter((p) => p.data.status !== "this sit
 const chapters = await getChapters();
 const [now] = await getNowEntries();
 const buildLog = posts.filter((p) => p.data.category === "build-log");
+const latestDate = [...posts.filter((p) => !p.data.draft), ...chapters]
+  .map((e) => e.data.date.getTime())
+  .sort((a, b) => b - a)[0];
+const daysSinceLastPost = latestDate ? daysSince(new Date(latestDate)) : undefined;
 ---
 
 <Base
@@ -30,7 +35,9 @@ const buildLog = posts.filter((p) => p.data.category === "build-log");
   ]}
 >
   <Dark />
-  <Dusk projects={projects} />
+  <div class="band band--dark-dusk" aria-hidden="true"></div>
+  <Dusk projects={projects} daysSinceLastPost={daysSinceLastPost} />
+  <div class="band band--dusk-dawn" aria-hidden="true"></div>
   <Dawn posts={posts} buildLog={buildLog} chapters={chapters} />
   <Day now={now} />
 </Base>

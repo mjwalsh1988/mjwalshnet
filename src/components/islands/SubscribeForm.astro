@@ -1,0 +1,147 @@
+---
+// Newsletter form. Posts to /api/subscribe; works without JavaScript through
+// a redirect back with ?subscribe=, and in place with it.
+import Button from "../ui/Button.astro";
+
+interface Props {
+  heading?: string;
+}
+const { heading = "New posts by email" } = Astro.props;
+---
+
+<section class="subscribe" aria-labelledby="subscribe-title">
+  <h2 id="subscribe-title" class="subscribe__title">
+    {heading}
+  </h2>
+  <p class="subscribe__text">
+    [MICHAEL: one line on the newsletter: how often, what is in it, and that unsubscribing is one
+    click.]
+  </p>
+  <form
+    class="subscribe__form"
+    method="post"
+    action="/api/subscribe"
+    data-subscribe-form
+    novalidate
+  >
+    <div class="subscribe__row">
+      <label for="subscribe-email" class="visually-hidden">
+        Your email address
+      </label>
+      <input
+        id="subscribe-email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        required
+        placeholder="you@example.com"
+      />
+      <Button type="submit" variant="primary">
+        Subscribe
+      </Button>
+    </div>
+    <div class="subscribe__trap" aria-hidden="true">
+      <label for="subscribe-website">Leave this field empty</label>
+      <input id="subscribe-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+    <p class="subscribe__status" data-subscribe-status tabindex="-1"></p>
+  </form>
+</section>
+
+<style>
+  .subscribe {
+    padding: var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    max-width: var(--measure);
+  }
+  .subscribe__title {
+    font-size: var(--step-2);
+  }
+  .subscribe__text {
+    margin-top: var(--space-2);
+    color: var(--fg-muted);
+  }
+  .subscribe__form {
+    margin-top: var(--space-4);
+  }
+  .subscribe__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+  .subscribe__row input {
+    flex: 1 1 14rem;
+    min-height: var(--target-primary);
+    padding: var(--space-2) var(--space-4);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    background: var(--bg);
+    color: var(--fg);
+  }
+  .subscribe__trap {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .subscribe__status {
+    margin-top: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-left: 3px solid var(--fg-muted);
+    background: var(--bg-surface);
+  }
+  .subscribe__status:empty {
+    display: none;
+  }
+  .subscribe__status[data-kind="ok"] {
+    border-left-color: var(--ok);
+  }
+  .subscribe__status[data-kind="error"] {
+    border-left-color: var(--error);
+  }
+</style>
+
+<script>
+  import { announce } from "../../lib/ui/announce";
+
+  const form = document.querySelector<HTMLFormElement>("[data-subscribe-form]");
+  const status = document.querySelector<HTMLElement>("[data-subscribe-status]");
+  const setStatus = (kind: "ok" | "error", message: string) => {
+    if (!status) return;
+    status.dataset.kind = kind;
+    status.textContent = message;
+    status.focus();
+    announce(message, { assertive: kind === "error" });
+  };
+  const params = new URLSearchParams(location.search);
+  const back = params.get("subscribe");
+  if (back) setStatus(back === "ok" ? "ok" : "error", params.get("reason") ?? "");
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const email = String(data.get("email") ?? "").trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setStatus("error", "That email address does not look right.");
+      (form.elements.namedItem("email") as HTMLInputElement).focus();
+      return;
+    }
+    try {
+      const res = await fetch(form.action, {
+        method: "POST",
+        headers: { Accept: "application/json", "X-Requested-With": "fetch" },
+        body: data,
+      });
+      const result = (await res.json()) as { ok: boolean; message: string };
+      setStatus(result.ok ? "ok" : "error", result.message);
+      if (result.ok) {
+        form.reset();
+        window.mwTrack?.("newsletter_subscribe");
+      }
+    } catch {
+      setStatus("error", "I could not reach the newsletter service. Please try again later.");
+    }
+  });
+</script>

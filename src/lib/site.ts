@@ -43,6 +43,18 @@ export const SOCIAL = [
   { href: "https://gridironsites.com", label: "Gridiron Sites", rel: "me" },
 ] as const;
 
+/**
+ * Giscus (GitHub Discussions) settings for comments. Public values. Michael
+ * fills them from https://giscus.app once the repository has Discussions on;
+ * while any is empty the comments section says they are coming.
+ */
+export const GISCUS = {
+  repo: "",
+  repoId: "",
+  category: "Comments",
+  categoryId: "",
+};
+
 export function isActive(currentPath: string, href: string): boolean {
   if (href === "/") return currentPath === "/";
   return currentPath === href || currentPath.startsWith(`${href}/`);

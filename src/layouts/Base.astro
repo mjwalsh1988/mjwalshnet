@@ -9,6 +9,8 @@ import PrefsScript from "../components/site/PrefsScript.astro";
 import SkipLink from "../components/site/SkipLink.astro";
 import LiveRegion from "../components/ui/LiveRegion.astro";
 import Palette from "../components/islands/Palette.astro";
+import ReadingControls from "../components/islands/ReadingControls.astro";
+import ScreenReaderView from "../components/islands/ScreenReaderView.astro";
 import { graph, type JsonLd } from "../lib/seo/jsonld";
 import { resolveMeta, type PageMeta } from "../lib/seo/meta";
 import { SITE } from "../lib/site";
@@ -87,6 +89,7 @@ const jsonLdText = JSON.stringify(graph(jsonLd));
       href="/feed.json"
     />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="webmention" href="https://webmention.io/mjwalsh.net/webmention" />
     <script type="speculationrules" set:html={speculationRules} is:inline />
     <script type="application/ld+json" set:html={jsonLdText} is:inline />
     {meta.feeds?.map((feed) => (
@@ -101,9 +104,16 @@ const jsonLdText = JSON.stringify(graph(jsonLd));
       <slot />
     </main>
     <Footer>
-      <slot name="footer-controls" slot="controls" />
+      <Fragment slot="controls">
+        <ReadingControls />
+        <button type="button" class="sr-view-open" data-sr-view-open data-pending>
+          What my screen reader hears
+        </button>
+        <slot name="footer-controls" />
+      </Fragment>
     </Footer>
     <Palette />
+    <ScreenReaderView />
     <LiveRegion />
     <Analytics />
   </body>
@@ -113,5 +123,16 @@ const jsonLdText = JSON.stringify(graph(jsonLd));
   main {
     flex: 1 0 auto;
     outline: none;
+  }
+  .sr-view-open {
+    min-height: var(--target-primary);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
   }
 </style>

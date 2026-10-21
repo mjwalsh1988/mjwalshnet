@@ -175,3 +175,40 @@ Dark: eyebrow, the opening statement (placeholder) in display type, a quiet seco
 The Vercel adapter does not support `astro preview` once a route is on demand, and the build output moved to dist/client with the function entry under .vercel/output. scripts/serve.mjs serves the static files with gzip and the trailing-slash redirect from vercel.json, and hands everything else to the function entry, so the Playwright suites, Lighthouse CI, the PDF step and `npm run preview` all run against what Vercel will serve. The contact test exercises the real function.
 
 Tests: 163 Playwright tests across every route in both themes and both widths, plus keyboard and behaviour tests for the chapter rail, the resume formats, the contact form and the home page structure. Lighthouse: every route at 100 for accessibility, best practices and SEO, performance 97 to 99.
+
+## Phase 4: signature features (2026-10-21)
+
+### The dark-to-light scroll arc
+
+src/styles/home-arc.css. Every movement keeps its solid ground; two empty bands sit between the first three movements and show the blend. With motion allowed and scroll-driven animations supported, the page ground behind the bands moves from ink through dusk to paper with the scroll position (animation-timeline: scroll on the body). Otherwise each band is a static gradient between its neighbours and the page is four sections stepping from dark to light. Reduced motion, from the system or the footer toggle, turns the animation off. The footer now has its own solid ground, because on the home page it sits over the moving body ground. scripts/check-contrast.ts prints the band samples and confirms no text sits on a blend.
+
+- Decision: the animation timeline is set through a custom property. The CSS minifier folded animation-timeline into the animation shorthand, which browsers reject, and the arc silently did nothing until the test caught it.
+
+### What my screen reader hears
+
+src/lib/a11y/accessible-name.ts computes accessible names (aria-labelledby, aria-label, native labels, alt, text) and walks the live DOM into the stream a screen reader reads in browse mode: landmarks with their names and ends, headings with their level, links with current page, buttons with pressed or expanded state, images by alt text (decorative ones skipped), lists with counts, fields with labels, tables with their size, and the text in between. src/components/islands/ScreenReaderView.astro shows it in a dialog from a button in every footer and on the accessibility page, and never reads itself. The test checks the about page stream line by line.
+
+### Listen mode
+
+src/components/islands/AudioPlayer.astro: a native audio element with custom labelled controls (play and pause as a toggle, a seek slider with spoken position, speed, mute), the voice source in the label ("Read by Michael", "Read by a voice actor", "Synthetic voice"), keyboard shortcuts (K or Space, J and L, comma and period, M) that stay out of form fields, and the transcript being the page. Without a recording it offers the browser's own voice through the Web Speech API, labelled synthetic and "not me". Posts and chapters both carry it.
+
+### Charts and long descriptions
+
+src/components/content/Chart.astro draws a bar chart as an SVG with a title and description and puts the same numbers in a table under "Show the data", with the source and date. Available in every MDX file.
+
+### Live numbers
+
+src/lib/metrics reads site_metrics_public at build through the paging helper (fetchAll in src/lib/server/supabase.ts, range() in pages of 1000 ordered by key) and falls back to src/data/metrics-snapshot.json with one log line. src/pages/api/metrics.ts is the cron function: bearer CRON_SECRET only, Search Console clicks and impressions for ffbeacon.com through a service-account JWT signed with node:crypto, upsert into site_metrics, then a POST to the deploy hook. scripts/snapshot-metrics.ts refreshes the committed snapshot. The home page shows the strip with "days since the last post" computed at build, and project stats can point at a metric key.
+
+- Decision: "Sleeper leagues synced this season" has no source this site can reach (it lives in FF Beacon's database and no key for it is in the plan's list), so the function does not fabricate it. The handoff lists it.
+- The snapshot holds two real figures: the 69,885 impressions from the plan, flagged for a re-pull, and the test count from this repository.
+
+### Reading controls
+
+src/components/islands/ReadingControls.astro: a Reading button in every footer opens a dialog with text size (100 to 200 percent), looser line spacing, dyslexia-friendly spacing, high contrast, dark theme and reduced motion, applied on change through the preference store and persisted. Events fire for text size, high contrast, dyslexia spacing and reset. The test confirms no horizontal scrolling at 200 percent on a 360 pixel screen, which found that a long heading word could overflow; headings and paragraphs may now break long words.
+
+### Newsletter, comments, webmentions
+
+/api/subscribe posts to Buttondown and mirrors the address into the subscribers table; without the key it answers that the newsletter is not live yet. The form sits on the blog index and under every post. Comments (src/components/islands/Comments.astro) load Giscus only on a click, with the theme matched; until the repository values in src/lib/site.ts are filled the section says comments are coming. Webmentions are fetched from webmention.io at build with a five-second timeout and rendered as counts and a list; the head carries the webmention link.
+
+Tests: 174 Playwright tests, 36 unit tests, HTML validation clean, Lighthouse at 100 for accessibility, best practices and SEO on every route, performance 99 to 100, every route under 2.0 s LCP with the compressing local server.

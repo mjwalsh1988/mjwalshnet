@@ -4,6 +4,7 @@ import { render } from "astro:content";
 import Base from "../../layouts/Base.astro";
 import ChapterRail from "../../components/content/ChapterRail.astro";
 import Prose from "../../components/content/Prose.astro";
+import AudioPlayer from "../../components/islands/AudioPlayer.astro";
 import { mdxComponents } from "../../components/content/mdx-components";
 import {
   chapterPath,
@@ -83,7 +84,13 @@ void postReadingTime;
           </span>
         )}
       </p>
-      <slot name="listen" />
+      <AudioPlayer
+        src={chapter.data.audio?.src}
+        voice={chapter.data.audio?.voice}
+        duration={chapter.data.audio?.duration}
+        readSelector=".chapter__body"
+        title={chapter.data.title}
+      />
     </header>
 
     <div class="chapter__layout">
