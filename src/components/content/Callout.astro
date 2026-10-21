@@ -1,0 +1,46 @@
+---
+// A short aside inside prose. Three kinds, each with a visible label so the
+// meaning never rests on color alone. "summary" is the plain-language
+// summary at the top of long technical posts (section 9.3).
+interface Props {
+  kind?: "note" | "warning" | "summary";
+  title?: string;
+}
+const { kind = "note", title } = Astro.props;
+const labels = { note: "Note", warning: "Take care", summary: "In plain words" };
+const heading = title ?? labels[kind];
+---
+
+<aside class:list={["callout", `callout--${kind}`]} aria-label={heading}>
+  <p class="callout__label">{heading}</p>
+  <div class="callout__body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .callout {
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    background: var(--bg-surface);
+    border-radius: 2px;
+  }
+  .callout--warning {
+    border-left-color: var(--error);
+  }
+  .callout--summary {
+    border-left-color: var(--fg);
+  }
+  .callout__label {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    margin-bottom: var(--space-2);
+  }
+  .callout__body > :global(* + *) {
+    margin-top: var(--space-3);
+  }
+</style>

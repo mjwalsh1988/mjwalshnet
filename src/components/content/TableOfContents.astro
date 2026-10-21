@@ -1,0 +1,76 @@
+---
+// Table of contents from render().headings: a nav landmark with a heading,
+// listing h2 and h3 as nested lists. Omitted when there are fewer than three.
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+  title?: string;
+}
+const { headings, title = "On this page" } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+type Node = { heading: MarkdownHeading; children: MarkdownHeading[] };
+const tree: Node[] = [];
+for (const h of items) {
+  if (h.depth === 2 || tree.length === 0) tree.push({ heading: h, children: [] });
+  else tree[tree.length - 1]!.children.push(h);
+}
+---
+
+{items.length >= 3 && (
+  <nav class="toc" aria-labelledby="toc-title">
+    <p id="toc-title" class="toc__title eyebrow">
+      {title}
+    </p>
+    <ol class="toc__list">
+      {tree.map((node) => (
+        <li>
+          <a href={`#${node.heading.slug}`}>{node.heading.text}</a>
+          {node.children.length > 0 && (
+            <ol class="toc__list toc__list--nested">
+              {node.children.map((child) => (
+                <li>
+                  <a href={`#${child.slug}`}>{child.text}</a>
+                </li>
+              ))}
+            </ol>
+          )}
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}
+
+<style>
+  .toc {
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-size: var(--step--1);
+  }
+  .toc__title {
+    margin-bottom: var(--space-3);
+  }
+  .toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-1);
+  }
+  .toc__list--nested {
+    margin-top: var(--space-1);
+    padding-left: var(--space-4);
+  }
+  .toc a {
+    display: inline-block;
+    padding-block: var(--space-1);
+    color: var(--fg);
+    text-decoration: none;
+    min-height: var(--target-min);
+  }
+  .toc a:hover {
+    text-decoration: underline;
+  }
+</style>

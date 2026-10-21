@@ -1,0 +1,26 @@
+---
+// "Describe this image" (section 6.5): a long description under a native
+// disclosure, visible to everyone. Charts pass their data table through the
+// default slot instead of, or as well as, the text.
+import Disclosure from "../ui/Disclosure.astro";
+
+interface Props {
+  /** The long description in full sentences. */
+  text?: string;
+  label?: string;
+  id?: string;
+}
+const { text, label = "Describe this image", id } = Astro.props;
+---
+
+<Disclosure summary={label} variant="plain" class="describe" id={id}>
+  {text && <p>{text}</p>}
+  <slot />
+</Disclosure>
+
+<style>
+  .describe {
+    margin-top: var(--space-2);
+    font-size: var(--step--1);
+  }
+</style>
