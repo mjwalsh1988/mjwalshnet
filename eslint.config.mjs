@@ -11,6 +11,10 @@ export default defineConfig(
   eslintPluginAstro.configs.recommended,
   eslintPluginAstro.configs["jsx-a11y-strict"],
   {
+    files: ["**/*.cjs"],
+    rules: { "@typescript-eslint/no-require-imports": "off" },
+  },
+  {
     rules: {
       "@typescript-eslint/consistent-type-imports": "error",
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
