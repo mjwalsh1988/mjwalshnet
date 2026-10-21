@@ -36,3 +36,9 @@ src/styles/tokens.css holds the raw palette (ink, paper, lamp, lamp-dim, ember, 
 - Decision: Content Security Policy is on through Astro's security.csp with hashes for scripts. The style directive allows inline because Expressive Code and Astro's font component write style attributes, which hashes cannot cover. frame-ancestors stays out of the meta tag (browsers ignore it there) and X-Frame-Options in vercel.json covers framing.
 - Decision: Astro's own Shiki highlighter is switched off because Expressive Code renders every code block; this also silences the CSP warning Astro prints about Shiki.
 - Decision: the preference store uses one localStorage key, mw-prefs, and data attributes on html rather than classes, so CSS can address each setting independently.
+
+### Phase 1: fonts
+
+Fraunces, Atkinson Hyperlegible Next and JetBrains Mono are self-hosted through the Astro Fonts API from the Google provider, Latin subset, variable weights, with metric-matched fallbacks generated from Georgia, Arial and Consolas. The body and display faces are preloaded from the base layout.
+
+- Decision: Fraunces ships in the upright style only. With both italics the four families came to 194 KB of woff2 against the plan's 180 KB budget; dropping the display italic brings the total to 149 KB. Atkinson keeps its italic for emphasis in prose.

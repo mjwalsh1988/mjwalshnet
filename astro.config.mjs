@@ -45,7 +45,7 @@ export default defineConfig({
       name: "Fraunces",
       cssVariable: "--font-display",
       weights: ["300 900"],
-      styles: ["normal", "italic"],
+      styles: ["normal"],
       subsets: ["latin"],
       fallbacks: ["Georgia", "serif"],
     },
