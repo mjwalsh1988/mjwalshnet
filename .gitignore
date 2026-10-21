@@ -26,3 +26,12 @@ desktop.ini
 # Supabase CLI local state
 supabase/.temp/
 supabase/.branches/
+
+# Astro and Vercel build state
+.astro/
+.vercel/
+
+# Test output
+test-results/
+playwright-report/
+.lighthouseci/

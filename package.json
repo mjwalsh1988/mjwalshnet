@@ -5,6 +5,24 @@
   "type": "module",
   "description": "Source for mjwalsh.net.",
   "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "postbuild": "node scripts/postbuild.mjs",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check": "astro check",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:a11y": "playwright test tests/a11y",
+    "test:e2e": "playwright test tests/e2e",
+    "test:all": "npm run test && npm run test:a11y && npm run test:e2e",
+    "check:writing": "tsx scripts/check-writing.ts",
+    "check:contrast": "tsx scripts/check-contrast.ts",
+    "check:html": "html-validate \"dist/**/*.html\"",
+    "lhci": "lhci autorun",
+    "verify": "npm run check:writing && npm run lint && npm run check && npm run test",
     "db:new": "supabase migration new",
     "db:push": "supabase db push",
     "db:list": "supabase migration list",
@@ -12,6 +30,37 @@
     "db:types": "supabase gen types typescript --linked --schema public > supabase/types/database.ts"
   },
   "devDependencies": {
-    "supabase": "2.121.0"
+    "@astrojs/check": "^0.9.11",
+    "@axe-core/playwright": "^4.14.0",
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.64.1",
+    "eslint": "^10.13.0",
+    "eslint-plugin-astro": "^3.2.1",
+    "html-validate": "^11.17.0",
+    "prettier": "^3.9.10",
+    "prettier-plugin-astro": "^1.1.1",
+    "supabase": "2.121.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^5.0.5"
+  },
+  "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.4",
+    "@astrojs/mdx": "^8.1.0",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "@astrojs/vercel": "^11.0.16",
+    "@supabase/supabase-js": "^2.118.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.4.1",
+    "astro-expressive-code": "^0.44.2",
+    "pagefind": "^1.5.2",
+    "satori": "^0.63.2",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.3"
+  },
+  "engines": {
+    "node": ">=22.22.0"
   }
 }
