@@ -28,7 +28,31 @@ const current = Astro.url.pathname.replace(/\/$/, "") || "/";
         ))}
       </ul>
     </nav>
-    <ThemeToggle />
+    <div class="site-header__controls">
+      <button type="button" class="site-header__search" data-palette-open>
+        <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
+          <circle
+            cx="6.5"
+            cy="6.5"
+            r="4.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+          ></circle>
+          <path
+            d="M10 10l4 4"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+        <span>Search</span>
+        <kbd class="site-header__kbd" aria-hidden="true">
+          /
+        </kbd>
+      </button>
+      <ThemeToggle />
+    </div>
   </div>
 </header>
 
@@ -36,6 +60,32 @@ const current = Astro.url.pathname.replace(/\/$/, "") || "/";
   .site-header {
     padding-block: var(--space-4);
     border-bottom: 1px solid var(--border);
+  }
+  .site-header__controls {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+  .site-header__search {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--target-primary);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+  .site-header__kbd {
+    padding: 0 0.4em;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-size: 0.85em;
+    color: var(--fg-muted);
   }
   .site-header__row {
     display: flex;

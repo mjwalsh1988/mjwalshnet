@@ -8,12 +8,14 @@ import Header from "../components/site/Header.astro";
 import PrefsScript from "../components/site/PrefsScript.astro";
 import SkipLink from "../components/site/SkipLink.astro";
 import LiveRegion from "../components/ui/LiveRegion.astro";
+import Palette from "../components/islands/Palette.astro";
+import { graph, type JsonLd } from "../lib/seo/jsonld";
 import { resolveMeta, type PageMeta } from "../lib/seo/meta";
 import { SITE } from "../lib/site";
 
 interface Props extends PageMeta {
-  /** JSON-LD objects for the page. The Person graph is added by the layout. */
-  jsonLd?: Record<string, unknown>[];
+  /** JSON-LD nodes for the page. The Person and WebSite nodes are added by the layout. */
+  jsonLd?: JsonLd[];
   /** "dark" on the home page, whose first movement is on ink. */
   ground?: "default" | "dark";
   bodyClass?: string;
@@ -34,7 +36,7 @@ const speculationRules = JSON.stringify({
 Astro.csp?.insertScriptHash(
   `sha256-${createHash("sha256").update(speculationRules).digest("base64")}`,
 );
-const jsonLdText = jsonLd.length ? JSON.stringify(jsonLd.length === 1 ? jsonLd[0] : jsonLd) : null;
+const jsonLdText = JSON.stringify(graph(jsonLd));
 ---
 
 <!doctype html>
@@ -51,7 +53,7 @@ const jsonLdText = jsonLd.length ? JSON.stringify(jsonLd.length === 1 ? jsonLd[0
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141210" />
     <PrefsScript />
     <Font cssVariable="--font-body" preload={[{ weight: "200 800", style: "normal" }]} />
-    <Font cssVariable="--font-display" preload={[{ weight: "300 900", style: "normal" }]} />
+    <Font cssVariable="--font-display" preload={[{ weight: "500", style: "normal" }]} />
     <Font cssVariable="--font-mono" />
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:type" content={meta.type} />
@@ -86,18 +88,22 @@ const jsonLdText = jsonLd.length ? JSON.stringify(jsonLd.length === 1 ? jsonLd[0
     />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <script type="speculationrules" set:html={speculationRules} is:inline />
-    {jsonLdText && <script type="application/ld+json" set:html={jsonLdText} is:inline />}
+    <script type="application/ld+json" set:html={jsonLdText} is:inline />
+    {meta.feeds?.map((feed) => (
+      <link rel="alternate" type="application/rss+xml" title={feed.title} href={feed.href} />
+    ))}
     <slot name="head" />
   </head>
   <body class={bodyClass}>
     <SkipLink />
     <Header ground={ground} />
-    <main id="main" tabindex="-1">
+    <main id="main" tabindex="-1" data-pagefind-body={meta.noindex ? undefined : ""}>
       <slot />
     </main>
     <Footer>
       <slot name="footer-controls" slot="controls" />
     </Footer>
+    <Palette />
     <LiveRegion />
     <Analytics />
   </body>

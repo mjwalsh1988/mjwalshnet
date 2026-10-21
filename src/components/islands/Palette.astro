@@ -1,0 +1,294 @@
+---
+// Command palette (section 6.7): Ctrl+K, Cmd+K or / opens it; ? goes to the
+// shortcuts page. A dialog with a combobox over a listbox. Results are page
+// actions (go to a page, switch the theme) plus full-text search through the
+// Pagefind index built at deploy. The result count is announced politely.
+import Dialog from "../ui/Dialog.astro";
+---
+
+<Dialog id="palette" title="Search and commands" class="palette">
+  <div class="palette__form" role="search" data-palette-form>
+    <label for="palette-input" class="visually-hidden">
+      Search posts, projects and pages
+    </label>
+    <input
+      id="palette-input"
+      class="palette__input"
+      type="search"
+      autocomplete="off"
+      spellcheck="false"
+      placeholder="Search, or type a page name"
+      data-dialog-focus
+    />
+  </div>
+  <p class="palette__hint" id="palette-hint">
+    Arrow keys move, Enter opens, Escape closes.
+  </p>
+  <ul
+    id="palette-results"
+    class="palette__results"
+    aria-label="Results"
+    aria-describedby="palette-hint"
+  ></ul>
+  <p class="palette__status" data-palette-status aria-hidden="true"></p>
+</Dialog>
+
+<style>
+  .palette {
+    width: min(100% - 2rem, 36rem);
+  }
+  .palette__input {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    background: var(--bg);
+    color: var(--fg);
+    font-size: var(--step-0);
+  }
+  .palette__hint {
+    margin-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  .palette__results {
+    list-style: none;
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    max-height: 50dvh;
+    overflow: auto;
+  }
+  .palette__results:empty {
+    display: none;
+  }
+  .palette__results [role="option"] {
+    display: grid;
+    gap: 2px;
+    padding: var(--space-3) var(--space-3);
+    min-height: var(--target-primary);
+    border-top: 1px solid var(--border);
+    cursor: default;
+  }
+  .palette__results [role="option"][aria-selected="true"] {
+    background: var(--bg-surface);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+  .palette__results .palette__kind {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-eyebrow);
+  }
+  .palette__results .palette__excerpt {
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  .palette__results .palette__excerpt :global(mark) {
+    background: transparent;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .palette__status {
+    margin-top: var(--space-3);
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+</style>
+
+<script>
+  import { announce } from "../../lib/ui/announce";
+  import { openDialog } from "../../lib/ui/dialog";
+  import { createListbox } from "../../lib/ui/listbox";
+  import { readPrefs, resolvedTheme, writePrefs } from "../../lib/prefs";
+  import { PRIMARY_NAV, FOOTER_NAV } from "../../lib/site";
+
+  type Action = { kind: string; title: string; excerpt?: string; run: () => void };
+  type SearchResult = { url: string; meta: { title?: string }; excerpt: string };
+  type SearchLib = {
+    search: (q: string) => Promise<{ results: { data: () => Promise<SearchResult> }[] }>;
+  };
+
+  function setup(
+    dialog: HTMLDialogElement,
+    input: HTMLInputElement,
+    list: HTMLElement,
+    status: HTMLElement,
+    form: HTMLElement,
+  ) {
+    const pages: Action[] = [...PRIMARY_NAV, ...FOOTER_NAV, { href: "/", label: "Home" }].map(
+      (item) => ({
+        kind: "Page",
+        title: item.label,
+        run: () => {
+          location.href = item.href;
+        },
+      }),
+    );
+    const commands: Action[] = [
+      {
+        kind: "Command",
+        title: "Switch theme",
+        excerpt: "Light or dark",
+        run: () => {
+          writePrefs({ theme: resolvedTheme(readPrefs()) === "dark" ? "light" : "dark" });
+          dialog.close();
+        },
+      },
+      {
+        kind: "Command",
+        title: "Keyboard shortcuts",
+        run: () => {
+          location.href = "/keyboard";
+        },
+      },
+    ];
+
+    let actions: Action[] = [];
+    let searchLib: SearchLib | null | undefined;
+    let searchToken = 0;
+
+    async function loadSearch(): Promise<SearchLib | null> {
+      if (searchLib !== undefined) return searchLib;
+      try {
+        // The index exists only in a built site; without it the palette offers page actions.
+        const url = `${location.origin}/pagefind/pagefind.js`;
+        searchLib = (await import(/* @vite-ignore */ url)) as SearchLib;
+      } catch {
+        searchLib = null;
+      }
+      return searchLib;
+    }
+
+    const listbox = createListbox({
+      list,
+      input,
+      onSelect: (_option, index) => actions[index]?.run(),
+    });
+
+    function renderActions(next: Action[]) {
+      actions = next;
+      list.replaceChildren(
+        ...actions.map((a, i) => {
+          const li = document.createElement("li");
+          li.setAttribute("role", "option");
+          li.id = `palette-option-${i}`;
+          li.setAttribute("aria-selected", "false");
+          const kind = document.createElement("span");
+          kind.className = "palette__kind";
+          kind.textContent = a.kind;
+          const title = document.createElement("span");
+          title.textContent = a.title;
+          li.append(kind, title);
+          if (a.excerpt) {
+            const ex = document.createElement("span");
+            ex.className = "palette__excerpt";
+            // Pagefind excerpts are its own HTML with <mark> around matches.
+            ex.innerHTML = a.excerpt;
+            li.append(ex);
+          }
+          return li;
+        }),
+      );
+      listbox.refresh();
+      if (actions.length) listbox.setActive(0);
+      const message =
+        actions.length === 0
+          ? "No results."
+          : `${actions.length} result${actions.length === 1 ? "" : "s"}.`;
+      status.textContent = message;
+      announce(message);
+    }
+
+    async function update() {
+      const q = input.value.trim();
+      const token = (searchToken += 1);
+      const lower = q.toLowerCase();
+      const local = [...commands, ...pages].filter(
+        (a) => !q || a.title.toLowerCase().includes(lower),
+      );
+      if (q.length < 2) {
+        renderActions(local);
+        return;
+      }
+      const lib = await loadSearch();
+      if (token !== searchToken) return;
+      if (!lib) {
+        renderActions(local);
+        status.textContent = `${local.length} result${local.length === 1 ? "" : "s"}. Full-text search is built at deploy.`;
+        return;
+      }
+      const res = await lib.search(q);
+      if (token !== searchToken) return;
+      const found = await Promise.all(res.results.slice(0, 8).map((r) => r.data()));
+      const hits: Action[] = found.map((d) => ({
+        kind: "Search",
+        title: d.meta.title ?? d.url,
+        excerpt: d.excerpt,
+        run: () => {
+          // Pagefind derives URLs from file paths, with a trailing slash the site never uses.
+          location.href = d.url.length > 1 ? d.url.replace(/\/$/, "") : d.url;
+        },
+      }));
+      renderActions([...hits, ...local]);
+    }
+
+    input.addEventListener("input", () => void update());
+    // Enter with no option active opens the first result.
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && listbox.getActive() < 0) {
+        e.preventDefault();
+        actions[0]?.run();
+      }
+    });
+    form.setAttribute("aria-label", "Search");
+    dialog.addEventListener("mw:dialog-open", () => {
+      window.mwTrack?.("palette_open");
+      void update();
+    });
+
+    function open(query = "") {
+      input.value = query;
+      openDialog(dialog);
+      if (query) void update();
+    }
+
+    for (const button of document.querySelectorAll<HTMLElement>("[data-palette-open]")) {
+      button.addEventListener("click", () => open());
+    }
+
+    // Deep link from the WebSite search action: /blog?q=term opens the palette with the term.
+    const q = new URLSearchParams(location.search).get("q");
+    if (q) open(q);
+
+    document.addEventListener("keydown", (event) => {
+      const target = event.target as HTMLElement | null;
+      const typing =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target?.isContentEditable;
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        if (dialog.open) dialog.close();
+        else open();
+        return;
+      }
+      if (typing || event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.key === "/") {
+        event.preventDefault();
+        open();
+      } else if (event.key === "?") {
+        event.preventDefault();
+        location.href = "/keyboard";
+      }
+    });
+  }
+
+  const dialog = document.getElementById("palette") as HTMLDialogElement | null;
+  const input = document.getElementById("palette-input") as HTMLInputElement | null;
+  const list = document.getElementById("palette-results");
+  const status = document.querySelector<HTMLElement>("[data-palette-status]");
+  const form = document.querySelector<HTMLElement>("[data-palette-form]");
+  if (dialog && input && list && status && form) setup(dialog, input, list, status, form);
+</script>

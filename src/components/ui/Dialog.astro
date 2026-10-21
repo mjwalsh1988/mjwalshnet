@@ -25,7 +25,7 @@ const {
 
 <dialog id={id} class:list={["dialog", className]} aria-labelledby={`${id}-title`} {...rest}>
   <div class="dialog__frame">
-    <header class="dialog__header">
+    <div class="dialog__header">
       <h2 id={`${id}-title`} class:list={["dialog__title", { "visually-hidden": hideTitle }]}>
         {title}
       </h2>
@@ -33,7 +33,7 @@ const {
         <span aria-hidden="true">&times;</span>
         <span class="visually-hidden">{closeLabel}</span>
       </button>
-    </header>
+    </div>
     <div class="dialog__body">
       <slot />
     </div>

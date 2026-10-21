@@ -16,6 +16,8 @@ export type PageMeta = {
   noindex?: boolean;
   publishedTime?: string;
   modifiedTime?: string;
+  /** Extra feed links for the head (a category page adds its own feed). */
+  feeds?: { title: string; href: string }[];
 };
 
 export type ResolvedMeta = {
@@ -29,6 +31,7 @@ export type ResolvedMeta = {
   noindex: boolean;
   publishedTime?: string;
   modifiedTime?: string;
+  feeds?: { title: string; href: string }[];
 };
 
 export function canonicalUrl(path: string): string {
@@ -63,6 +66,7 @@ export function resolveMeta(meta: PageMeta): ResolvedMeta {
     noindex: meta.noindex ?? false,
     publishedTime: meta.publishedTime,
     modifiedTime: meta.modifiedTime,
+    feeds: meta.feeds,
   };
 }
 
