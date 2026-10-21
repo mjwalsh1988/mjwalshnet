@@ -1,0 +1,70 @@
+---
+// One post in a list. The eyebrow carries real information (category and
+// reading time), the title is the link, the description follows. No icon, no
+// box, no shadow: a rule above, type below.
+import { formatDate, isoDate, postPath, postReadingTime, type Post } from "../../lib/content";
+import { categoryBySlug, categoryPath } from "../../lib/taxonomy";
+
+interface Props {
+  post: Post;
+  headingLevel?: "h2" | "h3";
+  showCategory?: boolean;
+}
+const { post, headingLevel = "h3", showCategory = true } = Astro.props;
+const Heading = headingLevel;
+const category = categoryBySlug(post.data.category);
+const time = postReadingTime(post);
+---
+
+<article class="post-card">
+  <p class="post-card__meta eyebrow">
+    {showCategory && <a href={categoryPath(category.slug)}>{category.name}</a>}
+    <time datetime={isoDate(post.data.date)}>{formatDate(post.data.date)}</time>
+    <span>{time.label}</span>
+    {post.data.draft && <span class="post-card__draft">Draft</span>}
+  </p>
+  <Heading class="post-card__title">
+    <a href={postPath(post)}>{post.data.title}</a>
+  </Heading>
+  <p class="post-card__description">{post.data.description}</p>
+</article>
+
+<style>
+  .post-card {
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+  .post-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin-bottom: var(--space-2);
+  }
+  .post-card__meta a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .post-card__meta a:hover {
+    text-decoration: underline;
+  }
+  .post-card__draft {
+    color: var(--error);
+  }
+  .post-card__title {
+    font-size: var(--step-2);
+  }
+  .post-card__title a {
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .post-card__title a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 0.06em;
+    text-underline-offset: 0.12em;
+  }
+  .post-card__description {
+    margin-top: var(--space-2);
+    max-width: var(--measure);
+    color: var(--fg-muted);
+  }
+</style>

@@ -1,0 +1,82 @@
+---
+// The author box under every post (section 10.2): the one place the name is
+// in the third person, followed by a first-person line, linking to /about and
+// the profiles with rel="me".
+import { Picture } from "astro:assets";
+import portrait from "../../assets/img/michael-walsh.jpg";
+import { SOCIAL } from "../../lib/site";
+---
+
+<aside class="author-box" aria-labelledby="author-box-title">
+  <Picture
+    class="author-box__photo"
+    src={portrait}
+    alt="Michael Walsh smiling, outdoors by a river in autumn."
+    widths={[96, 192]}
+    sizes="96px"
+    formats={["avif", "webp"]}
+    loading="lazy"
+  />
+  <div>
+    <p id="author-box-title" class="author-box__name">
+      Written by Michael Walsh
+    </p>
+    <p class="author-box__line">
+      I am a full-stack developer in Fort Wayne, Indiana. I lost my sight at 34 and I still ship.
+      <a href="/about">More about me</a>.
+    </p>
+    <ul class="author-box__links" aria-label="Michael elsewhere">
+      {SOCIAL.map((s) => (
+        <li>
+          <a href={s.href} rel={`${s.rel} noopener`}>
+            {s.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</aside>
+
+<style>
+  .author-box {
+    display: flex;
+    gap: var(--space-5);
+    align-items: flex-start;
+    padding: var(--space-5) 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .author-box :global(.author-box__photo) {
+    flex: none;
+    width: 96px;
+    height: 96px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  .author-box__name {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+  }
+  .author-box__line {
+    margin-top: var(--space-2);
+    color: var(--fg-muted);
+  }
+  .author-box__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    list-style: none;
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    font-size: var(--step--1);
+  }
+  .author-box__links a {
+    display: inline-block;
+    min-height: var(--target-min);
+  }
+  @media (width < 32rem) {
+    .author-box {
+      flex-direction: column;
+    }
+  }
+</style>

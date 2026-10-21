@@ -1,0 +1,66 @@
+---
+// The nine categories under their three headings (section 4.2), with post
+// counts. Used on the blog index and as the "filter" on category pages.
+import { CATEGORIES, CATEGORY_GROUPS, categoryPath } from "../../lib/taxonomy";
+
+interface Props {
+  counts: Record<string, number>;
+  current?: string;
+}
+const { counts, current } = Astro.props;
+---
+
+<nav class="category-groups" aria-label="Categories">
+  {CATEGORY_GROUPS.map((group) => (
+    <div class="category-groups__group">
+      <p class="eyebrow">{group.title}</p>
+      <ul>
+        {CATEGORIES.filter((c) => c.group === group.id).map((c) => (
+          <li>
+            <a href={categoryPath(c.slug)} aria-current={current === c.slug ? "page" : undefined}>
+              {c.name}
+              <span class="category-groups__count">{counts[c.slug] ?? 0}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</nav>
+
+<style>
+  .category-groups {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  }
+  .category-groups ul {
+    list-style: none;
+    margin: var(--space-2) 0 0;
+    padding: 0;
+  }
+  .category-groups a {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-height: var(--target-primary);
+    align-items: center;
+    padding-block: var(--space-1);
+    color: var(--fg);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .category-groups a:hover {
+    color: var(--accent);
+  }
+  .category-groups a[aria-current="page"] {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+  }
+  .category-groups__count {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+</style>

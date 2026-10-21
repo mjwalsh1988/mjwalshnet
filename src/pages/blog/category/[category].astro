@@ -1,0 +1,166 @@
+---
+import Base from "../../../layouts/Base.astro";
+import CategoryGroups from "../../../components/content/CategoryGroups.astro";
+import PostCard from "../../../components/content/PostCard.astro";
+import {
+  chapterPath,
+  formatDate,
+  getChapters,
+  getPosts,
+  isoDate,
+  type Chapter,
+  type Post,
+} from "../../../lib/content";
+import { breadcrumbs, webPage } from "../../../lib/seo/jsonld";
+import { canonicalUrl } from "../../../lib/seo/meta";
+import {
+  CATEGORIES,
+  categoryFeedPath,
+  categoryPath,
+  MEMOIR_SERIES,
+  type Category,
+} from "../../../lib/taxonomy";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  const chapters = await getChapters();
+  return CATEGORIES.map((category) => ({
+    params: { category: category.slug },
+    props: {
+      category,
+      posts: posts.filter((p) => p.data.category === category.slug),
+      chapters: category.slug === MEMOIR_SERIES ? chapters : [],
+      counts: Object.fromEntries(
+        CATEGORIES.map((c) => [
+          c.slug,
+          posts.filter((p) => p.data.category === c.slug).length +
+            (c.slug === MEMOIR_SERIES ? chapters.length : 0),
+        ]),
+      ),
+    },
+  }));
+}
+
+interface Props {
+  category: Category;
+  posts: Post[];
+  chapters: Chapter[];
+  counts: Record<string, number>;
+}
+const { category, posts, chapters, counts } = Astro.props;
+const path = categoryPath(category.slug);
+const description = category.description.startsWith("[MICHAEL")
+  ? category.description
+  : category.description.slice(0, 160);
+---
+
+<Base
+  title={category.name}
+  description={description}
+  path={path}
+  feeds={[{ title: `Michael Walsh, ${category.name}`, href: categoryFeedPath(category.slug) }]}
+  jsonLd={[
+    webPage({ url: canonicalUrl(path), title: category.name, description }),
+    breadcrumbs([
+      { name: "Blog", url: canonicalUrl("/blog") },
+      { name: category.name, url: canonicalUrl(path) },
+    ]),
+  ]}
+>
+  <div class="wrap category-page">
+    <header class="category-page__header">
+      <p class="eyebrow">
+        <a href="/blog">Blog</a>
+      </p>
+      <h1>{category.name}</h1>
+      <p class="category-page__lead measure">{category.description}</p>
+      <p class="eyebrow category-page__feed">
+        <a href={categoryFeedPath(category.slug)}>RSS feed for {category.name}</a>
+      </p>
+    </header>
+
+    <div class="category-page__layout">
+      <section aria-labelledby="posts-title" class="category-page__posts">
+        <h2 id="posts-title" class="visually-hidden">
+          Posts in {category.name}
+        </h2>
+        {chapters.map((chapter) => (
+          <article class="chapter-card">
+            <p class="eyebrow">
+              Chapter {chapter.data.chapter}
+              <time datetime={isoDate(chapter.data.date)}>{formatDate(chapter.data.date)}</time>
+            </p>
+            <h3>
+              <a href={chapterPath(chapter)}>{chapter.data.title}</a>
+            </h3>
+            <p class="chapter-card__summary">{chapter.data.summary}</p>
+          </article>
+        ))}
+        {posts.map((post) => (
+          <PostCard post={post} showCategory={false} />
+        ))}
+        {posts.length === 0 && chapters.length === 0 && (
+          <p>Nothing here yet. The first post in this category arrives at launch.</p>
+        )}
+      </section>
+      <aside class="category-page__aside" aria-label="Other categories">
+        <CategoryGroups counts={counts} current={category.slug} />
+      </aside>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .category-page {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .category-page__header h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .category-page__lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .category-page__feed {
+    margin-top: var(--space-4);
+  }
+  .category-page__layout {
+    margin-top: var(--space-7);
+    display: grid;
+    gap: var(--space-7);
+  }
+  .chapter-card {
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+  .chapter-card .eyebrow {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-2);
+  }
+  .chapter-card h3 {
+    font-size: var(--step-2);
+  }
+  .chapter-card h3 a {
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .chapter-card h3 a:hover {
+    text-decoration: underline;
+  }
+  .chapter-card__summary {
+    margin-top: var(--space-2);
+    color: var(--fg-muted);
+    max-width: var(--measure);
+  }
+  @media (width >= 64rem) {
+    .category-page__layout {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+    }
+    .category-page__aside :global(.category-groups) {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

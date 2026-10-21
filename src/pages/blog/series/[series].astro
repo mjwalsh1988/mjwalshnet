@@ -1,0 +1,141 @@
+---
+// A multi-part series. The memoir series lists the story chapters; any other
+// series lists its posts in seriesOrder.
+import Base from "../../../layouts/Base.astro";
+import PostCard from "../../../components/content/PostCard.astro";
+import {
+  allSeries,
+  chapterPath,
+  formatDate,
+  getChapters,
+  getPosts,
+  isoDate,
+  seriesPosts,
+  type Chapter,
+  type Post,
+} from "../../../lib/content";
+import { breadcrumbs, webPage } from "../../../lib/seo/jsonld";
+import { canonicalUrl } from "../../../lib/seo/meta";
+import { MEMOIR_SERIES, seriesPath } from "../../../lib/taxonomy";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  const chapters = await getChapters();
+  return allSeries(posts).map((series) => ({
+    params: { series },
+    props: {
+      series,
+      posts: seriesPosts(series, posts),
+      chapters: series === MEMOIR_SERIES ? chapters : [],
+    },
+  }));
+}
+
+interface Props {
+  series: string;
+  posts: Post[];
+  chapters: Chapter[];
+}
+const { series, posts, chapters } = Astro.props;
+const name =
+  series === MEMOIR_SERIES
+    ? "Traversing Darkness"
+    : series.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase());
+const path = seriesPath(series);
+const total = posts.length + chapters.length;
+const description =
+  series === MEMOIR_SERIES
+    ? "The memoir, chapter by chapter, as I write it: losing my sight at 34 to a brain tumor, the months before, and everything that came after."
+    : `Every part of the ${name} series on mjwalsh.net, in order, so you can read it from the start without hunting through the blog index.`;
+---
+
+<Base
+  title={`${name} series`}
+  description={description}
+  path={path}
+  jsonLd={[
+    webPage({ url: canonicalUrl(path), title: `${name} series`, description }),
+    breadcrumbs([
+      { name: "Blog", url: canonicalUrl("/blog") },
+      { name: `${name} series`, url: canonicalUrl(path) },
+    ]),
+  ]}
+>
+  <div class="wrap series-page">
+    <p class="eyebrow">
+      <a href="/blog">Blog</a>
+    </p>
+    <h1>{name}</h1>
+    <p class="series-page__lead measure">
+      A series in {total} part{total === 1 ? "" : "s"}, in order.
+      {series === MEMOIR_SERIES && <a href="/story">Read it on the story page</a>}
+    </p>
+    <ol class="series-page__list">
+      {chapters.map((chapter) => (
+        <li>
+          <p class="eyebrow">
+            Chapter {chapter.data.chapter}
+            <time datetime={isoDate(chapter.data.date)}>{formatDate(chapter.data.date)}</time>
+          </p>
+          <h2>
+            <a href={chapterPath(chapter)}>{chapter.data.title}</a>
+          </h2>
+          <p class="series-page__summary">{chapter.data.summary}</p>
+        </li>
+      ))}
+      {posts.map((post) => (
+        <li>
+          <PostCard post={post} headingLevel="h2" />
+        </li>
+      ))}
+    </ol>
+  </div>
+</Base>
+
+<style>
+  .series-page {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .series-page h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .series-page__lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .series-page__list {
+    list-style: none;
+    margin: var(--space-7) 0 0;
+    padding: 0;
+    max-width: var(--measure);
+  }
+  .series-page__list > li {
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+  .series-page__list > li:has(.post-card) {
+    padding-block: 0;
+    border-top: 0;
+  }
+  .series-page__list .eyebrow {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-2);
+  }
+  .series-page__list h2 {
+    font-size: var(--step-2);
+  }
+  .series-page__list h2 a {
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .series-page__list h2 a:hover {
+    text-decoration: underline;
+  }
+  .series-page__summary {
+    margin-top: var(--space-2);
+    color: var(--fg-muted);
+  }
+</style>

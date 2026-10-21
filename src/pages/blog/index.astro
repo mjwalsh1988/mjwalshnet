@@ -1,0 +1,101 @@
+---
+import Base from "../../layouts/Base.astro";
+import CategoryGroups from "../../components/content/CategoryGroups.astro";
+import PostCard from "../../components/content/PostCard.astro";
+import { getChapters, getPosts } from "../../lib/content";
+import { STATIC_PAGES } from "../../lib/pages";
+import { webPage } from "../../lib/seo/jsonld";
+import { canonicalUrl } from "../../lib/seo/meta";
+import { MEMOIR_SERIES, seriesPath } from "../../lib/taxonomy";
+
+const page = STATIC_PAGES.blog;
+const posts = await getPosts();
+const chapters = await getChapters();
+const counts: Record<string, number> = {};
+for (const p of posts) counts[p.data.category] = (counts[p.data.category] ?? 0) + 1;
+counts["traversing-darkness"] = (counts["traversing-darkness"] ?? 0) + chapters.length;
+const latest = posts.slice(0, 20);
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  jsonLd={[
+    webPage({ url: canonicalUrl(page.path), title: page.title, description: page.description }),
+  ]}
+>
+  <div class="wrap blog-index">
+    <header class="blog-index__header">
+      <h1>Blog</h1>
+      <p class="blog-index__lead measure">
+        [MICHAEL: two sentences introducing the blog in your words: what you write about and why]
+      </p>
+      <p class="blog-index__feeds eyebrow">
+        <a href="/feed.xml">RSS</a>
+        <a href="/feed.json">JSON feed</a>
+        <a href={seriesPath(MEMOIR_SERIES)}>The memoir as a series</a>
+        <button type="button" data-palette-open="search">
+          Search posts
+        </button>
+      </p>
+    </header>
+
+    <section class="blog-index__categories" aria-labelledby="categories-title">
+      <h2 id="categories-title" class="visually-hidden">
+        Categories
+      </h2>
+      <CategoryGroups counts={counts} />
+    </section>
+
+    <section class="blog-index__latest" aria-labelledby="latest-title">
+      <h2 id="latest-title">Latest</h2>
+      {latest.length === 0 && <p>Nothing published yet. The first posts arrive at launch.</p>}
+      {latest.map((post) => (
+        <PostCard post={post} />
+      ))}
+    </section>
+  </div>
+</Base>
+
+<style>
+  .blog-index {
+    padding-block: var(--space-7) var(--space-8);
+    display: grid;
+    gap: var(--space-7);
+  }
+  .blog-index__header h1 {
+    font-size: var(--step-5);
+  }
+  .blog-index__lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .blog-index__feeds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    margin-top: var(--space-4);
+    align-items: center;
+  }
+  .blog-index__feeds a,
+  .blog-index__feeds button {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target-primary);
+    color: var(--accent);
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .blog-index__latest h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-2);
+  }
+</style>

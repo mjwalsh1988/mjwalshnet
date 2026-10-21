@@ -1,0 +1,260 @@
+---
+// Post page: eyebrow with category, date and reading time; the title; an
+// optional plain-language summary; the table of contents; the prose; series
+// navigation; related posts; the author box. Comments and the newsletter
+// prompt arrive in Phase 4 through the slots.
+import { render } from "astro:content";
+import Base from "./Base.astro";
+import AuthorBox from "../components/content/AuthorBox.astro";
+import Figure from "../components/content/Figure.astro";
+import PostCard from "../components/content/PostCard.astro";
+import Prose from "../components/content/Prose.astro";
+import TableOfContents from "../components/content/TableOfContents.astro";
+import { mdxComponents } from "../components/content/mdx-components";
+import {
+  formatDate,
+  isoDate,
+  postPath,
+  postReadingTime,
+  relatedPosts,
+  seriesPosts,
+  type Post,
+} from "../lib/content";
+import { canonicalUrl, ogImageUrl } from "../lib/seo/meta";
+import { blogPosting, breadcrumbs } from "../lib/seo/jsonld";
+import { categoryBySlug, categoryPath, seriesPath } from "../lib/taxonomy";
+
+interface Props {
+  post: Post;
+  allPosts: Post[];
+}
+const { post, allPosts } = Astro.props;
+const { Content, headings } = await render(post);
+const category = categoryBySlug(post.data.category);
+const time = postReadingTime(post);
+const path = postPath(post);
+const related = relatedPosts(post, allPosts);
+const series = post.data.series ? seriesPosts(post.data.series, allPosts) : [];
+const index = series.findIndex((p) => p.id === post.id);
+const previous = index > 0 ? series[index - 1] : undefined;
+const next = index >= 0 ? series[index + 1] : undefined;
+const seriesName = post.data.series
+  ? post.data.series.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase())
+  : undefined;
+
+const jsonLd = [
+  blogPosting({
+    url: canonicalUrl(path),
+    title: post.data.title,
+    description: post.data.description,
+    datePublished: isoDate(post.data.date),
+    dateModified: post.data.updated ? isoDate(post.data.updated) : undefined,
+    image: ogImageUrl(path),
+    wordCount: time.words,
+    category: category.name,
+    tags: post.data.tags,
+  }),
+  breadcrumbs([
+    { name: "Blog", url: canonicalUrl("/blog") },
+    { name: category.name, url: canonicalUrl(categoryPath(category.slug)) },
+    { name: post.data.title, url: canonicalUrl(path) },
+  ]),
+];
+---
+
+<Base
+  title={post.data.title}
+  description={post.data.description}
+  path={path}
+  type="article"
+  publishedTime={isoDate(post.data.date)}
+  modifiedTime={post.data.updated ? isoDate(post.data.updated) : undefined}
+  jsonLd={jsonLd}
+>
+  <article class="wrap post" data-pagefind-meta={`category:${category.name}`}>
+    <header class="post__header">
+      <p class="eyebrow post__eyebrow">
+        <a href={categoryPath(category.slug)}>{category.name}</a>
+        <time datetime={isoDate(post.data.date)}>{formatDate(post.data.date)}</time>
+        <span>{time.label}</span>
+        {post.data.draft && <span class="post__draft">Draft, not published</span>}
+      </p>
+      <h1 class="post__title">{post.data.title}</h1>
+      <p class="post__description">{post.data.description}</p>
+      {post.data.updated && (
+        <p class="post__updated">
+          Updated <time datetime={isoDate(post.data.updated)}>{formatDate(post.data.updated)}</time>
+        </p>
+      )}
+      {post.data.canonical && (
+        <p class="post__updated">
+          First published at{" "}
+          <a href={post.data.canonical}>{new URL(post.data.canonical).hostname}</a>.
+        </p>
+      )}
+    </header>
+
+    {post.data.hero && post.data.heroAlt && (
+      <Figure
+        src={post.data.hero}
+        alt={post.data.heroAlt}
+        longDescription={post.data.heroDescription}
+        priority
+        class="post__hero"
+      />
+    )}
+
+    {series.length > 1 && seriesName && (
+      <nav class="post__series" aria-label={`Series: ${seriesName}`}>
+        <p>
+          Part {index + 1} of {series.length} in{" "}
+          <a href={seriesPath(post.data.series!)}>{seriesName}</a>.
+        </p>
+      </nav>
+    )}
+
+    <div class="post__layout">
+      <div class="post__toc">
+        <TableOfContents headings={headings} />
+      </div>
+      <Prose class="post__body">
+        <slot name="before-content" />
+        <Content components={mdxComponents} />
+      </Prose>
+    </div>
+
+    <footer class="post__footer">
+      {post.data.tags.length > 0 && (
+        <p class="post__tags eyebrow">
+          Tagged{" "}
+          {post.data.tags.map((t, i) => (
+            <span>
+              {i > 0 ? ", " : ""}
+              {t}
+            </span>
+          ))}
+        </p>
+      )}
+      {(previous || next) && seriesName && (
+        <nav class="post__series-nav" aria-label={`More in ${seriesName}`}>
+          {previous && (
+            <a href={postPath(previous)} rel="prev">
+              <span class="eyebrow">Previous</span>
+              <span>{previous.data.title}</span>
+            </a>
+          )}
+          {next && (
+            <a href={postPath(next)} rel="next">
+              <span class="eyebrow">Next</span>
+              <span>{next.data.title}</span>
+            </a>
+          )}
+        </nav>
+      )}
+      <slot name="after-content" />
+      <AuthorBox />
+      {related.length > 0 && (
+        <section class="post__related" aria-labelledby="related-title">
+          <h2 id="related-title">Related</h2>
+          {related.map((p) => (
+            <PostCard post={p} />
+          ))}
+        </section>
+      )}
+      <p class="post__back">
+        <a href={categoryPath(category.slug)}>More in {category.name}</a> or{" "}
+        <a href="/blog">all posts</a>.
+      </p>
+    </footer>
+  </article>
+</Base>
+
+<style>
+  .post {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .post__header {
+    max-width: var(--measure);
+  }
+  .post__eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+  }
+  .post__eyebrow a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .post__draft {
+    color: var(--error);
+  }
+  .post__title {
+    margin-top: var(--space-4);
+    font-size: var(--step-5);
+  }
+  .post__description {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .post__updated {
+    margin-top: var(--space-3);
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  .post :global(.post__hero) {
+    margin-top: var(--space-6);
+  }
+  .post__series {
+    margin-top: var(--space-5);
+    padding: var(--space-3) var(--space-4);
+    border-left: 3px solid var(--accent);
+    background: var(--bg-surface);
+    max-width: var(--measure);
+  }
+  .post__layout {
+    margin-top: var(--space-7);
+    display: grid;
+    gap: var(--space-6);
+  }
+  .post__toc:empty {
+    display: none;
+  }
+  .post__footer {
+    margin-top: var(--space-8);
+    max-width: var(--measure);
+    display: grid;
+    gap: var(--space-6);
+  }
+  .post__series-nav {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+  .post__series-nav a {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .post__series-nav a:hover {
+    border-color: var(--accent);
+  }
+  .post__related h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-2);
+  }
+  @media (width >= 64rem) {
+    .post__layout {
+      grid-template-columns: minmax(0, var(--measure)) 16rem;
+    }
+    .post__toc {
+      order: 2;
+      position: sticky;
+      top: var(--space-5);
+      align-self: start;
+    }
+  }
+</style>
