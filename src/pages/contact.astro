@@ -1,0 +1,73 @@
+---
+// Contact (section 4.1): the form, direct email, a note on response time.
+// ?topic= and ?page= prefill the form (the footer's report link uses them),
+// which is read at build for the static page and again by the script.
+import Base from "../layouts/Base.astro";
+import ContactForm from "../components/islands/ContactForm.astro";
+import { STATIC_PAGES } from "../lib/pages";
+import { webPage } from "../lib/seo/jsonld";
+import { canonicalUrl } from "../lib/seo/meta";
+
+const page = STATIC_PAGES.contact;
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  jsonLd={[
+    webPage({ url: canonicalUrl(page.path), title: page.title, description: page.description }),
+  ]}
+>
+  <div class="wrap contact">
+    <header class="contact__header">
+      <p class="eyebrow">Contact</p>
+      <h1>Email me</h1>
+      <p class="contact__lead measure">
+        [MICHAEL: one or two sentences in your words about what you are glad to hear about: work,
+        writing, accessibility problems, football.]
+      </p>
+      <p class="contact__direct measure">
+        Or write to me directly at [MICHAEL: the public email address you want shown here]. I read
+        everything myself and usually answer within two working days.
+      </p>
+    </header>
+    <ContactForm />
+  </div>
+</Base>
+
+<style>
+  .contact {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .contact__header {
+    margin-bottom: var(--space-7);
+  }
+  .contact__header h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .contact__lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .contact__direct {
+    margin-top: var(--space-3);
+  }
+</style>
+
+<script>
+  // Prefill topic and page from the URL (the footer's report link).
+  const params = new URLSearchParams(location.search);
+  const topic = params.get("topic");
+  const page = params.get("page");
+  const select = document.getElementById("contact-topic") as HTMLSelectElement | null;
+  const pageInput = document.getElementById("contact-page") as HTMLInputElement | null;
+  if (select && topic && [...select.options].some((o) => o.value === topic)) select.value = topic;
+  if (pageInput && page) {
+    pageInput.value = page;
+    const field = pageInput.closest<HTMLElement>(".contact-form__field");
+    if (field) field.hidden = false;
+  }
+</script>

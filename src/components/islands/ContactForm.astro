@@ -1,0 +1,264 @@
+---
+// The contact form (sections 9.2 and 12). Visible labels, errors tied with
+// aria-describedby and announced through the live region, no timeouts, the
+// help text in the same place as everywhere else. Works without JavaScript by
+// posting to the function and coming back with ?status=. With JavaScript it
+// submits in place and keeps focus on the result. Turnstile renders only when
+// its site key is set.
+import Button from "../ui/Button.astro";
+
+interface Props {
+  topic?: string;
+  page?: string;
+}
+const { topic = "", page = "" } = Astro.props;
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
+const topics = [
+  ["work", "Work: a role, a project or a question about what I build"],
+  ["writing", "Writing: a post, the story or an interview"],
+  ["accessibility", "Accessibility: something on this site does not work for you"],
+  ["football", "Football: fantasy, FF Beacon or the Packers"],
+  ["privacy", "Privacy: delete something of mine"],
+  ["other", "Something else"],
+];
+---
+
+<form
+  class="contact-form"
+  method="post"
+  action="/api/contact"
+  data-contact-form
+  novalidate
+  aria-describedby="contact-help"
+>
+  <p id="contact-help" class="contact-form__help">
+    Every field except the topic is required. I usually answer within two working days.
+  </p>
+
+  <div class="contact-form__field">
+    <label for="contact-name">Your name</label>
+    <input
+      id="contact-name"
+      name="name"
+      type="text"
+      autocomplete="name"
+      required
+      aria-describedby="contact-name-error"
+    />
+    <p id="contact-name-error" class="contact-form__error" data-error-for="name"></p>
+  </div>
+
+  <div class="contact-form__field">
+    <label for="contact-email">Your email address</label>
+    <input
+      id="contact-email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      required
+      aria-describedby="contact-email-error"
+    />
+    <p id="contact-email-error" class="contact-form__error" data-error-for="email"></p>
+  </div>
+
+  <div class="contact-form__field">
+    <label for="contact-topic">What is it about</label>
+    <select id="contact-topic" name="topic">
+      {topics.map(([value, label]) => (
+        <option value={value} selected={value === topic}>
+          {label}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  <div class="contact-form__field" hidden={!page}>
+    <label for="contact-page">The page it concerns</label>
+    <input id="contact-page" name="page" type="text" value={page} readonly />
+  </div>
+
+  <div class="contact-form__field">
+    <label for="contact-message">Your message</label>
+    <textarea
+      id="contact-message"
+      name="message"
+      rows="7"
+      required
+      aria-describedby="contact-message-error"
+    ></textarea>
+    <p id="contact-message-error" class="contact-form__error" data-error-for="message"></p>
+  </div>
+
+  <div class="contact-form__trap" aria-hidden="true">
+    <label for="contact-website">Leave this field empty</label>
+    <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  {siteKey ? (
+    <div class="contact-form__field">
+      <div class="cf-turnstile" data-sitekey={siteKey} data-theme="auto" data-size="flexible"></div>
+    </div>
+  ) : null}
+
+  <p class="contact-form__status" data-contact-status tabindex="-1"></p>
+
+  <div class="contact-form__actions">
+    <Button type="submit" variant="primary">
+      Send message
+    </Button>
+  </div>
+</form>
+{siteKey && (
+  <script
+    is:inline
+    src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+    async
+    defer
+  ></script>
+)}
+
+<style>
+  .contact-form {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 40rem;
+  }
+  .contact-form__help {
+    color: var(--fg-muted);
+  }
+  .contact-form__field {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .contact-form__field label {
+    font-weight: 600;
+  }
+  .contact-form input,
+  .contact-form select,
+  .contact-form textarea {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    background: var(--bg);
+    color: var(--fg);
+    min-height: var(--target-primary);
+  }
+  .contact-form input[aria-invalid="true"],
+  .contact-form textarea[aria-invalid="true"] {
+    border-color: var(--error);
+    border-width: 2px;
+  }
+  .contact-form__error {
+    color: var(--error);
+    font-size: var(--step--1);
+  }
+  .contact-form__error:empty {
+    display: none;
+  }
+  .contact-form__trap {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .contact-form__status {
+    padding: var(--space-3) var(--space-4);
+    border-left: 3px solid var(--fg-muted);
+    background: var(--bg-surface);
+  }
+  .contact-form__status:empty {
+    display: none;
+  }
+  .contact-form__status[data-kind="ok"] {
+    border-left-color: var(--ok);
+  }
+  .contact-form__status[data-kind="error"] {
+    border-left-color: var(--error);
+  }
+</style>
+
+<script>
+  import { announce } from "../../lib/ui/announce";
+
+  const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+  const status = document.querySelector<HTMLElement>("[data-contact-status]");
+
+  function setStatus(kind: "ok" | "error", message: string) {
+    if (!status) return;
+    status.dataset.kind = kind;
+    status.textContent = message;
+    status.focus();
+    announce(message, { assertive: kind === "error" });
+  }
+
+  function showErrors(errors: Record<string, string>) {
+    if (!form) return;
+    let first: HTMLElement | null = null;
+    for (const field of ["name", "email", "message"]) {
+      const input = form.elements.namedItem(field) as HTMLInputElement | null;
+      const slot = form.querySelector<HTMLElement>(`[data-error-for="${field}"]`);
+      const message = errors[field];
+      if (!input || !slot) continue;
+      slot.textContent = message ?? "";
+      input.setAttribute("aria-invalid", message ? "true" : "false");
+      if (message && !first) first = input;
+    }
+    first?.focus();
+  }
+
+  function localErrors(data: FormData): Record<string, string> {
+    const errors: Record<string, string> = {};
+    if (!String(data.get("name") ?? "").trim()) errors.name = "Please tell me your name.";
+    const email = String(data.get("email") ?? "").trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      errors.email = "That email address does not look right.";
+    if (String(data.get("message") ?? "").trim().length < 10)
+      errors.message = "Say a little more than that.";
+    return errors;
+  }
+
+  // Coming back from a submission without JavaScript.
+  const params = new URLSearchParams(location.search);
+  if (params.get("status") === "sent") setStatus("ok", "Thanks. Your message is on its way.");
+  if (params.get("status") === "error")
+    setStatus("error", params.get("reason") ?? "Something went wrong. Please try again.");
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const errors = localErrors(data);
+    if (Object.keys(errors).length) {
+      showErrors(errors);
+      announce("Please check the form.", { assertive: true });
+      return;
+    }
+    showErrors({});
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (button) button.disabled = true;
+    try {
+      const res = await fetch(form.action, {
+        method: "POST",
+        headers: { Accept: "application/json", "X-Requested-With": "fetch" },
+        body: data,
+      });
+      const result = (await res.json()) as {
+        ok: boolean;
+        message: string;
+        errors?: Record<string, string>;
+      };
+      if (result.ok) {
+        form.reset();
+        setStatus("ok", result.message);
+      } else {
+        if (result.errors) showErrors(result.errors);
+        setStatus("error", result.message);
+      }
+    } catch {
+      setStatus("error", "I could not send that. Please try again, or email me directly.");
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
+</script>
