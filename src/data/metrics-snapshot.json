@@ -1,0 +1,20 @@
+{
+  "snapshotTakenAt": "2026-10-21",
+  "note": "Last committed copy of site_metrics. The build reads Supabase first and falls back to this file, so a database outage never breaks a deploy. scripts/snapshot-metrics.ts refreshes it.",
+  "metrics": [
+    {
+      "key": "ffbeacon_gsc_impressions_90d",
+      "value": 69885,
+      "label": "FF Beacon search impressions, last 90 days",
+      "source": "Google Search Console, from the build plan; re-pulled by the metrics job before launch",
+      "as_of": "2026-10-20"
+    },
+    {
+      "key": "automated_tests",
+      "value": 199,
+      "label": "Automated tests on this site",
+      "source": "This repository: 163 Playwright tests and 36 unit tests, counted 2026-10-21",
+      "as_of": "2026-10-21"
+    }
+  ]
+}

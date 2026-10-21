@@ -3,11 +3,13 @@
 // blocks with one real number each, and the compact story timeline.
 import { Picture } from "astro:assets";
 import { formatDate, projectPath, type Project } from "../../lib/content";
+import MetricsStrip from "../content/MetricsStrip.astro";
 
 interface Props {
   projects: Project[];
+  daysSinceLastPost?: number;
 }
-const { projects } = Astro.props;
+const { projects, daysSinceLastPost } = Astro.props;
 
 // The beats on record (section 6.3), in order. Michael's chapters tell the rest.
 const beats = [
@@ -72,6 +74,23 @@ const beats = [
     <p class="movement__more">
       <a href="/projects">All projects</a>
     </p>
+
+    <div class="metrics-wrap">
+      <MetricsStrip
+        title="Live numbers"
+        extra={
+          daysSinceLastPost === undefined
+            ? []
+            : [
+                {
+                  label: "Days since the last post",
+                  value: String(daysSinceLastPost),
+                  source: "The blog, counted at build",
+                },
+              ]
+        }
+      />
+    </div>
 
     <section class="beats" aria-labelledby="beats-title">
       <h2 id="beats-title" class="eyebrow movement__eyebrow">
@@ -178,6 +197,9 @@ const beats = [
     color: var(--on-dusk-accent);
     display: inline-block;
     min-height: var(--target-primary);
+  }
+  .metrics-wrap {
+    margin-top: var(--space-8);
   }
   .beats {
     margin-top: var(--space-9);

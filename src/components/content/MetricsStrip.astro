@@ -1,0 +1,79 @@
+---
+// The live numbers strip (section 6.6): each figure with its source and
+// as-of date, baked into the HTML at build. "Live" means the value came from
+// Supabase at this build; otherwise it is the committed snapshot.
+import { formatDate } from "../../lib/content";
+import { formatValue, getMetrics } from "../../lib/metrics";
+
+interface Props {
+  keys?: string[];
+  title?: string;
+  /** Extra computed figures, such as days since the last post. */
+  extra?: { label: string; value: string; source: string }[];
+}
+const { keys, title = "The numbers", extra = [] } = Astro.props;
+const all = await getMetrics();
+const metrics = keys ? keys.map((k) => all.find((m) => m.key === k)).filter(Boolean) : all;
+---
+
+<section class="metrics" aria-labelledby="metrics-title">
+  <h2 id="metrics-title" class="eyebrow">
+    {title}
+  </h2>
+  <dl class="metrics__list">
+    {metrics.map((m) => (
+      <div class="metrics__item">
+        <dt>{m!.label}</dt>
+        <dd>
+          <span class="metrics__value">{formatValue(m!.value)}</span>
+          <span class="metrics__source">
+            Source: {m!.source}, as of{" "}
+            <time datetime={m!.asOf}>{formatDate(new Date(m!.asOf))}</time>
+            {m!.live ? "" : " (last committed snapshot)"}
+          </span>
+        </dd>
+      </div>
+    ))}
+    {extra.map((e) => (
+      <div class="metrics__item">
+        <dt>{e.label}</dt>
+        <dd>
+          <span class="metrics__value">{e.value}</span>
+          <span class="metrics__source">Source: {e.source}</span>
+        </dd>
+      </div>
+    ))}
+  </dl>
+</section>
+
+<style>
+  .metrics__list {
+    margin: var(--space-4) 0 0;
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+  .metrics__item {
+    padding-top: var(--space-3);
+    border-top: 2px solid currentColor;
+  }
+  .metrics__item dt {
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  .metrics__item dd {
+    margin: var(--space-2) 0 0;
+    display: grid;
+    gap: var(--space-1);
+  }
+  .metrics__value {
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    line-height: 1;
+    color: var(--accent);
+  }
+  .metrics__source {
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+</style>
