@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "postbuild": "node scripts/postbuild.mjs",
-    "preview": "astro preview",
+    "postbuild": "node scripts/postbuild.mjs && node scripts/build-pdf.mjs",
+    "preview": "node scripts/serve.mjs --port 4321",
     "astro": "astro",
     "check": "astro check",
     "lint": "eslint .",
@@ -20,7 +20,7 @@
     "test:all": "npm run test && npm run test:a11y && npm run test:e2e",
     "check:writing": "tsx scripts/check-writing.ts",
     "check:contrast": "tsx scripts/check-contrast.ts",
-    "check:html": "html-validate \"dist/**/*.html\"",
+    "check:html": "html-validate \"dist/client/**/*.html\"",
     "lhci": "lhci autorun",
     "verify": "npm run check:writing && npm run lint && npm run check && npm run test",
     "db:new": "supabase migration new",
@@ -29,7 +29,9 @@
     "db:diff": "supabase db diff --linked",
     "db:types": "supabase gen types typescript --linked --schema public > supabase/types/database.ts",
     "prepare": "git config core.hooksPath .githooks",
-    "build:test": "node scripts/build-test.mjs"
+    "build:test": "node scripts/build-test.mjs",
+    "build:pdf": "node scripts/build-pdf.mjs",
+    "capture:screenshots": "node scripts/capture-screenshots.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.11",

@@ -1,16 +1,19 @@
 // Lighthouse CI budgets from section 9.4 and section 11 of the plan.
 // Pages open with ?analytics=on so the Google tag is present, as the plan
-// requires, and scores reflect what visitors get.
+// requires, and scores reflect what visitors get. The site is served by
+// scripts/serve.mjs, the same server the Playwright suites use.
 const routes = require("./scripts/lighthouse-routes.cjs");
+
+const PORT = 4399;
 
 module.exports = {
   ci: {
     collect: {
-      staticDistDir: "./dist",
-      isSinglePageApplication: false,
-      url: routes.map((path) => `http://localhost/${path.replace(/^\//, "")}?analytics=on`),
+      startServerCommand: `node scripts/serve.mjs --port ${PORT}`,
+      startServerReadyPattern: "serve:",
+      url: routes.map((path) => `http://localhost:${PORT}${path}?analytics=on`),
+      // Single runs varied by 200 ms; the median of three is reported.
       numberOfRuns: 3,
-      // Mobile is the default form factor; no preset needed.
       settings: {
         onlyCategories: ["performance", "accessibility", "best-practices", "seo"],
       },

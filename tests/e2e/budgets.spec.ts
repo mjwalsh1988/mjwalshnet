@@ -6,7 +6,7 @@ import path from "node:path";
 import { gzipSync } from "node:zlib";
 import { expect, test } from "@playwright/test";
 
-const DIST = "dist";
+const DIST = "dist/client";
 const KB = 1024;
 
 const gz = (file: string) => gzipSync(readFileSync(file)).length;

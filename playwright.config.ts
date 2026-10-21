@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// The accessibility suite runs against the built site served by `astro preview`
-// so it tests what visitors get, including inline scripts and hashes.
+// The suites run against the built site served by scripts/serve.mjs (static
+// files plus the server entry), so they test what visitors get.
 const port = 4321;
 
 export default defineConfig({
@@ -16,7 +16,7 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   webServer: {
-    command: `npm run preview -- --port ${port}`,
+    command: `node scripts/serve.mjs --port ${port}`,
     url: `http://localhost:${port}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

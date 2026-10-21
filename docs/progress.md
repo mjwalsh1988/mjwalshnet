@@ -138,3 +138,40 @@ Lighthouse on the new routes found a cumulative layout shift of 0.275: the theme
 - Decision: three Lighthouse runs per route with the median taken, because single runs varied by 200 ms.
 - Decision: three html-validate rules (element-permitted-content, text-content, no-implicit-button-type) are off because they fire only on the generated Expressive Code markup, whose accessible names axe checks anyway.
 - Decision: the dialog header is a div, not a header element, because a second banner landmark on every page failed the unique-landmark rule; the palette search box is a div with role="search" rather than a form, which would need a submit button.
+
+## Phase 3: pages (2026-10-21)
+
+### Resume in three formats
+
+src/data/resume.ts is the one source, in the JSON Resume schema, with the titles, employers and dates from section 7.5 (fourteen entries from the freelance years to JWeis today, the career break included in Michael's own terms, Woodstock High School). Every description, highlight and skill group is a placeholder for the interview. /resume renders it with a print stylesheet; /resume.json serves it; scripts/build-pdf.mjs prints the built page to resume.pdf with Playwright after every build and copies it to public/resume.pdf. The page says plainly that I am open to Director of Technology and full-stack roles.
+
+- Decision: the PDF is generated wherever a browser exists (this machine, CI) and the committed copy in public/ ships when one does not (the Vercel build). The handoff tells Michael to run `npm run build:pdf` after editing the resume so the committed PDF stays current, or to let CI do it.
+
+### About and story
+
+/about is the short bio with ProfilePage schema, the portrait with "Describe this photo" (the plan's draft description, marked for confirmation), and four short sections with placeholders. /story introduces the memoir and lists the chapters with the chapter rail; /story/[chapter] renders a chapter beside the rail, which marks the current chapter with aria-current and says "Chapter 1 of 1", with previous and next links and the voice source label when a recording exists.
+
+### Projects
+
+/projects is a one-line grid: year and role, title, tagline, one real number where there is one. /projects/[slug] has the gallery (real screenshots of ffbeacon.com and gridironsites.com captured at 2x by scripts/capture-screenshots.mjs, each with alt text and a long description written from what the screenshot shows), the numbers with source and as-of date, the prose sections and the stack. The index excludes nothing; drafts are labelled.
+
+### Now, uses, accessibility, colophon, privacy, keyboard
+
+Each page is built with its structure and the facts the plan supplies, and placeholders where the words must be Michael's. The accessibility statement draws its fix log from src/data/a11y-log.ts, which already holds five real entries from this build (the duplicate banner landmark, the figure caption order, the heading link text leaking into the table of contents, the layout shift from the hidden toggles, and the invisible home page navigation found in a screenshot review), plus known issues and a slot for each manual pass. The keyboard page lists every shortcut in tables, including the audio player's for Phase 4. The privacy page names Google Analytics, Turnstile, Buttondown and Giscus and what each stores.
+
+### Contact
+
+/contact carries the form, a direct email placeholder and the response-time line. src/components/islands/ContactForm.astro: visible labels, inline errors tied with aria-describedby, the assertive live region for a failed submission, no timeouts, a honeypot, and Turnstile rendered only when the public site key is set. It posts to /api/contact without JavaScript and comes back with a status; with JavaScript it submits in place and moves focus to the result. src/pages/api/contact.ts is the Vercel function: Zod validation, Turnstile verification when the secret is set, a rate limit of five messages an hour per hashed IP counted in contact_messages, a stored copy in Supabase, and mail through Resend. Each missing key turns its step off with one log line, and if neither Supabase nor Resend is configured the function answers 503 with "The form is not connected yet" so nothing is silently lost.
+
+- Decision: the Resend sender address is no-reply at the site's own domain. Resend only sends from a verified domain, so verifying mjwalsh.net in Resend is on Michael's list in the handoff.
+- Decision: the rate limit counts rows in Supabase rather than keeping a map in memory, because a Vercel function has no memory between invocations.
+
+### Home page, four static sections
+
+Dark: eyebrow, the opening statement (placeholder) in display type, a quiet second line, two text links. Dusk: the four projects as large blocks with their screenshot and one number each, then the story in six beats, the facts the plan has on record. Dawn: the latest posts (or the first memoir chapter when no post is published) and the Build Log. Day: the now strip and contact. Each movement pins its own color tokens, so the dark sections stay dark and the paper sections stay paper in both themes and in high contrast, and every nested component picks the right colors.
+
+### The local server
+
+The Vercel adapter does not support `astro preview` once a route is on demand, and the build output moved to dist/client with the function entry under .vercel/output. scripts/serve.mjs serves the static files with gzip and the trailing-slash redirect from vercel.json, and hands everything else to the function entry, so the Playwright suites, Lighthouse CI, the PDF step and `npm run preview` all run against what Vercel will serve. The contact test exercises the real function.
+
+Tests: 163 Playwright tests across every route in both themes and both widths, plus keyboard and behaviour tests for the chapter rail, the resume formats, the contact form and the home page structure. Lighthouse: every route at 100 for accessibility, best practices and SEO, performance 97 to 99.
