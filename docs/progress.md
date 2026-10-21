@@ -219,3 +219,7 @@ docs/content-topics.md is the topic map from section 10.1. Michael asked for it 
 
 - Decision: the FF Beacon figure is updated to the live Search Console number, 73,908 impressions and 2,025 clicks for 2026-07-23 to 2026-10-21, in the metrics snapshot and on the FF Beacon project page. The plan's 69,885 was the earlier pull. The test count in the snapshot is now 210.
 - Main findings: accessible fantasy football and blind developer setup are the clearest openings (old or missing answers to questions people are asking now); Claude Code automation is crowded and should be written for links, not search; the name "Michael Walsh" is crowded, so every profile should link to the site.
+
+## Wrap-up before a new session (2026-10-21)
+
+Brought the plan, the handoff and the README up to date with the Phase 0 research: the plan's status line, the Semrush mentions (Michael chose not to use the work account) and the 69,885 figure now say what happened. The handoff has a new section 7 on where things stand, including the unresolved npm run dev problem on Michael's machine. Pushed main to GitHub for the first time.

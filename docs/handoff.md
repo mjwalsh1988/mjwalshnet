@@ -1,6 +1,6 @@
 # Handoff for the testing phase
 
-Written 2026-10-21 at the end of the Phase 1 to 4 build. docs/progress.md has the dated entry per task and every judgment call. Phase 5 (launch) and the manual pass come after the keys are in.
+Written 2026-10-21 at the end of the Phase 1 to 4 build. docs/progress.md has the dated entry per task and every judgment call. Phase 5 (launch) and the manual pass come after the keys are in. Updated later the same day after the Phase 0 keyword research (section 7), and everything was pushed to main on GitHub.
 
 ## 1. Placeholders that need your words
 
@@ -206,7 +206,7 @@ Copy .env.example to .env for local work. Production values go in the Vercel pro
 10. Giscus: turn on Discussions in the repository, run through giscus.app, and put the four values into GISCUS in src/lib/site.ts. They are public, not secrets.
 11. Webmentions: sign in at webmention.io with the site (it needs the rel="me" links, which are in the footer) so mentions start arriving; the head already carries the webmention link.
 12. Google Analytics: set data retention to 14 months in the property admin, and link Search Console at launch.
-13. Push to main. CI runs the whole suite on GitHub; Vercel builds from the same commit.
+13. Push to main. CI runs the whole suite on GitHub; Vercel builds from the same commit. The code is already on main as of 2026-10-21, so connecting the repository in Vercel is enough for the first build.
 
 ## 4. Commands
 
@@ -239,8 +239,16 @@ Log each pass with its date in src/data/a11y-log.ts under manualPasses, and each
 ## 6. Things the build could not do, for your list
 
 - Sleeper leagues synced this season: no source this site can reach. If FF Beacon exposes a count (a view or an endpoint), add a provider in src/pages/api/metrics.ts next to searchConsole.
-- The 69,885 impressions figure is the one from the plan; the metrics job re-pulls it once the service account exists.
+- The FF Beacon impressions figure in the snapshot is 73,908, pulled by hand from Search Console on 2026-10-21. The metrics job keeps it current once the service account exists. The SEO post's draft title and folder still say 69,885 from the plan; change the title to the live number on the day it is published.
 - No recording exists yet, so listen mode offers only the synthetic voice. Add audio to a chapter or post's frontmatter (src, voice, duration) and drop the file in public/audio.
 - The NVDA pass of the primitives is yours; the automated checks stand in until then.
 - pa11y-ci from the plan is not installed; axe through Playwright, html-validate and Lighthouse cover the same ground. Add it in Phase 5 if you want the second opinion.
 - Lighthouse's lab LCP is a warning rather than an error, for the reason recorded in docs/progress.md; every route reads under 2.0 s with the compressing server, and the field number comes from Speed Insights.
+
+## 7. Where things stand for the next session
+
+- Phases 1 to 4 are built. Phase 0 keyword research is done: docs/content-topics.md has the topic map, a target search for each launch post and the next steps from it. Two searches were not checked: "Michael Walsh JWeis" and the hosting-company post topic.
+- Still yours from Phase 0: the interviews, the portrait description, docs/content-voice.md with its five examples, and the 126 placeholders in section 1.
+- The one new post the research suggests: a Building Blind comparison of Sleeper, ESPN, Yahoo and NFL Fantasy with a screen reader.
+- npm run dev did not start for you on 2026-10-21. Here, npx astro dev started and served / and /blog at http://localhost:4321. If it still fails, the output of npm run dev and node --version will show why.
+- Next: add the keys (section 3), then the manual pass (section 5), then Phase 5 in the plan.

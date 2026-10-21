@@ -1,6 +1,8 @@
 # mjwalsh.net
 
-Source for mjwalsh.net. The build plan is in docs/mjwalsh-net-build-plan.md.
+Source for mjwalsh.net. The build plan is in docs/mjwalsh-net-build-plan.md. docs/progress.md is the dated record of each task, docs/handoff.md lists what is left before launch (placeholders, keys, the manual checklist) and docs/content-topics.md is the keyword research.
+
+Run the site with npm run dev at http://localhost:4321. The handoff lists every other command.
 
 ## Database
 

@@ -1,6 +1,6 @@
 # mjwalsh.net build plan
 
-Written 2026-10-20. Revised 2026-10-21 with Michael's answers to the first draft's fourteen questions. Status: approved direction, nothing built yet.
+Written 2026-10-20. Revised 2026-10-21 with Michael's answers to the first draft's fourteen questions. Status as of the end of 2026-10-21: Phases 1 to 4 are built and pushed to main, and the Phase 0 keyword research is done (docs/content-topics.md). docs/progress.md records each task and docs/handoff.md lists what is left for Michael before Phase 5.
 
 This file is the technical plan. The companion artifact (the visual pitch) explains the same ideas in plain terms with mockups. When the two disagree, this file wins.
 
@@ -338,7 +338,7 @@ Posts (target twelve at launch, at least one per category):
 - Life: one short post, Michael's choice of subject.
 - AI and Automation: "Using Claude as a logged step, not a magic box"; "Twenty-five pipelines, one personal credit card: how FF Beacon runs itself".
 - Programming: "Seven years running a hosting company, and what it taught me about uptime" (from the Hoststing years).
-- SEO and Marketing: "What 69,885 impressions in 90 days taught me about writing for search" (number re-pulled from Search Console before publishing).
+- SEO and Marketing: "What 69,885 impressions in 90 days taught me about writing for search" (number re-pulled from Search Console before publishing; it was 73,908 on 2026-10-21).
 - Fantasy Football: "Twenty seasons of playing by ear".
 - Packers and the NFL: one post timed to the week of launch, whatever the Packers just did.
 - Build Log: the first five entries, backdated to real events with Michael's confirmation.
@@ -538,7 +538,7 @@ Each manual pass is logged with a date in the accessibility fix log.
 
 ### 10.1 Positioning
 
-The site should become the first result for "Michael Walsh blind developer", "Michael Walsh FF Beacon", and "Michael Walsh JWeis", and a page-one result for the practical topics with real search demand and weak competition: blind developer setup, screen reader for coding, blind programmer tools, accessible fantasy football, Claude Code automation examples, and the specific technical posts. Keyword research with Semrush and Search Console data happens in Phase 0 and produces a topic map in docs/content-topics.md.
+The site should become the first result for "Michael Walsh blind developer", "Michael Walsh FF Beacon", and "Michael Walsh JWeis", and a page-one result for the practical topics with real search demand and weak competition: blind developer setup, screen reader for coding, blind programmer tools, accessible fantasy football, Claude Code automation examples, and the specific technical posts. Keyword research happens in Phase 0 and produces a topic map in docs/content-topics.md. Done 2026-10-21 with Search Console data and live Google results; Michael chose not to use Semrush, which is a work account.
 
 ### 10.2 Entity and author signals
 
@@ -630,9 +630,9 @@ Each phase ends with a review by Michael with the screen reader, a dated entry i
 - No open questions as of 2026-10-21. Michael's own tasks are listed in section 14.
 - Record the interviews for the about page, the resume (one pass per job: what he actually did, in his words), and the first twelve posts. The memoir chapters are Michael's to write on his own schedule.
 - Gather real assets: the portrait and its confirmed description, project screenshots (re-captured at 2x), the resume facts from 7.5 checked by Michael.
-- Keyword and topic research with Semrush and Search Console; write docs/content-topics.md.
+- Keyword and topic research with Search Console and live search results; write docs/content-topics.md. Done 2026-10-21, without Semrush by Michael's choice.
 - Write docs/content-voice.md from section 7 with five before-and-after examples, including one LinkedIn sentence rewritten in his voice.
-- Pull current metrics (FF Beacon GSC, leagues synced, test counts) and record sources.
+- Pull current metrics (FF Beacon GSC, leagues synced, test counts) and record sources. FF Beacon GSC and the test count were pulled 2026-10-21 into src/data/metrics-snapshot.json; leagues synced has no source yet.
 - Michael: Vercel project, domains, deploy hook, and the environment variables from 8.4 as they become available.
 
 ### Phase 1: Foundation
