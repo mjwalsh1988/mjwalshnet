@@ -1,0 +1,7 @@
+#!/bin/sh
+# Runs the writing pattern checker before every commit. Install with
+# `npm install` (the prepare script points git at this folder).
+npm run --silent check:writing || {
+  echo "Commit stopped: fix the writing findings above or mark a line with 'writing-check: ignore-next-line' and say why."
+  exit 1
+}

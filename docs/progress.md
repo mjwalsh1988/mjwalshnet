@@ -18,3 +18,12 @@ Astro 7.4.1 with TypeScript strict, Tailwind 4 through the Vite plugin, the Verc
 - Decision: Content Security Policy will use Astro's built-in hash generation (security.csp) instead of nonces. The site is static, so there is no per-request nonce; hashes give the same guarantee. Wired in the base layout task.
 - Note: npm audit reports 31 advisories, all inside @lhci/cli's old dependency tree (and one in uuid). They are dev-only and do not ship. Revisit when Lighthouse CI publishes a newer release.
 - Note: the three font families with normal and italic styles come to about 194 KB of woff2. The plan's budget is 180 KB. Revisit in the fonts task.
+
+### Phase 1: writing checker
+
+scripts/check-writing.ts scans Markdown and MDX prose (including frontmatter values and alt text in JSX tags), Astro template text and copy-bearing attributes, and comments and string literals in TypeScript. It fails on em dashes, curly quotes, ellipsis characters, emoji, the banned word list, formulaic transitions at sentence starts, vague authority, significance inflation, conversational scaffolding, negative parallelism and Title Case headings. Thirteen unit tests cover it. It runs from a git pre-commit hook in .githooks (installed by the npm prepare script) and will run in CI.
+
+- Decision: the memoir folder (src/content/story) is exempt from the Title Case heading rule only, because Michael's section headings ("The First Sign") are his own style and the rule says to match the surrounding voice.
+- Decision: a line can be exempted with a comment reading "writing-check: ignore-next-line", for cases such as quoting a LinkedIn sentence in order to rewrite it. Each use should say why.
+- Decision: the rule-of-three cadence is not machine-checked. It needs judgment, so it stays a manual pass item and is reported in the end-of-session writing summary.
+- Also added .gitattributes so every text file commits with LF endings and the CRLF warnings stop.
