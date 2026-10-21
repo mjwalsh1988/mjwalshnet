@@ -1,0 +1,97 @@
+---
+// The chapter rail (section 6.3): a nav landmark listing the chapters with
+// aria-current on the one being read and the reader's position in words.
+// Sticky beside the text on wide screens, a plain list above it on narrow ones.
+import { chapterPath, type Chapter } from "../../lib/content";
+
+interface Props {
+  chapters: Chapter[];
+  current?: string;
+}
+const { chapters, current } = Astro.props;
+const index = chapters.findIndex((c) => c.id === current);
+---
+
+<nav class="rail" aria-labelledby="rail-title">
+  <p id="rail-title" class="eyebrow rail__title">
+    Chapters
+  </p>
+  {index >= 0 && (
+    <p class="rail__progress">
+      Chapter {index + 1} of {chapters.length}
+    </p>
+  )}
+  <ol class="rail__list">
+    {chapters.map((chapter) => (
+      <li>
+        <a
+          href={chapterPath(chapter)}
+          aria-current={chapter.id === current ? "page" : undefined}
+          class="rail__link"
+        >
+          <span class="rail__number mono">{chapter.data.chapter}</span>
+          <span class="rail__text">
+            <span class="rail__name">{chapter.data.title}</span>
+            <span class="rail__period">{chapter.data.period}</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ol>
+  <p class="rail__note">
+    [MICHAEL: one line for the rail about chapters still to come, or nothing]
+  </p>
+</nav>
+
+<style>
+  .rail {
+    font-size: var(--step--1);
+  }
+  .rail__progress {
+    margin-top: var(--space-2);
+    color: var(--fg-muted);
+  }
+  .rail__list {
+    list-style: none;
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    border-top: 1px solid var(--border);
+  }
+  .rail__link {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--fg);
+    text-decoration: none;
+    min-height: var(--target-primary);
+  }
+  .rail__link:hover .rail__name {
+    text-decoration: underline;
+  }
+  .rail__link[aria-current="page"] {
+    box-shadow: inset 3px 0 0 var(--accent);
+    padding-left: var(--space-3);
+  }
+  .rail__number {
+    color: var(--fg-muted);
+  }
+  .rail__text {
+    display: grid;
+    gap: 2px;
+  }
+  .rail__period {
+    color: var(--fg-muted);
+  }
+  .rail__note {
+    margin-top: var(--space-3);
+    color: var(--fg-muted);
+  }
+  @media (width >= 64rem) {
+    .rail {
+      position: sticky;
+      top: var(--space-5);
+    }
+  }
+</style>

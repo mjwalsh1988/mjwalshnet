@@ -1,0 +1,163 @@
+---
+// The short, practical bio (section 4.1) with ProfilePage schema (10.2): what
+// I do, where, how I work, the photo with a full description, links. The long
+// version is /story.
+import { Picture } from "astro:assets";
+import portrait from "../assets/img/michael-walsh.jpg";
+import Base from "../layouts/Base.astro";
+import Describe from "../components/content/Describe.astro";
+import { STATIC_PAGES } from "../lib/pages";
+import { profilePage } from "../lib/seo/jsonld";
+import { canonicalUrl } from "../lib/seo/meta";
+import { SOCIAL } from "../lib/site";
+
+const page = STATIC_PAGES.about;
+const created = "2026-10-21";
+const modified = "2026-10-21";
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  type="profile"
+  image="/img/michael-walsh.jpg"
+  imageAlt="Michael Walsh smiling, outdoors by a river in autumn."
+  jsonLd={[
+    profilePage({ url: canonicalUrl(page.path), dateCreated: created, dateModified: modified }),
+  ]}
+>
+  <article class="wrap about">
+    <header class="about__header">
+      <p class="eyebrow">About</p>
+      <h1>About me</h1>
+      <p class="about__lead measure">
+        The short version. <a href="/story">The long version is the story.</a>
+      </p>
+    </header>
+
+    <div class="about__layout">
+      <div class="about__photo">
+        <Picture
+          src={portrait}
+          alt="Michael Walsh smiling, outdoors by a river in autumn."
+          widths={[320, 480, 640]}
+          sizes="(min-width: 64rem) 20rem, 60vw"
+          formats={["avif", "webp"]}
+          loading="eager"
+          fetchpriority="high"
+          aria-details="about-photo-description"
+        />
+        <Describe id="about-photo-description" label="Describe this photo">
+          <p>
+            [MICHAEL: confirm with someone who was there. Draft: Michael from the shoulders up,
+            smiling with his teeth showing, short dark hair brushed up and back, a full dark beard,
+            a black collared shirt, outdoors beside a river with trees turning autumn colors and a
+            cloudy sky behind him. Someone's arm rests across his shoulders from the right.]
+          </p>
+        </Describe>
+      </div>
+
+      <div class="about__text">
+        <section aria-labelledby="what-i-do">
+          <h2 id="what-i-do">What I do</h2>
+          <p>
+            [MICHAEL: two or three sentences from the about interview: full-stack developer and
+            automation and AI specialist at JWeis Marketing since October 2024, remote from Fort
+            Wayne, Indiana; FF Beacon and Gridiron Sites on your own time.]
+          </p>
+        </section>
+        <section aria-labelledby="how-i-work">
+          <h2 id="how-i-work">How I work</h2>
+          <p>
+            [MICHAEL: how you work without sight, in a paragraph: the screen reader, the keyboard,
+            the terminal, Claude Code, testing by ear. The uses page has the details.]
+          </p>
+          <p>
+            <a href="/uses">The tools I use</a>.
+          </p>
+        </section>
+        <section aria-labelledby="where-i-have-been">
+          <h2 id="where-i-have-been">Where I have been</h2>
+          <p>
+            [MICHAEL: a paragraph on the path: freelance work since 14, Hostgator in 2009, the
+            hosting years, Hoststing, two Director of Technology roles, the career break, JWeis.]
+          </p>
+          <p>
+            <a href="/resume">The resume has the dates</a>.
+          </p>
+        </section>
+        <section aria-labelledby="elsewhere">
+          <h2 id="elsewhere">Elsewhere</h2>
+          <ul class="about__links">
+            {SOCIAL.map((s) => (
+              <li>
+                <a href={s.href} rel="me">
+                  {s.label}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a href="/contact">Email me</a>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .about {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .about__header h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .about__lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .about__layout {
+    margin-top: var(--space-7);
+    display: grid;
+    gap: var(--space-7);
+    align-items: start;
+  }
+  .about__photo :global(img) {
+    width: 100%;
+    max-width: 20rem;
+    border-radius: 2px;
+  }
+  .about__text {
+    display: grid;
+    gap: var(--space-6);
+    max-width: var(--measure);
+  }
+  .about__text h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-3);
+  }
+  .about__text p + p {
+    margin-top: var(--space-3);
+  }
+  .about__links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+  }
+  .about__links a {
+    display: inline-block;
+    min-height: var(--target-min);
+  }
+  @media (width >= 64rem) {
+    .about__layout {
+      grid-template-columns: 20rem minmax(0, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,121 @@
+---
+// The story (section 4.1 and 6.3): the memoir in chapters, with the chapter
+// rail. This page introduces it and lists the chapters; each chapter has its
+// own page. The home page shows a compact version of the beats.
+import Base from "../../layouts/Base.astro";
+import ChapterRail from "../../components/content/ChapterRail.astro";
+import { chapterPath, formatDate, getChapters, isoDate } from "../../lib/content";
+import { STATIC_PAGES } from "../../lib/pages";
+import { webPage } from "../../lib/seo/jsonld";
+import { canonicalUrl } from "../../lib/seo/meta";
+
+const page = STATIC_PAGES.story;
+const chapters = await getChapters();
+---
+
+<Base
+  title={page.title}
+  description={page.description}
+  path={page.path}
+  jsonLd={[
+    webPage({ url: canonicalUrl(page.path), title: page.title, description: page.description }),
+  ]}
+>
+  <div class="wrap story">
+    <header class="story__header">
+      <p class="eyebrow">Traversing Darkness</p>
+      <h1>My story</h1>
+      <p class="story__lead measure">
+        [MICHAEL: two or three sentences introducing the memoir in your words: what it is, why you
+        are writing it, and that chapters arrive as you finish them.]
+      </p>
+    </header>
+    <div class="story__layout">
+      <section class="story__chapters" aria-labelledby="chapters-title">
+        <h2 id="chapters-title" class="visually-hidden">
+          The chapters
+        </h2>
+        {chapters.map((chapter) => (
+          <article class="story__chapter">
+            <p class="eyebrow">
+              Chapter {chapter.data.chapter}
+              <span>{chapter.data.period}</span>
+              <time datetime={isoDate(chapter.data.date)}>{formatDate(chapter.data.date)}</time>
+            </p>
+            <h3>
+              <a href={chapterPath(chapter)}>{chapter.data.title}</a>
+            </h3>
+            <p class="story__summary">{chapter.data.summary}</p>
+            {chapter.data.audio && (
+              <p class="story__audio eyebrow">
+                Read aloud,{" "}
+                {chapter.data.audio.voice === "michael"
+                  ? "by me"
+                  : chapter.data.audio.voice === "actor"
+                    ? "by a voice actor"
+                    : "synthetic voice"}
+              </p>
+            )}
+          </article>
+        ))}
+        {chapters.length === 0 && <p>The first chapter is on its way.</p>}
+      </section>
+      <aside class="story__rail">
+        <ChapterRail chapters={chapters} />
+      </aside>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .story {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .story__header h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2);
+  }
+  .story__lead {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .story__layout {
+    margin-top: var(--space-7);
+    display: grid;
+    gap: var(--space-7);
+  }
+  .story__chapter {
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--border);
+    max-width: var(--measure);
+  }
+  .story__chapter .eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin-bottom: var(--space-2);
+  }
+  .story__chapter h3 {
+    font-size: var(--step-2);
+  }
+  .story__chapter h3 a {
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .story__chapter h3 a:hover {
+    text-decoration: underline;
+  }
+  .story__summary {
+    margin-top: var(--space-2);
+    color: var(--fg-muted);
+  }
+  .story__audio {
+    margin-top: var(--space-2);
+  }
+  @media (width >= 64rem) {
+    .story__layout {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+    }
+  }
+</style>

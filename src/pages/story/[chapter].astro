@@ -1,0 +1,196 @@
+---
+// One memoir chapter with the chapter rail beside it. Michael's words only.
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import ChapterRail from "../../components/content/ChapterRail.astro";
+import Prose from "../../components/content/Prose.astro";
+import { mdxComponents } from "../../components/content/mdx-components";
+import {
+  chapterPath,
+  formatDate,
+  getChapters,
+  isoDate,
+  postReadingTime,
+  type Chapter,
+} from "../../lib/content";
+import { readingTime } from "../../lib/reading-time";
+import { blogPosting, breadcrumbs } from "../../lib/seo/jsonld";
+import { canonicalUrl, ogImageUrl } from "../../lib/seo/meta";
+
+export async function getStaticPaths() {
+  const chapters = await getChapters();
+  return chapters.map((chapter) => ({
+    params: { chapter: chapter.id },
+    props: { chapter, chapters },
+  }));
+}
+
+interface Props {
+  chapter: Chapter;
+  chapters: Chapter[];
+}
+const { chapter, chapters } = Astro.props;
+const { Content } = await render(chapter);
+const path = chapterPath(chapter);
+const time = readingTime(chapter.body ?? "");
+const index = chapters.findIndex((c) => c.id === chapter.id);
+const previous = chapters[index - 1];
+const next = chapters[index + 1];
+void postReadingTime;
+---
+
+<Base
+  title={`Chapter ${chapter.data.chapter}: ${chapter.data.title}`}
+  description={chapter.data.description}
+  path={path}
+  type="article"
+  publishedTime={isoDate(chapter.data.date)}
+  modifiedTime={chapter.data.updated ? isoDate(chapter.data.updated) : undefined}
+  jsonLd={[
+    blogPosting({
+      url: canonicalUrl(path),
+      title: chapter.data.title,
+      description: chapter.data.description,
+      datePublished: isoDate(chapter.data.date),
+      dateModified: chapter.data.updated ? isoDate(chapter.data.updated) : undefined,
+      image: ogImageUrl(path),
+      wordCount: time.words,
+      category: "Traversing Darkness",
+      tags: ["memoir"],
+    }),
+    breadcrumbs([
+      { name: "My story", url: canonicalUrl("/story") },
+      { name: `Chapter ${chapter.data.chapter}`, url: canonicalUrl(path) },
+    ]),
+  ]}
+>
+  <article class="wrap chapter">
+    <header class="chapter__header">
+      <p class="eyebrow chapter__eyebrow">
+        <a href="/story">My story</a>
+        <span>Chapter {chapter.data.chapter}</span>
+        <span>{chapter.data.period}</span>
+        <span>{time.label}</span>
+      </p>
+      <h1>{chapter.data.title}</h1>
+      <p class="chapter__summary">{chapter.data.summary}</p>
+      <p class="chapter__date">
+        Published <time datetime={isoDate(chapter.data.date)}>{formatDate(chapter.data.date)}</time>
+        {chapter.data.updated && (
+          <span>
+            , updated{" "}
+            <time datetime={isoDate(chapter.data.updated)}>{formatDate(chapter.data.updated)}</time>
+          </span>
+        )}
+      </p>
+      <slot name="listen" />
+    </header>
+
+    <div class="chapter__layout">
+      <Prose class="chapter__body">
+        <Content components={mdxComponents} />
+      </Prose>
+      <aside class="chapter__rail">
+        <ChapterRail chapters={chapters} current={chapter.id} />
+      </aside>
+    </div>
+
+    <footer class="chapter__footer">
+      <nav class="chapter__nav" aria-label="Chapter navigation">
+        {previous && (
+          <a href={chapterPath(previous)} rel="prev">
+            <span class="eyebrow">Previous chapter</span>
+            <span>{previous.data.title}</span>
+          </a>
+        )}
+        {next && (
+          <a href={chapterPath(next)} rel="next">
+            <span class="eyebrow">Next chapter</span>
+            <span>{next.data.title}</span>
+          </a>
+        )}
+        {!next && (
+          <p class="chapter__end">
+            [MICHAEL: a line for the end of the latest chapter, or nothing]
+          </p>
+        )}
+      </nav>
+      <p class="chapter__back">
+        <a href="/story">All chapters</a>
+      </p>
+    </footer>
+  </article>
+</Base>
+
+<style>
+  .chapter {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .chapter__eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+  }
+  .chapter__eyebrow a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .chapter__header {
+    max-width: var(--measure);
+  }
+  .chapter__header h1 {
+    margin-top: var(--space-4);
+    font-size: var(--step-5);
+  }
+  .chapter__summary {
+    margin-top: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+  }
+  .chapter__date {
+    margin-top: var(--space-3);
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  .chapter__layout {
+    margin-top: var(--space-7);
+    display: grid;
+    gap: var(--space-7);
+  }
+  .chapter :global(.chapter__body) {
+    font-size: var(--step-1);
+  }
+  .chapter__footer {
+    margin-top: var(--space-8);
+    max-width: var(--measure);
+    display: grid;
+    gap: var(--space-5);
+  }
+  .chapter__nav {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+  .chapter__nav a {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .chapter__nav a:hover {
+    border-color: var(--accent);
+  }
+  .chapter__end {
+    color: var(--fg-muted);
+  }
+  @media (width >= 64rem) {
+    .chapter__layout {
+      grid-template-columns: minmax(0, var(--measure)) 16rem;
+    }
+    .chapter__rail {
+      align-self: start;
+    }
+  }
+</style>
