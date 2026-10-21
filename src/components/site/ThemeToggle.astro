@@ -1,13 +1,14 @@
 ---
-// The theme switch. The label and icon name what the button does next, so a
-// sighted visitor sees it change and a screen reader hears "Switch to light
-// theme, button". Both labels are in the markup and CSS shows the one that
-// matches data-theme on <html>, which the inline preference script sets before
-// first paint, so the label is right from the first frame. Without JavaScript
-// the button stays hidden and the page shows the light theme.
+// The theme switch in the access bar. It shows the theme it switches to, with
+// a moon or sun, and its name is the full action: a screen reader hears
+// "Switch to light theme, button", and the visible word is part of that name.
+// Both labels are in the markup and CSS shows the one that matches data-theme
+// on <html>, which the inline preference script sets before first paint, so
+// the label is right from the first frame. Without JavaScript the button
+// stays hidden and the page shows the light theme.
 ---
 
-<button type="button" class="theme-toggle" data-theme-toggle data-pending>
+<button type="button" class="access-bar__item theme-toggle" data-theme-toggle data-pending>
   <span class="theme-toggle__label theme-toggle__label--to-dark">
     <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
       <path
@@ -18,7 +19,9 @@
         stroke-linejoin="round"
       ></path>
     </svg>
-    <span>Switch to dark theme</span>
+    <span>
+      <span class="visually-hidden">Switch to </span>dark<span class="visually-hidden"> theme</span>
+    </span>
   </span>
   <span class="theme-toggle__label theme-toggle__label--to-light">
     <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
@@ -30,24 +33,14 @@
         stroke-linecap="round"
       ></path>
     </svg>
-    <span>Switch to light theme</span>
+    <span>
+      <span class="visually-hidden">Switch to </span>light
+      <span class="visually-hidden"> theme</span>
+    </span>
   </span>
 </button>
 
 <style>
-  .theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--target-primary);
-    padding: var(--space-2) var(--space-3);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    background: transparent;
-    color: inherit;
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-  }
   .theme-toggle__label {
     display: inline-flex;
     align-items: center;

@@ -2,7 +2,6 @@
 import { FOOTER_NAV, SOCIAL } from "../../lib/site";
 import BrailleMark from "./BrailleMark.astro";
 import LocalTime from "./LocalTime.astro";
-import MotionToggle from "./MotionToggle.astro";
 
 const year = new Date().getFullYear();
 // Pre-fills the contact form with the page the problem was found on (section 9.3).
@@ -17,7 +16,6 @@ const reportHref = `/contact?topic=accessibility&page=${encodeURIComponent(Astro
       <p class="site-footer__line">
         Every word here is mine. I write it, I edit it by ear, and nothing goes up without that
         pass.
-        <a href="/colophon">How this site is built</a>.
       </p>
     </div>
     <nav class="site-footer__nav" aria-label="Site">
@@ -43,9 +41,15 @@ const reportHref = `/contact?topic=accessibility&page=${encodeURIComponent(Astro
         ))}
       </ul>
     </nav>
-    <div class="site-footer__controls" aria-label="Display settings" role="group">
-      <MotionToggle />
-      <slot name="controls" />
+    <div class="site-footer__listen">
+      <h2 class="site-footer__listen-title">Hear this page the way I do</h2>
+      <p class="site-footer__listen-text">
+        I read the web with a screen reader. This shows the page the way it reads it to me, line by
+        line.
+      </p>
+      <button type="button" class="site-footer__listen-button" data-sr-view-open data-pending>
+        What my screen reader hears
+      </button>
     </div>
     <p class="site-footer__copyright">
       <span class="mono">{year}</span> Michael Walsh.
@@ -55,7 +59,7 @@ const reportHref = `/contact?topic=accessibility&page=${encodeURIComponent(Astro
 
 <style>
   .site-footer {
-    /* A solid ground of its own: on the home page the body ground behind it moves. */
+    /* A solid ground of its own, so it does not take the home page's body ground. */
     background: var(--bg);
     margin-top: auto;
     padding-block: var(--space-7) var(--space-6);
@@ -93,19 +97,47 @@ const reportHref = `/contact?topic=accessibility&page=${encodeURIComponent(Astro
     padding-block: var(--space-1);
     color: var(--fg);
   }
-  .site-footer__controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    align-items: center;
+  .site-footer__listen {
+    display: grid;
+    gap: var(--space-3);
     align-content: start;
+    justify-items: start;
+    padding: var(--space-5);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    background: var(--bg-surface);
+  }
+  .site-footer__listen-title {
+    font-size: var(--step-1);
+  }
+  .site-footer__listen-text {
+    color: var(--fg-muted);
+    max-width: 40ch;
+  }
+  .site-footer__listen-button {
+    min-height: var(--target-primary);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--fg);
+    border-radius: 2px;
+    background: var(--fg);
+    color: var(--bg);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+  }
+  .site-footer__listen-button:hover {
+    background: transparent;
+    color: var(--fg);
   }
   .site-footer__copyright {
     grid-column: 1 / -1;
     color: var(--fg-muted);
   }
   @media (width >= 64rem) {
-    .site-footer__about {
+    .site-footer__about,
+    .site-footer__listen {
       grid-column: span 2;
     }
   }

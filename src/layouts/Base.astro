@@ -103,16 +103,9 @@ const jsonLdText = JSON.stringify(graph(jsonLd));
     <main id="main" tabindex="-1" data-pagefind-body={meta.noindex ? undefined : ""}>
       <slot />
     </main>
-    <Footer>
-      <Fragment slot="controls">
-        <ReadingControls />
-        <button type="button" class="sr-view-open" data-sr-view-open data-pending>
-          What my screen reader hears
-        </button>
-        <slot name="footer-controls" />
-      </Fragment>
-    </Footer>
+    <Footer />
     <Palette />
+    <ReadingControls />
     <ScreenReaderView />
     <LiveRegion />
     <Analytics />
@@ -123,16 +116,5 @@ const jsonLdText = JSON.stringify(graph(jsonLd));
   main {
     flex: 1 0 auto;
     outline: none;
-  }
-  .sr-view-open {
-    min-height: var(--target-primary);
-    padding: var(--space-2) var(--space-3);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    background: transparent;
-    color: inherit;
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
   }
 </style>

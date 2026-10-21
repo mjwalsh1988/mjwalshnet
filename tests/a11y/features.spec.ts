@@ -54,7 +54,7 @@ test.describe("reading controls", () => {
   test("text size and spacing apply to the page and persist", async ({ page }) => {
     await page.goto("/uses");
     await page.getByRole("button", { name: "Reading" }).click();
-    const dialog = page.getByRole("dialog", { name: "Reading settings" });
+    const dialog = page.getByRole("dialog", { name: "Reading and display" });
     await expect(dialog).toBeVisible();
     await page.getByRole("combobox", { name: "Text size" }).selectOption("150");
     await expect(page.locator("html")).toHaveAttribute("data-text-size", "150");

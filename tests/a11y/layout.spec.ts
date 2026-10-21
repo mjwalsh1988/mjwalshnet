@@ -99,12 +99,42 @@ test.describe("base layout", () => {
     }
   });
 
-  test("the reduce motion toggle sets the motion attribute", async ({ page }) => {
+  test("reduce motion in the reading and display settings sets the motion attribute", async ({
+    page,
+  }) => {
     await page.goto("/");
-    const toggle = page.getByRole("button", { name: "Reduce motion" });
-    await toggle.click();
-    await expect(toggle).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("banner").getByRole("button", { name: "Reading" }).click();
+    const box = page
+      .getByRole("dialog", { name: "Reading and display" })
+      .getByRole("checkbox", { name: "Reduce motion" });
+    await box.check();
     await expect(page.locator("html")).toHaveAttribute("data-motion", "reduce");
+  });
+
+  test("the access bar holds the four tools at the top of every page", async ({ page }) => {
+    for (const [width, rows] of [
+      [1280, 1],
+      [360, 2],
+    ] as const) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto("/about");
+      const bar = page.getByRole("banner").locator(".access-bar");
+      const names = ["Search", "Switch to dark theme", "Reading", "Screen reader view"];
+      const tops: number[] = [];
+      for (const name of names) {
+        const button = bar.getByRole("button", { name });
+        await expect(button).toBeVisible();
+        const box = (await button.boundingBox())!;
+        expect(box.height).toBeGreaterThanOrEqual(44);
+        tops.push(box.y);
+      }
+      // One row on a wide screen, a two by two grid on a phone.
+      expect(new Set(tops.map((t) => Math.round(t))).size, `rows at ${width}px`).toBe(rows);
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+    }
   });
 
   test("the footer carries the place line and the report link with the page URL", async ({
