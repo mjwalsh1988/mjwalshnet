@@ -25,21 +25,6 @@ Every placeholder reads [MICHAEL: what is needed]. `npm run check:writing -- --p
 
 ### Blog posts (src/content/posts, all drafts)
 
-- content/posts/build-log-1/index.mdx, line 12: the post, in your words, from the interview transcript. Plain sentences, physical detail, dialogue where it happened, what did not work as well as what did.
-- content/posts/build-log-1/index.mdx, line 2: Build Log entry 1: what shipped, in one line
-- content/posts/build-log-1/index.mdx, line 3: 120 to 160 characters describing this post, for search results and cards
-- content/posts/build-log-2/index.mdx, line 12: the post, in your words, from the interview transcript. Plain sentences, physical detail, dialogue where it happened, what did not work as well as what did.
-- content/posts/build-log-2/index.mdx, line 2: Build Log entry 2: what shipped, in one line
-- content/posts/build-log-2/index.mdx, line 3: 120 to 160 characters describing this post, for search results and cards
-- content/posts/build-log-3/index.mdx, line 12: the post, in your words, from the interview transcript. Plain sentences, physical detail, dialogue where it happened, what did not work as well as what did.
-- content/posts/build-log-3/index.mdx, line 2: Build Log entry 3: what shipped, in one line
-- content/posts/build-log-3/index.mdx, line 3: 120 to 160 characters describing this post, for search results and cards
-- content/posts/build-log-4/index.mdx, line 12: the post, in your words, from the interview transcript. Plain sentences, physical detail, dialogue where it happened, what did not work as well as what did.
-- content/posts/build-log-4/index.mdx, line 2: Build Log entry 4: what shipped, in one line
-- content/posts/build-log-4/index.mdx, line 3: 120 to 160 characters describing this post, for search results and cards
-- content/posts/build-log-5/index.mdx, line 12: the post, in your words, from the interview transcript. Plain sentences, physical detail, dialogue where it happened, what did not work as well as what did.
-- content/posts/build-log-5/index.mdx, line 2: Build Log entry 5: what shipped, in one line
-- content/posts/build-log-5/index.mdx, line 3: 120 to 160 characters describing this post, for search results and cards
 - content/posts/dev-pipeline-sample/index.mdx, line 46: confirm this description with someone who was there. Michael from the shoulders up, smiling with his teeth showing, short dark hair brushed up and back, a full dark beard, a black collared shirt, outdoors beside a river with trees turning autumn colors and a cloudy sky; someone's arm rests across his shoulders from the right.
 - content/posts/how-i-write-code-i-cannot-see/index.mdx, line 15: the post, in your words, from the interview transcript. Plain sentences, physical detail, dialogue where it happened, what did not work as well as what did.
 - content/posts/how-i-write-code-i-cannot-see/index.mdx, line 3: 120 to 160 characters describing this post, for search results and cards
@@ -48,9 +33,6 @@ Every placeholder reads [MICHAEL: what is needed]. `npm run check:writing -- --p
 - content/posts/life-post-one/index.mdx, line 3: 120 to 160 characters describing this post, for search results and cards
 - content/posts/my-screen-reader-setup-in-2026/index.mdx, line 15: the post, in your words, from the interview transcript. Plain sentences, physical detail, dialogue where it happened, what did not work as well as what did.
 - content/posts/my-screen-reader-setup-in-2026/index.mdx, line 3: 120 to 160 characters describing this post, for search results and cards
-- content/posts/packers-launch-week/index.mdx, line 10: the post, in your words, from the interview transcript. Plain sentences, physical detail, dialogue where it happened, what did not work as well as what did.
-- content/posts/packers-launch-week/index.mdx, line 2: Packers post for launch week, whatever the Packers just did
-- content/posts/packers-launch-week/index.mdx, line 3: 120 to 160 characters describing this post, for search results and cards
 - content/posts/seven-years-running-a-hosting-company/index.mdx, line 15: the post, in your words, from the interview transcript. Plain sentences, physical detail, dialogue where it happened, what did not work as well as what did.
 - content/posts/seven-years-running-a-hosting-company/index.mdx, line 3: 120 to 160 characters describing this post, for search results and cards
 - content/posts/the-day-i-called-my-first-uber/index.mdx, line 12: the post, in your words, from the interview transcript. Plain sentences, physical detail, dialogue where it happened, what did not work as well as what did.

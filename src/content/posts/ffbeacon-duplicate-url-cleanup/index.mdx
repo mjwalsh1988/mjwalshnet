@@ -1,0 +1,14 @@
+---
+title: "One page per ranking format instead of 48 duplicate URLs on FF Beacon"
+description: "FF Beacon's rankings were spread across 48 duplicate URLs. I gave each format its own page and cleaned up canonicals, 404s and crawl depth."
+date: 2026-07-29
+category: build-log
+tags: ["build-log", "ff-beacon", "seo"]
+draft: true
+---
+
+On July 29 I did a round of search cleanup on FF Beacon. The big change was that each rankings format now has its own page, where before the same content sat behind 48 duplicate URLs.
+
+I also added self-referencing canonicals to the plain pages, cut the crawl depth, and stopped passing internal links into a page marked noindex. Missing pages now return a real 404, after I scoped the loading boundary to the leagues section. The Beacon Brief got an RSS feed the same day.
+
+Search impressions began climbing around August 20. I can't say how much of that came from this work.

@@ -77,19 +77,6 @@ const posts = [
     category: "fantasy-football",
     tags: ["dynasty", "sleeper", "ff-beacon"],
   },
-  {
-    slug: "packers-launch-week",
-    title: "[MICHAEL: Packers post for launch week, whatever the Packers just did]",
-    category: "packers-and-the-nfl",
-    tags: ["packers"],
-  },
-  ...[1, 2, 3, 4, 5].map((n) => ({
-    slug: `build-log-${n}`,
-    title: `[MICHAEL: Build Log entry ${n}: what shipped, in one line]`,
-    category: "build-log",
-    tags: ["build-log"],
-    note: "Backdated to the real event once you confirm the date (section 7.4).",
-  })),
 ];
 
 function postFile(p) {

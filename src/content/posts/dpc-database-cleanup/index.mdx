@@ -1,0 +1,14 @@
+---
+title: "Cutting Dynasty Price Check's database from 1.1 GB to 339 MB"
+description: "Supabase warned that Dynasty Price Check was over the free plan's database limit. I cut the database from 1.1 GB to 339 MB and kept what the site reads."
+date: 2026-10-03
+category: build-log
+tags: ["build-log", "dynasty-price-check", "database"]
+draft: true
+---
+
+Supabase emailed that Dynasty Price Check had gone over the free plan's 0.5 GB database limit. At 1.129 GB, with restrictions due on November 1, database size was the only thing over. Egress, storage and logins were all well under their limits.
+
+I took full backups first, then worked in rounds. Two features came out whole: Draft Den, with its pages, jobs and 24 tables, and the old news pipeline, with 22 tables. I deleted weekly stats for 2018 to 2020 and kept 2021 onward, dropped seven unused or duplicate indexes, and stopped writing two Dynasty Decoder tables that nothing ever read. The nightly KeepTradeCut sync now sends about 8,000 rows instead of 170,000. Then I compacted the big tables, and row counts and per-row checksums matched before and after.
+
+The database finished at 339 MB, down from 1,062 MB by Postgres's own count, on October 3. At the current growth rate, that leaves about a year and a half before the limit.
