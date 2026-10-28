@@ -89,8 +89,12 @@ const schema = data.url
               <dd>
                 <span class="stats__value">{s.value}</span>
                 <span class="stats__source">
-                  Source: {s.source}, as of{" "}
-                  <time datetime={isoDate(s.asOf)}>{formatDate(s.asOf)}</time>
+                  Source: {s.source}
+                  {s.asOf && (
+                    <>
+                      , as of <time datetime={isoDate(s.asOf)}>{formatDate(s.asOf)}</time>
+                    </>
+                  )}
                 </span>
               </dd>
             </div>

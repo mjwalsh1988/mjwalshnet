@@ -71,8 +71,8 @@ const projects = defineCollection({
     z.object({
       title: z.string().min(1).max(80),
       description,
-      /** One line for the index grid. */
-      tagline: z.string().max(120),
+      /** Two sentences at most, for the home page and the index grid. */
+      tagline: z.string().max(260),
       url: z.url().optional(),
       role: z.array(z.string()).min(1),
       year: z.string().refine((y) => isPlaceholder(y) || /^\d{4}( to (\d{4}|present))?$/.test(y), {
@@ -87,7 +87,8 @@ const projects = defineCollection({
             value: z.string(),
             label: z.string(),
             source: z.string(),
-            asOf: z.coerce.date(),
+            /** Omit for a fixed figure, such as a launch-window total, that never needs refreshing. */
+            asOf: z.coerce.date().optional(),
             /** Key in site_metrics when the figure is live (section 6.6). */
             metricKey: z.string().optional(),
           }),

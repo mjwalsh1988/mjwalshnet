@@ -13,8 +13,9 @@ const { projects, daysSinceLastPost } = Astro.props;
 
 // The beats on record (section 6.3), in order. Michael's chapters tell the rest.
 const beats = [
+  { when: "2021", what: "Behavioral changes I noticed, later traced to the tumor and where it sat in my brain" },
   { when: "2022", what: "Vision problems through the year" },
-  { when: "October 2022", what: "A brain tumor found" },
+  { when: "October 2022", what: "A large, orange-sized tumor found in my frontal lobe" },
   { when: "After that", what: "A craniotomy" },
   { when: "", what: "Sight lost as a complication of the tumor and the surgery" },
   { when: "2022 to 2024", what: "Two years of recovery and relearning how to live blind" },
@@ -31,7 +32,7 @@ const beats = [
     <p class="movement__lede">Over twenty years of building for the web, the last two by ear.</p>
     <ol class="shipped">
       {projects.map((project) => {
-        const stat = project.data.stats[0];
+        const stats = project.data.stats.slice(0, 2);
         const shot = project.data.gallery[0];
         return (
           <li class="shipped__item">
@@ -55,13 +56,17 @@ const beats = [
                 <a href={projectPath(project)}>{project.data.title}</a>
               </h3>
               <p class="shipped__tagline">{project.data.tagline}</p>
-              {stat ? (
-                <p class="shipped__stat">
-                  <span class="shipped__value">{stat.value}</span>
-                  <span class="shipped__label">
-                    {stat.label}, as of {formatDate(stat.asOf)}
-                  </span>
-                </p>
+              {stats.length > 0 ? (
+                <div class="shipped__stats" data-count={stats.length}>
+                  {stats.map((stat) => (
+                    <p class="shipped__stat">
+                      <span class="shipped__value">{stat.value}</span>
+                      <span class="shipped__label">
+                        {stat.label}{stat.asOf && `, as of ${formatDate(stat.asOf)}`}
+                      </span>
+                    </p>
+                  ))}
+                </div>
               ) : (
                 <p class="shipped__stat shipped__stat--pending">
                   [MICHAEL: one real number for {project.data.title}, with its source]
@@ -79,14 +84,21 @@ const beats = [
     <div class="metrics-wrap">
       <MetricsStrip
         title="Live numbers"
+        compact
+        keys={[
+          "ffbeacon_gsc_impressions_total",
+          "ffbeacon_leagues_synced",
+          "ffbeacon_gsc_clicks_total",
+          "automated_tests",
+        ]}
         extra={
           daysSinceLastPost === undefined
             ? []
             : [
                 {
-                  label: "Days since the last post",
+                  label: "Days since last post",
                   value: String(daysSinceLastPost),
-                  source: "The blog, counted at build",
+                  source: "The blog",
                 },
               ]
         }
@@ -95,7 +107,7 @@ const beats = [
 
     <section class="beats" aria-labelledby="beats-title">
       <h2 id="beats-title" class="eyebrow movement__eyebrow">
-        The story, in six beats
+        The story, in seven beats
       </h2>
       <ol class="beats__list">
         {beats.map((b) => (
@@ -179,17 +191,39 @@ const beats = [
     margin-top: var(--space-3);
     max-width: 50ch;
   }
-  .shipped__stat {
+  .shipped__stats {
     margin-top: var(--space-4);
+    /* The figures size themselves from this row's width, so every card scales alike. */
+    container-type: inline-size;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4) var(--space-6);
+  }
+  /* Two figures split the row evenly and stay side by side; they stack only on very narrow screens. */
+  .shipped__stats[data-count="2"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (max-width: 22rem) {
+    .shipped__stats[data-count="2"] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  .shipped__stat {
     display: grid;
     gap: var(--space-1);
+    align-content: start;
+  }
+  .shipped__stat--pending {
+    margin-top: var(--space-4);
   }
   .shipped__stat--pending {
     color: var(--on-dusk-muted);
   }
   .shipped__value {
     font-family: var(--font-display);
-    font-size: var(--step-4);
+    /* Never wider than half the row, so a figure like 100,000+ stays on one line. */
+    font-size: min(var(--step-4), 9cqi);
+    white-space: nowrap;
     line-height: 1;
     color: var(--on-dusk-accent);
   }
@@ -209,8 +243,8 @@ const beats = [
     margin-top: var(--space-8);
   }
   .beats {
-    margin-top: var(--space-9);
-    padding-top: var(--space-7);
+    margin-top: var(--space-7);
+    padding-top: var(--space-6);
     border-top: 1px solid var(--on-dusk-muted);
   }
   .beats__list {
