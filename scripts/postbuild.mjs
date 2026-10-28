@@ -33,6 +33,7 @@ try {
   }).format(today);
   const value = new Intl.NumberFormat("en-US").format(counts.total);
   const source = `Source: This repository, ${counts.playwright} Playwright tests and ${counts.unit} unit tests, counted at build, as of <time datetime="${iso}">${long}</time>`;
+  const shortSource = "Source: This repository, counted at build";
   let patched = 0;
   for (const file of [...htmlFiles(path.join("dist", "client")), ...htmlFiles(vercelStatic)]) {
     const html = readFileSync(file, "utf8");
@@ -44,7 +45,8 @@ try {
       )
       .replace(
         /(<span[^>]*data-metric-source="automated_tests"[^>]*>)[\s\S]*?(<\/span>)/,
-        `$1${source}$2`,
+        // The compact strip on the home page keeps to a short source line.
+        (_match, open, close) => `${open}${open.includes("data-compact") ? shortSource : source}${close}`,
       );
     writeFileSync(file, next);
     patched += 1;

@@ -12,15 +12,17 @@ interface Props {
   title?: string;
   /** Extra computed figures, such as days since the last post. */
   extra?: { label: string; value: string; source: string }[];
+  /** Source only on each figure, with "(refreshed daily)" in the heading, for figures that update daily. */
+  compact?: boolean;
 }
-const { keys, title = "The numbers", extra = [] } = Astro.props;
+const { keys, title = "The numbers", extra = [], compact = false } = Astro.props;
 const all = await getMetrics();
 const metrics = keys ? keys.map((k) => all.find((m) => m.key === k)).filter(Boolean) : all;
 ---
 
-<section class="metrics" aria-labelledby="metrics-title">
+<section class:list={["metrics", { "metrics--compact": compact }]} aria-labelledby="metrics-title">
   <h2 id="metrics-title" class="eyebrow">
-    {title}
+    {title}{compact && " (refreshed daily)"}
   </h2>
   <dl class="metrics__list">
     {metrics.map((m) => (
@@ -30,10 +32,16 @@ const metrics = keys ? keys.map((k) => all.find((m) => m.key === k)).filter(Bool
           <span class="metrics__value" data-metric-value={m!.key}>
             {formatValue(m!.value)}
           </span>
-          <span class="metrics__source" data-metric-source={m!.key}>
-            Source: {m!.source}, as of{" "}
-            <time datetime={m!.asOf}>{formatDate(new Date(m!.asOf))}</time>
-            {m!.live ? "" : " (last committed snapshot)"}
+          <span class="metrics__source" data-metric-source={m!.key} data-compact={compact || undefined}>
+            {compact ? (
+              <>Source: {compact && m!.key === "automated_tests" ? "This repository, counted at build" : m!.source}</>
+            ) : (
+              <>
+                Source: {m!.source}, as of{" "}
+                <time datetime={m!.asOf}>{formatDate(new Date(m!.asOf))}</time>
+                {m!.live ? "" : " (last committed snapshot)"}
+              </>
+            )}
           </span>
         </dd>
       </div>
@@ -56,6 +64,18 @@ const metrics = keys ? keys.map((k) => all.find((m) => m.key === k)).filter(Bool
     display: grid;
     gap: var(--space-4);
     grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+  /* Five figures share one row when there is room; a short last row stretches to fill instead of leaving a gap. */
+  .metrics--compact .metrics__list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .metrics--compact .metrics__item {
+    flex: 1 1 11rem;
+    min-width: 0;
+  }
+  .metrics--compact .metrics__value {
+    white-space: nowrap;
   }
   .metrics__item {
     padding-top: var(--space-3);

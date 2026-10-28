@@ -44,7 +44,10 @@ async function googleAccessToken(serviceAccountJson: string, scope: string): Pro
   return ((await res.json()) as { access_token: string }).access_token;
 }
 
-/** FF Beacon clicks and impressions for the last 90 days from Search Console. */
+/** FF Beacon recorded no search data before this date, so it stands in for the launch. */
+const FF_BEACON_LAUNCH = "2026-06-01";
+
+/** FF Beacon clicks and impressions since launch from Search Console. */
 async function searchConsole(): Promise<MetricRow[]> {
   const json = env("GSC_SERVICE_ACCOUNT_JSON");
   if (!json) {
@@ -57,8 +60,6 @@ async function searchConsole(): Promise<MetricRow[]> {
   );
   const end = new Date();
   end.setUTCDate(end.getUTCDate() - 2); // Search Console data lags about two days.
-  const start = new Date(end);
-  start.setUTCDate(start.getUTCDate() - 89);
   const iso = (d: Date) => d.toISOString().slice(0, 10);
   const site = encodeURIComponent("sc-domain:ffbeacon.com");
   const res = await fetch(
@@ -66,7 +67,7 @@ async function searchConsole(): Promise<MetricRow[]> {
     {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ startDate: iso(start), endDate: iso(end), dimensions: [] }),
+      body: JSON.stringify({ startDate: FF_BEACON_LAUNCH, endDate: iso(end), dimensions: [] }),
     },
   );
   if (!res.ok)
@@ -77,21 +78,73 @@ async function searchConsole(): Promise<MetricRow[]> {
   const row = data.rows?.[0];
   if (!row) return [];
   const asOf = `${iso(end)}T00:00:00Z`;
-  const source = `Google Search Console, ${iso(start)} to ${iso(end)}`;
+  const source = "Search Console, all time";
   return [
     {
-      key: "ffbeacon_gsc_impressions_90d",
+      key: "ffbeacon_gsc_impressions_total",
       value: Math.round(row.impressions),
-      label: "FF Beacon search impressions, last 90 days",
+      label: "FF Beacon impressions",
       source,
       as_of: asOf,
     },
     {
-      key: "ffbeacon_gsc_clicks_90d",
+      key: "ffbeacon_gsc_clicks_total",
       value: Math.round(row.clicks),
-      label: "FF Beacon search clicks, last 90 days",
+      label: "FF Beacon clicks",
       source,
       as_of: asOf,
+    },
+  ];
+}
+
+const todayAsOf = () => `${new Date().toISOString().slice(0, 10)}T00:00:00Z`;
+
+/** FF Beacon's Discord member count from the public invite, which needs no bot token. */
+async function discord(): Promise<MetricRow[]> {
+  const code = env("FFBEACON_DISCORD_INVITE") ?? "scrhgHNWfe";
+  const res = await fetch(`https://discord.com/api/v10/invites/${code}?with_counts=true`);
+  if (!res.ok) throw new Error(`Discord invite lookup failed: ${res.status}`);
+  const data = (await res.json()) as { approximate_member_count?: number };
+  if (typeof data.approximate_member_count !== "number") return [];
+  return [
+    {
+      key: "ffbeacon_discord_members",
+      value: data.approximate_member_count,
+      label: "FF Beacon Discord members",
+      source: "Discord",
+      as_of: todayAsOf(),
+    },
+  ];
+}
+
+/**
+ * Leagues synced into FF Beacon, counted with the project's publishable key.
+ * The leagues table is readable by anyone, so the key can only read.
+ */
+async function ffbeaconLeagues(): Promise<MetricRow[]> {
+  const url = env("FFBEACON_SUPABASE_URL");
+  const key = env("FFBEACON_SUPABASE_PUBLISHABLE_KEY");
+  if (!url || !key) {
+    missing(
+      "FFBEACON_SUPABASE_URL and FFBEACON_SUPABASE_PUBLISHABLE_KEY",
+      "the leagues synced figure is not refreshed",
+    );
+    return [];
+  }
+  const res = await fetch(`${url.replace(/\/$/, "")}/rest/v1/leagues?select=id`, {
+    method: "HEAD",
+    headers: { apikey: key, Authorization: `Bearer ${key}`, Prefer: "count=exact" },
+  });
+  if (!res.ok) throw new Error(`FF Beacon leagues count failed: ${res.status}`);
+  const total = Number(res.headers.get("content-range")?.split("/")[1]);
+  if (!Number.isFinite(total)) return [];
+  return [
+    {
+      key: "ffbeacon_leagues_synced",
+      value: total,
+      label: "FF Beacon leagues synced",
+      source: "FF Beacon database",
+      as_of: todayAsOf(),
     },
   ];
 }
@@ -108,7 +161,11 @@ export const GET: APIRoute = async ({ request }) => {
 
   const rows: MetricRow[] = [];
   const errors: string[] = [];
-  for (const [name, source] of [["searchConsole", searchConsole]] as const) {
+  for (const [name, source] of [
+    ["searchConsole", searchConsole],
+    ["discord", discord],
+    ["ffbeaconLeagues", ffbeaconLeagues],
+  ] as const) {
     try {
       rows.push(...(await source()));
     } catch (error) {
@@ -116,9 +173,6 @@ export const GET: APIRoute = async ({ request }) => {
       console.error(`metrics ${name} failed: ${(error as Error).message}`);
     }
   }
-  // Sleeper leagues synced this season (section 6.6) needs a read from FF Beacon's
-  // own database, which this site has no key for. It is listed in the handoff.
-
   let written = 0;
   const db = secretClient();
   if (db && rows.length) {

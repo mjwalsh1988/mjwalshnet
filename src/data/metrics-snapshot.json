@@ -1,25 +1,39 @@
 {
-  "snapshotTakenAt": "2026-10-21",
+  "snapshotTakenAt": "2026-10-28",
   "note": "Last committed copy of site_metrics. The build reads Supabase first and falls back to this file, so a database outage never breaks a deploy. scripts/snapshot-metrics.ts refreshes it.",
   "metrics": [
     {
-      "key": "ffbeacon_gsc_impressions_90d",
-      "value": 73908,
-      "label": "FF Beacon search impressions, last 90 days",
-      "source": "Google Search Console, 2026-07-23 to 2026-10-21",
-      "as_of": "2026-10-21"
+      "key": "ffbeacon_gsc_impressions_total",
+      "value": 88383,
+      "label": "FF Beacon impressions",
+      "source": "Search Console, all time",
+      "as_of": "2026-10-28"
     },
     {
-      "key": "ffbeacon_gsc_clicks_90d",
-      "value": 2025,
-      "label": "FF Beacon search clicks, last 90 days",
-      "source": "Google Search Console, 2026-07-23 to 2026-10-21",
-      "as_of": "2026-10-21"
+      "key": "ffbeacon_gsc_clicks_total",
+      "value": 2394,
+      "label": "FF Beacon clicks",
+      "source": "Search Console, all time",
+      "as_of": "2026-10-28"
+    },
+    {
+      "key": "ffbeacon_leagues_synced",
+      "value": 1918,
+      "label": "FF Beacon leagues synced",
+      "source": "FF Beacon database",
+      "as_of": "2026-10-28"
+    },
+    {
+      "key": "ffbeacon_discord_members",
+      "value": 98,
+      "label": "FF Beacon Discord members",
+      "source": "Discord",
+      "as_of": "2026-10-28"
     },
     {
       "key": "automated_tests",
       "value": 210,
-      "label": "Automated tests on this site",
+      "label": "Automated tests",
       "source": "This repository: 174 Playwright tests and 36 unit tests, counted 2026-10-21",
       "as_of": "2026-10-21"
     }

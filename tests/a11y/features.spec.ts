@@ -112,12 +112,13 @@ test.describe("charts", () => {
 });
 
 test.describe("live numbers", () => {
-  test("the home page shows figures with a source and date", async ({ page }) => {
+  test("the home page shows figures with a source and a refresh note", async ({ page }) => {
     await page.goto("/");
     const strip = page.getByRole("region", { name: "Live numbers" });
-    await expect(strip).toContainText("Automated tests on this site");
+    await expect(strip).toContainText("Automated tests");
     await expect(strip).toContainText("Source:");
-    await expect(strip).toContainText("Days since the last post");
+    await expect(strip).toContainText("refreshed daily");
+    await expect(strip).toContainText("Days since last post");
   });
 
   test("the metrics function refuses calls without the secret", async ({ request }) => {
