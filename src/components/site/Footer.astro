@@ -11,7 +11,10 @@ const reportHref = `/contact?topic=accessibility&page=${encodeURIComponent(Astro
 <footer class="site-footer">
   <div class="wrap site-footer__grid">
     <div class="site-footer__about">
-      <BrailleMark size={36} class="site-footer__mark" />
+      <p class="site-footer__brand">
+        <BrailleMark size={36} class="site-footer__mark" />
+        <span class="site-footer__name">Michael Walsh</span>
+      </p>
       <LocalTime />
       <p class="site-footer__line">
         Every word here is mine. I write it, I edit it by ear, and nothing goes up without that
@@ -42,11 +45,13 @@ const reportHref = `/contact?topic=accessibility&page=${encodeURIComponent(Astro
       </ul>
     </nav>
     <div class="site-footer__listen">
-      <h2 class="site-footer__listen-title">Hear this page the way I do</h2>
-      <p class="site-footer__listen-text">
-        I read the web with a screen reader. This shows the page the way it reads it to me, line by
-        line.
-      </p>
+      <div class="site-footer__listen-copy">
+        <h2 class="site-footer__listen-title">Hear this page the way I do</h2>
+        <p class="site-footer__listen-text">
+          I read the web with a screen reader. This shows the page the way it reads it to me, line
+          by line.
+        </p>
+      </div>
       <button type="button" class="site-footer__listen-button" data-sr-view-open data-pending>
         What my screen reader hears
       </button>
@@ -66,16 +71,28 @@ const reportHref = `/contact?topic=accessibility&page=${encodeURIComponent(Astro
     border-top: 1px solid var(--border);
     font-size: var(--step--1);
   }
+  /* One column on a phone, then the about block over two link columns, then on a wide screen the
+     three sit in a row. The screen reader prompt is a band across the whole width, not a tall card. */
   .site-footer__grid {
     display: grid;
     gap: var(--space-6);
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    grid-template-columns: minmax(0, 1fr);
   }
   .site-footer__about {
     display: grid;
     gap: var(--space-3);
-    grid-column: 1 / -1;
+    align-content: start;
     max-width: 40ch;
+  }
+  .site-footer__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .site-footer__name {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--fg);
   }
   .site-footer__mark {
     color: var(--mark);
@@ -110,9 +127,13 @@ const reportHref = `/contact?topic=accessibility&page=${encodeURIComponent(Astro
   .site-footer__listen-title {
     font-size: var(--step-1);
   }
+  .site-footer__listen-copy {
+    display: grid;
+    gap: var(--space-2);
+  }
   .site-footer__listen-text {
     color: var(--fg-muted);
-    max-width: 40ch;
+    max-width: 52ch;
   }
   .site-footer__listen-button {
     min-height: var(--target-primary);
@@ -135,10 +156,28 @@ const reportHref = `/contact?topic=accessibility&page=${encodeURIComponent(Astro
     grid-column: 1 / -1;
     color: var(--fg-muted);
   }
-  @media (width >= 64rem) {
+  @media (width >= 40rem) {
+    .site-footer__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
     .site-footer__about,
     .site-footer__listen {
-      grid-column: span 2;
+      grid-column: 1 / -1;
+    }
+    .site-footer__listen {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      justify-items: stretch;
+      column-gap: var(--space-6);
+      padding-block: var(--space-4);
+    }
+  }
+  @media (width >= 64rem) {
+    .site-footer__grid {
+      grid-template-columns: 1.5fr 1fr 1fr;
+    }
+    .site-footer__about {
+      grid-column: auto;
     }
   }
 </style>
