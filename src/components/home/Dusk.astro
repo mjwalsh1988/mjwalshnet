@@ -13,7 +13,10 @@ const { projects, daysSinceLastPost } = Astro.props;
 
 // The beats on record (section 6.3), in order. Michael's chapters tell the rest.
 const beats = [
-  { when: "2021", what: "Behavioral changes I noticed, later traced to the tumor and where it sat in my brain" },
+  {
+    when: "2021",
+    what: "Behavioral changes I noticed, later traced to the tumor and where it sat in my brain",
+  },
   { when: "2022", what: "Vision problems through the year" },
   { when: "October 2022", what: "A large, orange-sized tumor found in my frontal lobe" },
   { when: "After that", what: "A craniotomy" },
@@ -62,7 +65,8 @@ const beats = [
                     <p class="shipped__stat">
                       <span class="shipped__value">{stat.value}</span>
                       <span class="shipped__label">
-                        {stat.label}{stat.asOf && `, as of ${formatDate(stat.asOf)}`}
+                        {stat.label}
+                        {stat.asOf && `, as of ${formatDate(stat.asOf)}`}
                       </span>
                     </p>
                   ))}

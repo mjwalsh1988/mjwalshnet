@@ -46,7 +46,8 @@ try {
       .replace(
         /(<span[^>]*data-metric-source="automated_tests"[^>]*>)[\s\S]*?(<\/span>)/,
         // The compact strip on the home page keeps to a short source line.
-        (_match, open, close) => `${open}${open.includes("data-compact") ? shortSource : source}${close}`,
+        (_match, open, close) =>
+          `${open}${open.includes("data-compact") ? shortSource : source}${close}`,
       );
     writeFileSync(file, next);
     patched += 1;

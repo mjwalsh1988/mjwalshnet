@@ -22,7 +22,8 @@ const metrics = keys ? keys.map((k) => all.find((m) => m.key === k)).filter(Bool
 
 <section class:list={["metrics", { "metrics--compact": compact }]} aria-labelledby="metrics-title">
   <h2 id="metrics-title" class="eyebrow">
-    {title}{compact && " (refreshed daily)"}
+    {title}
+    {compact && " (refreshed daily)"}
   </h2>
   <dl class="metrics__list">
     {metrics.map((m) => (
@@ -32,9 +33,18 @@ const metrics = keys ? keys.map((k) => all.find((m) => m.key === k)).filter(Bool
           <span class="metrics__value" data-metric-value={m!.key}>
             {formatValue(m!.value)}
           </span>
-          <span class="metrics__source" data-metric-source={m!.key} data-compact={compact || undefined}>
+          <span
+            class="metrics__source"
+            data-metric-source={m!.key}
+            data-compact={compact || undefined}
+          >
             {compact ? (
-              <>Source: {compact && m!.key === "automated_tests" ? "This repository, counted at build" : m!.source}</>
+              <>
+                Source:{" "}
+                {compact && m!.key === "automated_tests"
+                  ? "This repository, counted at build"
+                  : m!.source}
+              </>
             ) : (
               <>
                 Source: {m!.source}, as of{" "}

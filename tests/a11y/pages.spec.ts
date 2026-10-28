@@ -36,9 +36,7 @@ test.describe("home page", () => {
     await expect(page.getByRole("heading", { level: 2, name: "The latest" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: /This month/ })).toBeVisible();
     // The test count is written in after the build by scripts/postbuild.mjs.
-    await expect(
-      page.getByText(/Playwright tests and \d+ unit tests, counted at build/),
-    ).toHaveCount(1);
+    await expect(page.getByText("This repository, counted at build")).toHaveCount(1);
   });
 });
 
