@@ -48,10 +48,6 @@ Every placeholder reads [MICHAEL: what is needed]. `npm run check:writing -- --p
 - content/posts/what-i-wish-the-ophthalmologist-had-said/index.mdx, line 10: the post, in your words, from the interview transcript. Plain sentences, physical detail, dialogue where it happened, what did not work as well as what did.
 - content/posts/what-i-wish-the-ophthalmologist-had-said/index.mdx, line 3: 120 to 160 characters describing this post, for search results and cards
 
-### Components: components/content/ChapterRail.astro
-
-- components/content/ChapterRail.astro, line 42: one line for the rail about chapters still to come, or nothing
-
 ### Home page (src/components/home)
 
 - components/home/Day.astro, line 36: one line inviting people to write, in your words.
@@ -74,10 +70,6 @@ Every placeholder reads [MICHAEL: what is needed]. `npm run check:writing -- --p
 ### Pages (src/pages): contact.astro
 
 - pages/contact.astro, line 31: the public email address you want shown here
-
-### Pages (src/pages): story/[chapter].astro
-
-- pages/story/[chapter].astro, line 121: a line for the end of the latest chapter, or nothing
 
 ### Pages (src/pages): uses.astro
 
@@ -148,12 +140,6 @@ Every placeholder reads [MICHAEL: what is needed]. `npm run check:writing -- --p
 - data/resume.ts, line 77: a real number or two: customers, servers, uptime, team size
 - data/resume.ts, line 85: what you ran and built as Director of Technology at JWeis
 - data/resume.ts, line 96: your words. On record: headless WordPress with Vue and Nuxt, and a proprietary learning management system.
-
-### The story, chapter one frontmatter (src/content/story)
-
-- content/story/01-through-darkness-and-light.mdx, line 4: one line that says what chapter one covers, for the chapter rail
-- content/story/01-through-darkness-and-light.mdx, line 5: the months or years chapter one covers, for example 2021 to 2022
-- content/story/01-through-darkness-and-light.mdx, line 7: a description of 120 to 160 characters for search results and social cards
 
 Total: 126. The home page Dusk section also shows "one real number with its source" for each project that has no stat yet; those resolve when the project frontmatter gets its numbers.
 

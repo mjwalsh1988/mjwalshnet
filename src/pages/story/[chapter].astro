@@ -116,11 +116,6 @@ void postReadingTime;
             <span>{next.data.title}</span>
           </a>
         )}
-        {!next && (
-          <p class="chapter__end">
-            [MICHAEL: a line for the end of the latest chapter, or nothing]
-          </p>
-        )}
       </nav>
       <p class="chapter__back">
         <a href="/story">All chapters</a>
@@ -188,9 +183,6 @@ void postReadingTime;
   }
   .chapter__nav a:hover {
     border-color: var(--accent);
-  }
-  .chapter__end {
-    color: var(--fg-muted);
   }
   @media (width >= 64rem) {
     .chapter__layout {
