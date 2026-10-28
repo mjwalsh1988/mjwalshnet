@@ -20,7 +20,12 @@ import { categoryBySlug, CATEGORIES, categoryPath } from "../../lib/taxonomy";
 export const getStaticPaths: GetStaticPaths = async () => {
   const entries: { slug: string; input: OgInput }[] = STATIC_PAGE_LIST.map((page) => ({
     slug: ogSlug(page.path),
-    input: { title: page.title, eyebrow: page.eyebrow, ground: page.ground ?? "paper" },
+    input: {
+      title: page.ogTitle ?? page.title,
+      eyebrow: page.eyebrow,
+      meta: page.ogMeta,
+      ground: page.ground ?? "paper",
+    },
   }));
   for (const post of await getPosts()) {
     entries.push({

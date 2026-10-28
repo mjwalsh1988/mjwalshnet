@@ -10,16 +10,22 @@ export type StaticPage = {
   eyebrow: string;
   /** Ground of the social image. The home page and the story open on ink. */
   ground?: "ink" | "paper";
+  /** Headline on the social image when it should differ from the title. */
+  ogTitle?: string;
+  /** Line under the headline on the social image. */
+  ogMeta?: string;
 };
 
 export const STATIC_PAGES = {
   home: {
     path: "/",
-    title: "Michael Walsh",
+    title: "Michael Walsh: Blind Developer, AI Automation, Fort Wayne",
     description:
-      "I am a full-stack developer and automation specialist in Fort Wayne, Indiana. I lost my sight at 34 and kept building. My story, my work and my writing.",
-    eyebrow: "Blind developer in Fort Wayne, Indiana",
+      "Blind developer in Fort Wayne, Indiana. I lost my sight at 34 and still build AI automations, hosting, email and code for small businesses and agencies.",
+    eyebrow: "Technology and automation in Fort Wayne, Indiana",
     ground: "ink",
+    ogTitle: "I lost my sight at 34.\nI still run the whole stack.",
+    ogMeta: "Michael Walsh. AI automation and technology.",
   },
   story: {
     path: "/story",
@@ -82,7 +88,7 @@ export const STATIC_PAGES = {
     path: "/contact",
     title: "Contact",
     description:
-      "Send me a message about work, writing, accessibility or football. I read everything myself and usually answer within two working days.",
+      "Got a business or agency that needs its tech sorted out, or an AI automation to build? Email me or use the form. I usually answer ASAP.",
     eyebrow: "Contact",
   },
   colophon: {

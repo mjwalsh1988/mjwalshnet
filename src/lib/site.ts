@@ -5,7 +5,7 @@ export const SITE = {
   name: "Michael Walsh",
   url: import.meta.env.PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://mjwalsh.net",
   description:
-    "I am a full-stack developer and automation specialist in Fort Wayne, Indiana. I lost my sight at 34 and kept building. This is my story, my work and my writing.",
+    "Blind developer in Fort Wayne, Indiana. I lost my sight at 34 and still build AI automations, hosting, email and code for small businesses and agencies.",
   locale: "en_US",
   language: "en",
   timeZone: "America/Indiana/Indianapolis",

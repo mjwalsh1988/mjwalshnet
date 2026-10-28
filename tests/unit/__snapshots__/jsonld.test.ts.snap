@@ -39,7 +39,7 @@ exports[`JSON-LD builders > a blog post 1`] = `
     {
       "@id": "https://mjwalsh.net/#website",
       "@type": "WebSite",
-      "description": "I am a full-stack developer and automation specialist in Fort Wayne, Indiana. I lost my sight at 34 and kept building. This is my story, my work and my writing.",
+      "description": "Blind developer in Fort Wayne, Indiana. I lost my sight at 34 and still build AI automations, hosting, email and code for small businesses and agencies.",
       "inLanguage": "en",
       "name": "Michael Walsh",
       "potentialAction": {
@@ -145,7 +145,7 @@ exports[`JSON-LD builders > a plain page 1`] = `
     {
       "@id": "https://mjwalsh.net/#website",
       "@type": "WebSite",
-      "description": "I am a full-stack developer and automation specialist in Fort Wayne, Indiana. I lost my sight at 34 and kept building. This is my story, my work and my writing.",
+      "description": "Blind developer in Fort Wayne, Indiana. I lost my sight at 34 and still build AI automations, hosting, email and code for small businesses and agencies.",
       "inLanguage": "en",
       "name": "Michael Walsh",
       "potentialAction": {
@@ -219,7 +219,7 @@ exports[`JSON-LD builders > a project page 1`] = `
     {
       "@id": "https://mjwalsh.net/#website",
       "@type": "WebSite",
-      "description": "I am a full-stack developer and automation specialist in Fort Wayne, Indiana. I lost my sight at 34 and kept building. This is my story, my work and my writing.",
+      "description": "Blind developer in Fort Wayne, Indiana. I lost my sight at 34 and still build AI automations, hosting, email and code for small businesses and agencies.",
       "inLanguage": "en",
       "name": "Michael Walsh",
       "potentialAction": {
@@ -311,7 +311,7 @@ exports[`JSON-LD builders > every page carries the Person and WebSite graph 1`] 
     {
       "@id": "https://mjwalsh.net/#website",
       "@type": "WebSite",
-      "description": "I am a full-stack developer and automation specialist in Fort Wayne, Indiana. I lost my sight at 34 and kept building. This is my story, my work and my writing.",
+      "description": "Blind developer in Fort Wayne, Indiana. I lost my sight at 34 and still build AI automations, hosting, email and code for small businesses and agencies.",
       "inLanguage": "en",
       "name": "Michael Walsh",
       "potentialAction": {
@@ -370,7 +370,7 @@ exports[`JSON-LD builders > the about page 1`] = `
     {
       "@id": "https://mjwalsh.net/#website",
       "@type": "WebSite",
-      "description": "I am a full-stack developer and automation specialist in Fort Wayne, Indiana. I lost my sight at 34 and kept building. This is my story, my work and my writing.",
+      "description": "Blind developer in Fort Wayne, Indiana. I lost my sight at 34 and still build AI automations, hosting, email and code for small businesses and agencies.",
       "inLanguage": "en",
       "name": "Michael Walsh",
       "potentialAction": {

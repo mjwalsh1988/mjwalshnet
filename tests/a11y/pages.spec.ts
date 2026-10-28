@@ -28,7 +28,7 @@ test.describe("home page", () => {
     await expect(sections).toHaveCount(4);
     await expect(page.getByRole("region", { name: /I lost my sight at 34/ })).toHaveCount(1);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "I lost my sight at 34. I still write code for a living.",
+      "I lost my sight at 34. I still run the whole stack.",
     );
     await expect(
       page.getByRole("heading", { level: 2, name: "Things I built on my own time" }),

@@ -87,6 +87,10 @@ function fitTitle(title: string): number {
 }
 
 export async function renderOgSvg(input: OgInput): Promise<string> {
+  // A newline in the title forces a break, so a headline can end its line on a
+  // full stop instead of wherever the width runs out.
+  const lines = input.title.split("\n");
+  const longest = Math.max(...lines.map((line) => line.length));
   const dark = (input.ground ?? "paper") === "ink";
   const bg = dark ? INK : PAPER;
   const fg = dark ? PAPER : INK;
@@ -148,13 +152,17 @@ export async function renderOgSvg(input: OgInput): Promise<string> {
               props: {
                 style: {
                   fontFamily: "Fraunces",
-                  fontSize: fitTitle(input.title),
+                  fontSize: fitTitle("x".repeat(longest)),
                   lineHeight: 1.08,
                   letterSpacing: -1,
                   maxWidth: 1000,
                   display: "flex",
+                  flexDirection: "column",
                 },
-                children: input.title,
+                children: lines.map((line) => ({
+                  type: "div",
+                  props: { style: { display: "flex" }, children: line },
+                })),
               },
             },
             {
